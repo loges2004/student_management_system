@@ -17,18 +17,19 @@
 require 'vendor/autoload.php'; // Make sure to include PHPMailer
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
+
 $hostname = "localhost";
 $username = "root";
 $password = "";
 $databasename = "lk";
 $port = 4306;
-$mysqli= mysqli_connect($hostname,$username,$password,$databasename,$port);
-if(!$mysqli){
-    echo ('connect error: '.mysqli_connect_error());
+
+$mysqli = mysqli_connect($hostname, $username, $password, $databasename, $port);
+if (!$mysqli) {
+    echo ('Connect error: ' . mysqli_connect_error());
+    exit; // Exit if connection fails
 }
-else{
-    echo 'connection succes';
-}
+
 if (isset($_POST['submit'])) {
     $firstname = mysqli_real_escape_string($mysqli, $_POST['firstname']);
     $lastname = mysqli_real_escape_string($mysqli, $_POST['lastname']);
@@ -51,6 +52,24 @@ if (isset($_POST['submit'])) {
         exit;
     }
 
+    // Check if the email is already taken
+    $checkEmailQuery = "SELECT * FROM students WHERE email = '$email'";
+    $emailResult = mysqli_query($mysqli, $checkEmailQuery);
+    
+    if (mysqli_num_rows($emailResult) > 0) {
+        // Email already exists
+        echo "<script>Swal.fire({
+                icon: 'error',
+                title: 'Email already taken',
+                text: 'The email address is already registered. Please use a different email.',
+                position: 'top',
+                showConfirmButton: true
+            }).then(() => {
+                window.location.href = 'register.php';
+            });</script>";
+        exit;
+    }
+
     // Hash the password
     $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
@@ -64,7 +83,7 @@ if (isset($_POST['submit'])) {
         // Send verification email
         $mail = new PHPMailer(true); // Create an instance of PHPMailer
 
-        try { 
+        try {
             // Server settings
             $mail->isSMTP(); // Set mailer to use SMTP
             $mail->Host       = 'smtp.gmail.com'; // Set the SMTP server (update this)
@@ -121,5 +140,6 @@ if (isset($_POST['submit'])) {
     }
 }
 ?>
+
 </body>
 </html>

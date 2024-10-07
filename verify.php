@@ -1,3 +1,12 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+</head>
+<body>
 <?php
 require 'db.php'; // Import database configuration
 
@@ -28,7 +37,7 @@ if (isset($_GET['email']) && isset($_GET['token'])) {
                         position: 'top',
                         showConfirmButton: true
                     }).then(() => {
-                        window.location.href = 'login2.php';
+                        window.location.href = 'login22.php';
                     });
                 </script>";
             } else {
@@ -89,3 +98,5 @@ if (isset($_GET['email']) && isset($_GET['token'])) {
 // Close the database connection
 $mysqli->close();
 ?>
+</body>
+</html>
