@@ -27,7 +27,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             co_question_1, co_question_2, co_question_3, co_question_4, co_question_5,
             co_question_6, co_question_7, co_question_8, co_question_9, co_question_10,
             co_question_11a, co_question_11b, co_question_12a, co_question_12b,
-            co_question_13a, co_question_13b) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            co_question_13a, co_question_13b) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+               ON DUPLICATE KEY UPDATE
+            co_question_1 = VALUES(co_question_1),
+            co_question_2 = VALUES(co_question_2),
+            co_question_3 = VALUES(co_question_3),
+            co_question_4 = VALUES(co_question_4),
+            co_question_5 = VALUES(co_question_5),
+            co_question_6 = VALUES(co_question_6),
+            co_question_7 = VALUES(co_question_7),
+            co_question_8 = VALUES(co_question_8),
+            co_question_9 = VALUES(co_question_9),
+            co_question_10 = VALUES(co_question_10),
+            co_question_11a = VALUES(co_question_11a),
+            co_question_11b = VALUES(co_question_11b),
+            co_question_12a = VALUES(co_question_12a),
+            co_question_12b = VALUES(co_question_12b),
+            co_question_13a = VALUES(co_question_13a),
+            co_question_13b = VALUES(co_question_13b)");
     } else {
         $stmt = $mysqli->prepare("INSERT INTO course_outcomes (year, semester, department, test_type, subject_name, subject_code,
             co_question_1, co_question_2, co_question_3, co_question_4, co_question_5,
@@ -60,9 +77,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $params = array_merge([$year, $semester, $department, $test_type, $subject_name, $subject_code], $co_questions);
     
     // Print parameters for debugging
-    echo "<pre>";
-    print_r($params);
-    echo "</pre>";
+  
 
     // Bind parameters for the prepared statement
     $stmt->bind_param($types, ...$params);
