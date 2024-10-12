@@ -100,31 +100,28 @@ if ($test_type) {
         .table-responsive {
     max-height: 300px; /* Adjust the height as needed */
 }
-
 h2{
-    margin-left: 800px;
+    
+margin-left: 850px;
 }
 h4{
     text-align: center;
-    margin-bottom: 50px;
-}
-.s{
-    margin-bottom: 500px;
+    margin-bottom: 40px;
 }
     </style>
 </head>
 <body>
 <div class="container-fluid">
-    <h2 class="my-4">ENTER SERIALTEST MARK</h2>
-    <div class="row ">
+    <h2 class="my-4">Enter Test Details</h2>
+    <div class="row">
         <!-- Left Side: Scrollable Table -->
         <div class="col-md-4">
         <h4>Student Details</h4>
-        <div class="form-group side">
+        <div class="form-group">
                 <input type="text" id="searchBox" class="form-control" placeholder="Search by Register No or Student Name">
             </div>
-<div class="table-responsive" style="max-height: 300px; overflow-y: scroll;"> <!-- Force scrollbar even with little content -->
-    <table class="table table-bordered table-striped s" id="studentTable" >
+            <div class="table-responsive" style="max-height: 300px; overflow-y: scroll;">
+    <table class="table table-bordered table-striped" id="studentTable">
         <thead class="table-dark">
             <tr>
                 <th>Register No</th>
@@ -151,6 +148,7 @@ h4{
         </tbody>
     </table>
 </div>
+
 
 
         </div>
@@ -212,31 +210,19 @@ h4{
                 <input type="hidden" name="subject_name" value="<?php echo htmlspecialchars($subject_name); ?>">
                 <input type="hidden" name="subject_code" value="<?php echo htmlspecialchars($subject_code); ?>">
 
-               <!-- Input Fields in Table Format -->
-<table class="table table-bordered">
-   
-    <tbody>
-        <tr>
-            <td><label for="register_no"><strong>Register Number:</strong></label></td>
-            <td>
-                <input type="text" class="form-control" id="register_no" name="register_no" readonly>
-            </td>
-        </tr>
-        <tr>
-            <td><label for="student_name"><strong>Student Name:</strong></label></td>
-            <td>
-                <input type="text" class="form-control" id="student_name" name="student_name" readonly>
-            </td>
-        </tr>
-        <tr>
-            <td><label for="student_department"><strong>Student Department:</strong></label></td>
-            <td>
-                <input type="text" class="form-control" id="student_department" name="student_department" readonly>
-            </td>
-        </tr>
-    </tbody>
-</table>
-
+                <!-- Input Fields -->
+                <div class="form-group">
+                    <label for="register_no">Register Number:</label>
+                    <input type="text" class="form-control" id="register_no" name="register_no" required>
+                </div>
+                <div class="form-group">
+                    <label for="student_name">Student Name:</label>
+                    <input type="text" class="form-control" id="student_name" name="student_name" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="student_department">Student Department:</label>
+                    <input type="text" class="form-control" id="student_department" name="student_department" readonly>
+                </div>
 
                 <!-- Marks Entry -->
                 <div class="row">
@@ -286,161 +272,58 @@ h4{
                     <label for="total_marks">Total Marks:</label>
                     <input type="text" class="form-control" id="total_marks" name="total_marks" readonly>
                 </div>
-
-                <button type="button" class="btn btn-primary" id="editBtn">Edit</button>
-
-                <button type="submit" class="btn btn-success">save</button>
-               
-                <button type="button" class="btn btn-primary" id="submitBtn">Submit</button>
-
+                <button type="submit" class="btn btn-primary">Submit</button>
             </form>
         </div>
     </div>
 </div>
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
 <!-- Additional jQuery for AJAX and Form Functionality -->
 <script>
-    document.getElementById('submitBtn').addEventListener('click', function() {
-    window.location.href = 'homepage.php'; // Replace with your home page URL
-});
-
-    $(document).ready(function() {
+$(document).ready(function() {
     $('#searchBox').on('keyup', function() {
         var value = $(this).val().toLowerCase();
-        
-        // Apply search only to student table
-        $('#studentTable tbody tr').filter(function() {
+        $('table tbody tr').filter(function() {
             $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
         });
     });
-});
-    // Fetch student details based on click event
-$('#studentTable tbody').on('click', 'tr', function() {
-    var registerNo = $(this).find('td:first').text().trim(); // Get the register number from the clicked row
-    if (registerNo) {
-        $.ajax({
-            url: 'fetch_stud.php',
-            type: 'POST',
-            data: { register_no: registerNo, test_type: '<?php echo $test_type; ?>' }, // Include test type from previous page
-            success: function(data) {
-                try {
-                    var student = JSON.parse(data);
-                    if (student && student.student_name) {
 
-                        $('#register_no').val(registerNo);
-                        $('#student_name').val(student.student_name);
-                        $('#student_department').val(student.department);
-                        // Populate marks into the corresponding input fields
-                        $('#part_a_1').val(student.q1_marks || 0);
-                        $('#part_a_2').val(student.q2_marks || 0);
-                        $('#part_a_3').val(student.q3_marks || 0);
-                        $('#part_a_4').val(student.q4_marks || 0);
-                        $('#part_a_5').val(student.q5_marks || 0);
-                        $('#part_a_6').val(student.q6_marks || 0);
-                        $('#part_a_7').val(student.q7_marks || 0);
-                        $('#part_a_8').val(student.q8_marks || 0);
-                        $('#part_a_9').val(student.q9_marks || 0);
-                        $('#part_a_10').val(student.q10_marks || 0);
-                        $('#part_b_11a').val(student.q11A_marks || 0);
-                        $('#part_b_11b').val(student.q11B_marks || 0);
-                        $('#part_b_12a').val(student.q12A_marks || 0);
-                        $('#part_b_12b').val(student.q12B_marks || 0);
-                        $('#part_b_13a').val(student.q13A_marks || 0);
-                        $('#part_b_13b').val(student.q13B_marks || 0);
-                        calculateTotal();
-                        disableInputFields(); // Recalculate total marks based on the populated fields
-                    } else {
-                        alert('Student not found');
-                        clearStudentFields();
+      // Fetch student details based on Register Number
+      $('#register_no').on('change', function() {
+        var registerNo = $(this).val().trim();
+        if (registerNo) {
+            $.ajax({
+                url: 'fetch_stud.php',
+                type: 'POST',
+                data: {register_no: registerNo},
+                success: function(data) {
+                    try {
+                        var student = JSON.parse(data);
+                        if (student && student.student_name) {
+                            $('#student_name').val(student.student_name);
+                            $('#student_department').val(student.department);
+                        } else {
+                            alert('Student not found');
+                            $('#student_name').val('');
+                            $('#student_department').val('');
+                        }
+                    } catch (e) {
+                        alert('Error fetching student data');
                     }
-                } catch (e) {
-                    alert('Error fetching student data');
-                    clearStudentFields();
+                },
+                error: function() {
+                    alert('Error connecting to server');
                 }
-            },
-            error: function() {
-                alert('Error connecting to server');
-                clearStudentFields();
-            }
-        });
-    } else {
-        clearStudentFields();
-    }
-});
-
-// Clear input fields if no student found
-function clearStudentFields() {
-    $('#register_no').val(''); 
-    $('#student_name').val('');
-    $('#student_department').val('');
-    $('#part_a_1').val('');
-    $('#part_a_2').val('');
-    $('#part_a_3').val('');
-    $('#part_a_4').val('');
-    $('#part_a_5').val('');
-    $('#part_a_6').val('');
-    $('#part_a_7').val('');
-    $('#part_a_8').val('');
-    $('#part_a_9').val('');
-    $('#part_a_10').val('');
-    $('#part_b_11a').val('');
-    $('#part_b_11b').val('');
-    $('#part_b_12a').val('');
-    $('#part_b_12b').val('');
-    $('#part_b_13a').val('');
-    $('#part_b_13b').val('');
-}
-// Function to disable input fields
-function disableInputFields() {
-    $('#register_no').prop('disabled', true);
-    $('#student_name').prop('disabled', true);
-    $('#student_department').prop('disabled', true);
-    $('#part_a_1').prop('disabled', true);
-    $('#part_a_2').prop('disabled', true);
-    $('#part_a_3').prop('disabled', true);
-    $('#part_a_4').prop('disabled', true);
-    $('#part_a_5').prop('disabled', true);
-    $('#part_a_6').prop('disabled', true);
-    $('#part_a_7').prop('disabled', true);
-    $('#part_a_8').prop('disabled', true);
-    $('#part_a_9').prop('disabled', true);
-    $('#part_a_10').prop('disabled', true);
-    $('#part_b_11a').prop('disabled', true);
-    $('#part_b_11b').prop('disabled', true);
-    $('#part_b_12a').prop('disabled', true);
-    $('#part_b_12b').prop('disabled', true);
-    $('#part_b_13a').prop('disabled', true);
-    $('#part_b_13b').prop('disabled', true);
-}
-$(document).ready(function() {
-    // Handler for the Edit button
-    $('#editBtn').on('click', function() {
-        // Enable the input fields
-        enableInputFields();
+            });
+        } else {
+            $('#student_name').val('');
+            $('#student_department').val('');
+        }
     });
 
-    function enableInputFields() {
-        $('#register_no').prop('disabled', false);
-        $('#student_name').prop('disabled', false);
-        $('#student_department').prop('disabled', false);
-        $('#part_a_1').prop('disabled', false);
-        $('#part_a_2').prop('disabled', false);
-        $('#part_a_3').prop('disabled', false);
-        $('#part_a_4').prop('disabled', false);
-        $('#part_a_5').prop('disabled', false);
-        $('#part_a_6').prop('disabled', false);
-        $('#part_a_7').prop('disabled', false);
-        $('#part_a_8').prop('disabled', false);
-        $('#part_a_9').prop('disabled', false);
-        $('#part_a_10').prop('disabled', false);
-        $('#part_b_11a').prop('disabled', false);
-        $('#part_b_11b').prop('disabled', false);
-        $('#part_b_12a').prop('disabled', false);
-        $('#part_b_12b').prop('disabled', false);
-        $('#part_b_13a').prop('disabled', false);
-        $('#part_b_13b').prop('disabled', false);
-    }
-});
     // Calculate total marks dynamically
     function calculateTotal() {
         var total = 0;
@@ -477,7 +360,9 @@ $(document).ready(function() {
 
         calculateTotal();
     }
+});
 </script>
+
 
 </body>
 </html>

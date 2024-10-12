@@ -2,7 +2,7 @@
 // Include your database connection
 include('db.php');
 
-// Assuming you are receiving the following from the previous page via GET or session
+// Retrieve the required parameters from the previous page via GET or session
 $year = isset($_GET['year']) ? $_GET['year'] : '';
 $semester = isset($_GET['semester']) ? $_GET['semester'] : '';
 $department = isset($_GET['department']) ? $_GET['department'] : '';
@@ -10,7 +10,6 @@ $test_type = isset($_GET['test_type']) ? $_GET['test_type'] : '';
 $subject_name = isset($_GET['subject_name']) ? $_GET['subject_name'] : '';
 $subject_code = isset($_GET['subject_code']) ? $_GET['subject_code'] : '';
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -23,8 +22,8 @@ $subject_code = isset($_GET['subject_code']) ? $_GET['subject_code'] : '';
         table {
             font-family: Arial, sans-serif;
             border-collapse: collapse;
-            width: 100%; /* Full width for the main table */
-            margin: 20px 0; /* Margin between tables */
+            width: 100%;
+            margin: 20px 0;
             background-color: #fff;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -52,81 +51,74 @@ $subject_code = isset($_GET['subject_code']) ? $_GET['subject_code'] : '';
         }
 
         .form-select {
-            width: 100%; /* Full width for select elements */
+            width: 100%;
         }
 
-        /* Custom styles to center-align the labels */
         .form-group label {
-            text-align: left; /* Center-align text */
-            display: block; /* Make labels block elements */
-            margin-bottom: 5px; /* Add some space below the labels */
+            text-align: left;
+            display: block;
+            margin-bottom: 5px;
         }
 
-        /* Flexbox for equal width layout */
         .row {
             display: flex;
         }
 
         .col-md-6 {
-            flex: 1; /* Equal width for both columns */
-            padding: 10px; /* Add padding for spacing */
+            flex: 1;
+            padding: 10px;
+        }
+
+        .details-table {
+            width: 60%;
+            margin: 20px auto;
+            background-color: #f4f4f4;
+            border-radius: 10px;
+            padding: 10px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .details-table td, .details-table th {
+            text-align: left;
+            padding: 8px;
+            border: none;
         }
     </style>
 </head>
 <body>
 <div class="container mt-5">
+    <!-- Course Details Table -->
+    <table class="details-table table table-borderless">
+        <tr>
+            <th>Year:</th>
+            <td><?php echo htmlspecialchars($year); ?></td>
+            <th>Semester:</th>
+            <td><?php echo htmlspecialchars($semester); ?></td>
+        </tr>
+        <tr>
+            <th>Department:</th>
+            <td><?php echo htmlspecialchars($department); ?></td>
+            <th>Test Type:</th>
+            <td><?php echo htmlspecialchars($test_type); ?></td>
+        </tr>
+        <tr>
+            <th>Subject Name:</th>
+            <td><?php echo htmlspecialchars($subject_name); ?></td>
+            <th>Subject Code:</th>
+            <td><?php echo htmlspecialchars($subject_code); ?></td>
+        </tr>
+    </table>
+
     <h2>Set Course Outcomes for the Subjects</h2>
     <form action="submit_assessment.php" method="POST" id="assessmentForm">
+        <input type="hidden" name="year" value="<?php echo htmlspecialchars($year); ?>">
+        <input type="hidden" name="semester" value="<?php echo htmlspecialchars($semester); ?>">
+        <input type="hidden" name="department" value="<?php echo htmlspecialchars($department); ?>">
+        <input type="hidden" name="test_type" value="<?php echo htmlspecialchars($test_type); ?>">
+        <input type="hidden" name="subject_name" value="<?php echo htmlspecialchars($subject_name); ?>">
+        <input type="hidden" name="subject_code" value="<?php echo htmlspecialchars($subject_code); ?>">
+        
         <table class="table">
-            <tr>
-                <td colspan="2">
-                    <div class="form-group">
-                        <label for="year">Year:</label>
-                        <input type="text" class="form-control" id="year" name="year" value="<?php echo htmlspecialchars($year); ?>" readonly>
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td colspan="2">
-                    <div class="form-group">
-                        <label for="semester">Semester:</label>
-                        <input type="text" class="form-control" id="semester" name="semester" value="<?php echo htmlspecialchars($semester); ?>" readonly>
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td colspan="2">
-                    <div class="form-group">
-                        <label for="department">Department:</label>
-                        <input type="text" class="form-control" id="department" name="department" value="<?php echo htmlspecialchars($department); ?>" readonly>
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td colspan="2">
-                    <div class="form-group">
-                        <label for="test_type">Test Type:</label>
-                        <input type="text" class="form-control" id="test_type" name="test_type" value="<?php echo htmlspecialchars($test_type); ?>" readonly>
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td colspan="2">
-                    <div class="form-group">
-                        <label for="subject_name">Subject Name:</label>
-                        <input type="text" class="form-control" id="subject_name" name="subject_name" value="<?php echo htmlspecialchars($subject_name); ?>" readonly>
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td colspan="2">
-                    <div class="form-group">
-                        <label for="subject_code">Subject Code:</label>
-                        <input type="text" class="form-control" id="subject_code" name="subject_code" value="<?php echo htmlspecialchars($subject_code); ?>" readonly>
-                    </div>
-                </td>
-            </tr>
-
             <tr>
                 <td class="part">
                     <h1>Part A</h1>
@@ -146,7 +138,6 @@ $subject_code = isset($_GET['subject_code']) ? $_GET['subject_code'] : '';
                         <?php endfor; ?>
                     </table>
                 </td>
-
                 <td class="part">
                     <h1>Part B</h1>
                     <table class="table">

@@ -45,12 +45,7 @@
                 </select>
             </div>
 
-            <div class="mb-3">
-                <label for="test_type" class="form-label">Test Type:</label>
-                <select class="form-select" id="test_type" name="test_type" required>
-                    <option value="">--Select Test Type--</option>
-                </select>
-            </div>
+            
 
             <div class="mb-3">
                 <label for="subject_name" class="form-label">Subject Name:</label>
@@ -74,6 +69,13 @@
             <div class="mb-3">
                 <label for="passmark">Pass Mark:</label>
                 <input type="number" name="passmark" class="form-control" id="passmark" readonly>
+            </div>
+
+            <div class="mb-3">
+                <label for="test_type" class="form-label">Test Type:</label>
+                <select class="form-select" id="test_type" name="test_type" required>
+                    <option value="">--Select Test Type--</option>
+                </select>
             </div>
 
             <button type="submit" name="next" class="btn btn-primary">Next</button>
