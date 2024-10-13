@@ -10,6 +10,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $department = $_POST['department'];
     $subject_name = $_POST['subject_name'];
     $subject_code = $_POST['subject_code'];
+    $testmark = $_POST['testmark']; // Get the testmark value from POST
 
     // Prepare the SQL statement to check if the subject already exists
     $stmt = $mysqli->prepare("SELECT * FROM subjects WHERE subject_name = ? AND subject_code = ? AND department = ? AND semester = ?");
@@ -21,13 +22,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Check if any row exists
     if ($result->num_rows > 0) {
-        // Subject exists, redirect to assessment_details.php
-        header("Location: assessment_details.php?subject_name=" . urlencode($subject_name) . 
-               "&subject_code=" . urlencode($subject_code) . 
-               "&year=" . urlencode($year) . 
-               "&test_type=" . urlencode($test_type) . 
-               "&department=" . urlencode($department) . 
-               "&semester=" . urlencode($semester));
+        // Subject exists, redirect based on testmark
+        if ($testmark == 60) {
+            header("Location: assessment_details.php?subject_name=" . urlencode($subject_name) . 
+                   "&subject_code=" . urlencode($subject_code) . 
+                   "&year=" . urlencode($year) . 
+                   "&test_type=" . urlencode($test_type) . 
+                   "&department=" . urlencode($department) . 
+                   "&semester=" . urlencode($semester));
+        } elseif ($testmark == 100) {
+            header("Location: assessment_details2.php?subject_name=" . urlencode($subject_name) . 
+                   "&subject_code=" . urlencode($subject_code) . 
+                   "&year=" . urlencode($year) . 
+                   "&test_type=" . urlencode($test_type) . 
+                   "&department=" . urlencode($department) . 
+                   "&semester=" . urlencode($semester));
+        }
         exit();
     } else {
         // Subject does not exist, show a message
