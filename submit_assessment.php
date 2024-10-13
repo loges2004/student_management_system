@@ -10,6 +10,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $subject_name = $_POST['subject_name'];
     $subject_code = $_POST['subject_code'];
     
+    // Check if required fields are empty
+    if (empty($year) || empty($semester) || empty($department) || empty($test_type) || empty($subject_name) || empty($subject_code)) {
+        echo "<script>alert('Please fill in all required fields.'); window.history.back();</script>";
+        exit();
+    }
+
     // Store CO selections
     $co_questions = [];
     for ($i = 1; $i <= 13; $i++) {
