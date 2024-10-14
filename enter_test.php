@@ -259,12 +259,12 @@ h4{
                     <div class="col-md-6">
                         <h5>Part B</h5>
                         <table class="table table-bordered">
-                            <?php for ($i = 11; $i <= 13; $i++): ?>
+                            <?php for ($i = 11; $i <= 12; $i++): ?>
                                 <tr>
                                     <td>
                                         <div class="form-group">
                                             <label for="part_b_<?php echo $i; ?>a">Question <?php echo $i; ?>a:</label>
-                                            <input type="number" class="form-control part-b" min="0" max="13" id="part_b_<?php echo $i; ?>a" name="part_b_<?php echo $i; ?>a" oninput="togglePartB('part_b_<?php echo $i; ?>a', 'part_b_<?php echo $i; ?>b')" required>
+                                            <input type="number" class="form-control part-b" min="0" max="16" id="part_b_<?php echo $i; ?>a" name="part_b_<?php echo $i; ?>a" oninput="togglePartB('part_b_<?php echo $i; ?>a', 'part_b_<?php echo $i; ?>b')" required>
                                         </div>
                                     </td>
                                 </tr>
@@ -272,11 +272,27 @@ h4{
                                     <td>
                                         <div class="form-group">
                                             <label for="part_b_<?php echo $i; ?>b">Question <?php echo $i; ?>b:</label>
-                                            <input type="number" class="form-control part-b" min="0" max="13" id="part_b_<?php echo $i; ?>b" name="part_b_<?php echo $i; ?>b" oninput="togglePartB('part_b_<?php echo $i; ?>b', 'part_b_<?php echo $i; ?>a')">
+                                            <input type="number" class="form-control part-b" min="0" max="16" id="part_b_<?php echo $i; ?>b" name="part_b_<?php echo $i; ?>b" oninput="togglePartB('part_b_<?php echo $i; ?>b', 'part_b_<?php echo $i; ?>a')">
                                         </div>
                                     </td>
                                 </tr>
                             <?php endfor; ?>
+                            <tr>
+                                    <td>
+                                        <div class="form-group">
+                                            <label for="part_b_13a">Question 13a:</label>
+                                            <input type="number" class="form-control part-b" min="0" max="8" id="part_b_<?php echo $i; ?>a" name="part_b_13a" oninput="togglePartB('part_b_13a', 'part_b_13b')" required>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="form-group">
+                                            <label for="part_b_13b">Question 13b:</label>
+                                            <input type="number" class="form-control part-b" min="0" max="8" id="part_b_<?php echo $i; ?>b" name="part_b_13b" oninput="togglePartB('part_b_13b', 'part_b_13a')">
+                                        </div>
+                                    </td>
+                                </tr>
                         </table>
                     </div>
                 </div>
@@ -286,13 +302,13 @@ h4{
                     <label for="total_marks">Total Marks:</label>
                     <input type="text" class="form-control" id="total_marks" name="total_marks" readonly>
                 </div>
-
+                <div class="d-flex justify-content-between">
                 <button type="button" class="btn btn-primary" id="editBtn">Edit</button>
 
                 <button type="submit" class="btn btn-success">save</button>
                
                 <button type="button" class="btn btn-primary" id="submitBtn">Submit</button>
-
+</div>
             </form>
         </div>
     </div>
