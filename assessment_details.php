@@ -2,13 +2,26 @@
 // Include your database connection
 include('db.php');
 
-// Retrieve the required parameters from the previous page via GET or session
-$year = isset($_GET['year']) ? $_GET['year'] : '';
-$semester = isset($_GET['semester']) ? $_GET['semester'] : '';
-$department = isset($_GET['department']) ? $_GET['department'] : '';
-$test_type = isset($_GET['test_type']) ? $_GET['test_type'] : '';
-$subject_name = isset($_GET['subject_name']) ? $_GET['subject_name'] : '';
-$subject_code = isset($_GET['subject_code']) ? $_GET['subject_code'] : '';
+// Start the session
+session_start();
+
+// Retrieve the required parameters from the session
+$year = isset($_SESSION['year']) ? $_SESSION['year'] : '';
+$semester = isset($_SESSION['semester']) ? $_SESSION['semester'] : '';
+$department = isset($_SESSION['department']) ? $_SESSION['department'] : '';
+$test_type = isset($_SESSION['test_type']) ? $_SESSION['test_type'] : '';
+$subject_name = isset($_SESSION['subject_name']) ? $_SESSION['subject_name'] : '';
+$subject_code = isset($_SESSION['subject_code']) ? $_SESSION['subject_code'] : '';
+$testmark = isset($_SESSION['testmark']) ? $_SESSION['testmark'] : '';
+
+// Check if the session variables are set
+if (empty($year) || empty($semester) || empty($department) || empty($test_type) || empty($subject_name) || empty($subject_code)) {
+    echo "<script>alert('Required data is missing. Please go back and submit the form again.'); window.history.back();</script>";
+    exit();
+}
+
+// Continue with your logic here
+// For example, you can query the database or display the assessment details
 ?>
 <!DOCTYPE html>
 <html lang="en">

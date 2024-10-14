@@ -293,7 +293,7 @@ if ($test_type) {
                 <td>
                     <div class="form-group">
                         <label for="part_b_16a">Question 16a:</label>
-                        <input type="number" class="form-control part-b" min="0" max="15" id="part_b_16a" name="part_b_16a" oninput="calculateTotal()" required>
+                        <input type="number" class="form-control part-b" min="0" max="15"  oninput="togglePartB('part_b_16a', 'part_b_16b')" id="part_b_16a" name="part_b_16a"  required>
                     </div>
                 </td>
             </tr>
@@ -301,7 +301,7 @@ if ($test_type) {
                 <td>
                     <div class="form-group">
                         <label for="part_b_16b">Question 16b:</label>
-                        <input type="number" class="form-control part-b" min="0" max="15" id="part_b_16b" name="part_b_16b" oninput="calculateTotal()">
+                        <input type="number" class="form-control part-b" min="0" max="15" id="part_b_16b" name="part_b_16b" oninput="togglePartB('part_b_16a', 'part_b_16b')">
                     </div>
                 </td>
             </tr>

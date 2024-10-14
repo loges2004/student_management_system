@@ -1,5 +1,9 @@
 <?php
-include('db.php'); // MySQLi connection
+// Include your database connection
+include('db.php');
+
+// Start the session
+session_start();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Get form data
@@ -15,6 +19,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         echo "<script>alert('Please fill in all required fields.'); window.history.back();</script>";
         exit();
     }
+
+    // Store form data in session variables
+    $_SESSION['year'] = $year;
+    $_SESSION['semester'] = $semester;
+    $_SESSION['department'] = $department;
+    $_SESSION['test_type'] = $test_type;
+    $_SESSION['subject_name'] = $subject_name;
+    $_SESSION['subject_code'] = $subject_code;
 
     // Store CO selections
     $co_questions = [];
