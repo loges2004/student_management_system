@@ -147,8 +147,10 @@ h4{
 }
 /* Header Style */
 h2 {
-    text-align: center; /* Center align the header */
-
+    text-align: center;
+    margin-top: 50px; /* Center align the header */
+margin-bottom: 50px;
+margin-left:500px;
 }
 
     </style>
@@ -156,7 +158,7 @@ h2 {
 <body>
     
 <div class="container-fluid">
-<h2 class="my-4">ENTER SERIAL TEST MARK</h2>
+<h2>ENTER SERIAL TEST MARK</h2>
 
     <div class="row">
         <!-- Left Side: Scrollable Table -->
