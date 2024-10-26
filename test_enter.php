@@ -152,7 +152,21 @@ h2 {
 margin-bottom: 50px;
 margin-left:500px;
 }
+.col-md-4 {
+    margin-top: 20px; /* Adjust the top margin to move it down */
+    margin-bottom: 30px; /* Adjust the bottom margin to move it up */
+    padding: 20px; /* Optional: add padding inside the column */
+    border: 1px solid #dee2e6; /* Optional: Add a border for visual separation */
+    border-radius: 5px; /* Optional: Rounded corners for aesthetics */
+}
 
+/* Responsive adjustments if needed */
+@media (max-width: 768px) {
+    .col-md-4 {
+        margin-top: 10px; /* Smaller top margin for mobile */
+        margin-bottom: 20px; /* Smaller bottom margin for mobile */
+    }
+}
     </style>
 </head>
 <body>
@@ -167,7 +181,7 @@ margin-left:500px;
             <div class="form-group">
                 <input type="text" id="searchBox" class="form-control" placeholder="Search by Register No or Student Name">
             </div>
-            <div class="table-responsive">
+            <div class="table-responsive" style="max-height: 300px; overflow-y: scroll;">
                 <table class="table table-bordered table-striped" id="studentTable">
                     <thead class="table-dark">
                         <tr>
