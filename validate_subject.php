@@ -35,13 +35,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Check if any row exists
     if ($result->num_rows > 0) {
         // Subject exists, redirect based on testmark
-        if ($testmark == 60) {
-            header("Location: assessment_details.php");
-            exit();
-        } elseif ($testmark == 100) {
-            header("Location: assessment_details2.php");
-            exit();
-        }
+        header("Location: table_page.php");
     } else {
         // Subject does not exist, show a message
         echo "<script>alert('Subject does not exist. You can insert it if needed.'); window.history.back();</script>";

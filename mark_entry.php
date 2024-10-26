@@ -29,6 +29,8 @@
                 <label for="semester" class="form-label">Select Semester:</label>
                 <select class="form-select" id="semester" name="semester" required>
                     <!-- Options will be populated dynamically via JavaScript -->
+
+                    
                 </select>
             </div>
 
@@ -56,29 +58,28 @@
                 <label for="subject_code" class="form-label">Subject Code:</label>
                 <input type="text" class="form-control" id="subject_code" name="subject_code" required>
             </div>
-
-            <div class="mb-3">
-                <label for="testmark">Select Test Mark:</label>
-                <select name="testmark" id="testmark" class="form-select" onchange="validateInput()">
-                    <option value="">--Select--</option>
-                    <option value="100">100</option>
-                    <option value="60">60</option>
-                </select>
-            </div>
-
-            <div class="mb-3">
-                <label for="passmark">Pass Mark:</label>
-                <input type="number" name="passmark" class="form-control" id="passmark" readonly>
-            </div>
-
             <div class="mb-3">
                 <label for="test_type" class="form-label">Test Type:</label>
                 <select class="form-select" id="test_type" name="test_type" required>
                     <option value="">--Select Test Type--</option>
+                    <option value="serialtest1">Serial Test 1</option>
+                <option value="serialtest2">Serial Test 2</option>
                 </select>
             </div>
+            <div class="mb-3">
+                <label for="testmark">Select Test Mark:</label>
+                <input type="number"  name="testmark" id="testmark" class="form-select">
+                
+            </div>
 
-            <button type="submit" name="next" class="btn btn-primary">Next</button>
+            <div class="mb-3">
+                <label for="passmark">Pass Mark:</label>
+                <input type="number" name="passmark" class="form-control" id="passmark" >
+            </div>
+
+     
+
+            <button type="submit" name="next" class="btn btn-primary">save</button>
         </form>
     </div>
 
@@ -104,32 +105,6 @@
             }
         });
 
-        function validateInput() {
-            const testmarkField = document.getElementById('testmark');
-            const passmarkField = document.getElementById('passmark');
-            const testmarkValue = parseInt(testmarkField.value);
-            const testTypeField = document.getElementById('test_type');
-
-            // Clear previous test type options
-            testTypeField.innerHTML = '<option value="">--Select Test Type--</option>';
-
-            // Allow only 100 or 60 for testmark
-            if (testmarkValue === 100) {
-                passmarkField.value = 50; // Set passmark to 50
-                // Add test type options for 100 marks
-                testTypeField.innerHTML += '<option value="serial_test1">Serial Test 1</option>';
-                testTypeField.innerHTML += '<option value="serial_test2">Serial Test 2</option>';
-            } else if (testmarkValue === 60) {
-                passmarkField.value = 30; // Set passmark to 30
-                // Add test type options for 60 marks
-                testTypeField.innerHTML += '<option value="serialtest1">Serial Test 1</option>';
-                testTypeField.innerHTML += '<option value="serialtest2">Serial Test 2</option>';
-            } else {
-                alert('Only 100 and 60 are allowed in Test Mark.');
-                testmarkField.value = ''; // Clear invalid testmark input
-                passmarkField.value = ''; // Clear passmark input
-            }
-        }
     </script>
 
 </body>
