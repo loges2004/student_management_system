@@ -188,6 +188,8 @@ margin-left:500px;
                             <th>Register No</th>
                             <th>Student Name</th>
                             <th>Total Marks</th>
+                            <th>Attendance</th>
+
                         </tr>
                     </thead>
                     <tbody>
