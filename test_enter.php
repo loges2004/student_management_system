@@ -26,7 +26,7 @@ $students = [];
     <title>Test Marks Entry</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        /* Basic Table Styles */
+      
 .table {
     width: 100%; /* Ensure tables use full width */
     margin-bottom: 1rem; /* Spacing below tables */
