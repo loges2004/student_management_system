@@ -111,6 +111,7 @@ $testmark = isset($_SESSION['testmark']) ? (int)$_SESSION['testmark'] : 0;
 
                 <!-- Validate and Save -->
                 <button id="validateBtn" class="btn btn-primary s">Save</button>
+                <button class="btn btn-danger s" onclick="backfunc()">back</button>
 
                 <div id="errorMsg" class="text-danger mt-2"></div>
                 <div id="successMsg" class="text-success mt-2" style="display: none;"></div>
@@ -238,6 +239,10 @@ document.getElementById('saveQuestions').addEventListener('click', function() {
     window.location.href = `test_enter.php?questionCount=${questionCount}`;
 });
 
+function backfunc(){
+    window.location.href="mark_entry.php";
+
+}
     </script>
 </body>
 
