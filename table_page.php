@@ -2,6 +2,9 @@
 session_start();
 
 // Retrieve the required parameters from the session
+
+$staff_id =isset($_SESSION['staff_id'] ) ? $_SESSION['staff_id'] : '';
+$staff_name =isset($_SESSION['staff_name'] ) ? $_SESSION['staff_name'] : '';
 $year = isset($_SESSION['year']) ? $_SESSION['year'] : '';
 $semester = isset($_SESSION['semester']) ? $_SESSION['semester'] : '';
 $department = isset($_SESSION['department']) ? $_SESSION['department'] : '';
@@ -11,7 +14,6 @@ $subject_code = isset($_SESSION['subject_code']) ? $_SESSION['subject_code'] : '
 $testmark = isset($_SESSION['testmark']) ? (int)$_SESSION['testmark'] : 0;
 
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -20,12 +22,12 @@ $testmark = isset($_SESSION['testmark']) ? (int)$_SESSION['testmark'] : 0;
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Enter Marks and Count</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
     <style>
         #marksTable {
             margin-top: 20px;
-            /* Space above the table */
             margin-bottom: 20px;
-            /* Space below the table */
         }
 
         h2 {
@@ -34,20 +36,17 @@ $testmark = isset($_SESSION['testmark']) ? (int)$_SESSION['testmark'] : 0;
 
         .details-table {
             margin-bottom: 30px;
-            /* Space below details table */
         }
 
         .s {
             margin-bottom: 10px;
             margin-top: 20px;
             margin-right: 20px;
-
         }
     </style>
 </head>
 
 <body>
-
     <div class="container mt-5">
         <div class="row">
             <!-- Left Section: Previous Details -->
@@ -55,6 +54,7 @@ $testmark = isset($_SESSION['testmark']) ? (int)$_SESSION['testmark'] : 0;
                 <table class="table table-bordered">
                     <thead>
                         <tr>
+                            <th>Staff Name</th>
                             <th>Year</th>
                             <th>Semester</th>
                             <th>Department</th>
@@ -66,6 +66,7 @@ $testmark = isset($_SESSION['testmark']) ? (int)$_SESSION['testmark'] : 0;
                     </thead>
                     <tbody>
                         <tr>
+                            <td><?php echo htmlspecialchars($staff_name); ?></td>
                             <td><?php echo htmlspecialchars($year); ?></td>
                             <td><?php echo htmlspecialchars($semester); ?></td>
                             <td><?php echo htmlspecialchars($department); ?></td>
@@ -81,8 +82,6 @@ $testmark = isset($_SESSION['testmark']) ? (int)$_SESSION['testmark'] : 0;
             <!-- Left Section: Marks and Count -->
             <div class="col-md-6">
                 <h2>Enter Marks and Count</h2>
-
-                <!-- Table for marks and count -->
                 <table class="table table-bordered" id="marksTable">
                     <thead>
                         <tr>
@@ -108,10 +107,9 @@ $testmark = isset($_SESSION['testmark']) ? (int)$_SESSION['testmark'] : 0;
                 <!-- Add Row Button -->
                 <button id="addRow" class="btn btn-secondary s">Add Row</button>
 
-
                 <!-- Validate and Save -->
                 <button id="validateBtn" class="btn btn-primary s">Save</button>
-                <button class="btn btn-danger s" onclick="backfunc()">back</button>
+                <button class="btn btn-danger s" onclick="backfunc()">Back</button>
 
                 <div id="errorMsg" class="text-danger mt-2"></div>
                 <div id="successMsg" class="text-success mt-2" style="display: none;"></div>
@@ -119,7 +117,6 @@ $testmark = isset($_SESSION['testmark']) ? (int)$_SESSION['testmark'] : 0;
 
             <!-- Right Section: COs Table -->
             <div class="col-md-6">
-                <!-- New Table for Question Numbers and Course Outcomes -->
                 <div id="questionSection" class="mt-5" style="display: none;">
                     <h2>Enter Course Outcomes for Each Question</h2>
                     <table class="table table-bordered" id="questionsTable">
@@ -133,14 +130,12 @@ $testmark = isset($_SESSION['testmark']) ? (int)$_SESSION['testmark'] : 0;
                             <!-- Question rows will be dynamically added here -->
                         </tbody>
                     </table>
-
                     <button id="saveQuestions" class="btn btn-success">Save Questions</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- JavaScript to handle dynamic row addition and total mark calculation -->
     <script>
         const testmark = <?php echo $testmark; ?>;
         let sno = 1;
@@ -216,33 +211,77 @@ $testmark = isset($_SESSION['testmark']) ? (int)$_SESSION['testmark'] : 0;
 
             if (totalMark !== testmark) {
                 errorMsg.innerText = `Total mark (${totalMark}) does not match Test Mark (${testmark}). Please check the values.`;
-                successMsg.style.display = 'none'; // Hide success message
+                successMsg.style.display = 'none';
             } else {
-                errorMsg.innerText = ''; // Clear error message
+                errorMsg.innerText = '';
                 successMsg.innerText = 'Marks are valid. Data saved successfully!';
-                successMsg.style.display = 'block'; // Show success message
+                successMsg.style.display = 'block';
 
                 // Generate COs table and show the question section
                 generateQuestionsTable();
-                document.getElementById('questionSection').style.display = 'block'; // Show the questions table
+                document.getElementById('questionSection').style.display = 'block';
             }
         });
-
-       // Save button click event for saving questions (you can handle further actions here)
-document.getElementById('saveQuestions').addEventListener('click', function() {
-    // Instead of alert, redirect to test_enter.php with the number of questions
+        document.getElementById('saveQuestions').addEventListener('click', function() {
     const questionTableBody = document.getElementById('questionsTable').getElementsByTagName('tbody')[0];
     const questions = questionTableBody.getElementsByTagName('tr');
-    let questionCount = questions.length;
+    let formData = new FormData();
 
-    // Use URL parameters to pass the question count
-    window.location.href = `test_enter.php?questionCount=${questionCount}`;
+    // Add session data to formData
+    formData.append('staffname', '<?php echo $staff_name; ?>');
+    formData.append('year', '<?php echo $year; ?>');
+    formData.append('semester', '<?php echo $semester; ?>');
+    formData.append('department', '<?php echo $department; ?>');
+    formData.append('test_type', '<?php echo $test_type; ?>');
+    formData.append('testmark', '<?php echo $testmark; ?>');
+    formData.append('subject_name', '<?php echo $subject_name; ?>');
+    formData.append('subject_code', '<?php echo $subject_code; ?>');
+
+    // Add COs to formData
+    for (let i = 0; i < questions.length; i++) {
+        const co = questions[i].querySelector('select').value;
+        formData.append(`course_outcome[${i + 1}]`, co);
+    }
+
+    // Submit form data to PHP script
+    fetch('save_questions.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.text())
+    .then(data => {
+        if (data === 'Success') {
+            Swal.fire({
+                title: 'Success!',
+                text: 'Data inserted successfully!',
+                icon: 'success',
+                confirmButtonText: 'OK'
+            }).then(() => {
+                window.location.href = 'test_enter.php'; // Redirect after success
+            });
+        } else {
+            Swal.fire({
+                title: 'Error!',
+                text: 'There was an error saving the data.',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        Swal.fire({
+            title: 'Error!',
+            text: 'An error occurred while submitting the form.',
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
+    });
 });
 
-function backfunc(){
-    window.location.href="mark_entry.php";
-
-}
+        function backfunc() {
+            window.location.href = "mark_entry.php";
+        }
     </script>
 </body>
 

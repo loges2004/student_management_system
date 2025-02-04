@@ -14,6 +14,19 @@
         <h1 class="text-center">Enter Assessment Details</h1>
 
         <form action="validate_subject.php" method="POST">
+            <!-- Staff ID -->
+            <div class="mb-3">
+                <label for="staff_id" class="form-label">Staff ID:</label>
+                <input type="text" class="form-control" id="staff_id" name="staff_id" required>
+            </div>
+
+            <!-- Staff Name -->
+            <div class="mb-3">
+                <label for="staff_name" class="form-label">Staff Name:</label>
+                <input type="text" class="form-control" id="staff_name" name="staff_name" required>
+            </div>
+
+            <!-- Year Selection -->
             <div class="mb-3">
                 <label for="year" class="form-label">Select Year:</label>
                 <select class="form-select" id="year" name="year" required>
@@ -25,15 +38,15 @@
                 </select>
             </div>
 
+            <!-- Semester Selection -->
             <div class="mb-3">
                 <label for="semester" class="form-label">Select Semester:</label>
                 <select class="form-select" id="semester" name="semester" required>
                     <!-- Options will be populated dynamically via JavaScript -->
-
-                    
                 </select>
             </div>
 
+            <!-- Department Selection -->
             <div class="mb-3">
                 <label for="department" class="form-label">Select Department:</label>
                 <select name="department" id="department" class="form-select" required>
@@ -47,39 +60,42 @@
                 </select>
             </div>
 
-            
-
+            <!-- Subject Name -->
             <div class="mb-3">
                 <label for="subject_name" class="form-label">Subject Name:</label>
                 <input type="text" class="form-control" id="subject_name" name="subject_name" required>
             </div>
 
+            <!-- Subject Code -->
             <div class="mb-3">
                 <label for="subject_code" class="form-label">Subject Code:</label>
                 <input type="text" class="form-control" id="subject_code" name="subject_code" required>
             </div>
+
+            <!-- Test Type -->
             <div class="mb-3">
                 <label for="test_type" class="form-label">Test Type:</label>
                 <select class="form-select" id="test_type" name="test_type" required>
                     <option value="">--Select Test Type--</option>
                     <option value="serialtest1">Serial Test 1</option>
-                <option value="serialtest2">Serial Test 2</option>
+                    <option value="serialtest2">Serial Test 2</option>
                 </select>
             </div>
+
+            <!-- Test Mark -->
             <div class="mb-3">
-                <label for="testmark">Select Test Mark:</label>
-                <input type="number"  name="testmark" id="testmark" class="form-select">
-                
+                <label for="testmark" class="form-label">Select Test Mark:</label>
+                <input type="number" name="testmark" id="testmark" class="form-control">
             </div>
 
+            <!-- Pass Mark -->
             <div class="mb-3">
-                <label for="passmark">Pass Mark:</label>
-                <input type="number" name="passmark" class="form-control" id="passmark" >
+                <label for="passmark" class="form-label">Pass Mark:</label>
+                <input type="number" name="passmark" class="form-control" id="passmark">
             </div>
 
-     
-
-            <button type="submit" name="next" class="btn btn-primary">save</button>
+            <!-- Submit Button -->
+            <button type="submit" name="next" class="btn btn-primary">Save</button>
         </form>
     </div>
 
@@ -104,7 +120,6 @@
                 semester.innerHTML += '<option value="8">Semester 8</option>';
             }
         });
-
     </script>
 
 </body>
