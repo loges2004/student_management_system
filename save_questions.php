@@ -18,6 +18,7 @@ $testmark = $_SESSION['testmark'];
 $subject_name = $_SESSION['subject_name'];
 $subject_code = $_SESSION['subject_code'];
 
+
 // Check if a record with the same combination already exists
 $query = "SELECT id FROM test_results WHERE staff_id = ? AND staffname = ? AND year = ? AND semester = ? AND department = ? AND test_type = ? AND testmark = ? AND subject_name = ? AND subject_code = ?";
 $stmt = $mysqli->prepare($query);

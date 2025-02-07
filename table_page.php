@@ -236,7 +236,7 @@ $testmark = isset($_SESSION['testmark']) ? (int)$_SESSION['testmark'] : 0;
     formData.append('testmark', '<?php echo $testmark; ?>');
     formData.append('subject_name', '<?php echo $subject_name; ?>');
     formData.append('subject_code', '<?php echo $subject_code; ?>');
-
+            
     // Add COs to formData
     for (let i = 0; i < questions.length; i++) {
         const co = questions[i].querySelector('select').value;
@@ -251,13 +251,14 @@ $testmark = isset($_SESSION['testmark']) ? (int)$_SESSION['testmark'] : 0;
     .then(response => response.text())
     .then(data => {
         if (data === 'Success') {
+            const questionCount = questions.length;
             Swal.fire({
                 title: 'Success!',
                 text: 'Data inserted successfully!',
                 icon: 'success',
                 confirmButtonText: 'OK'
             }).then(() => {
-                window.location.href = 'test_enter.php'; // Redirect after success
+                window.location.href = `test_enter.php?questionCount=${questionCount}`; // Redirect after success
             });
         } else {
             Swal.fire({
