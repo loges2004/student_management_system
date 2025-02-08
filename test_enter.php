@@ -12,7 +12,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $_SESSION['questionCount'] = $questionCount;
 }
 
-if (!isset($_SESSION['year'], $_SESSION['semester'], $_SESSION['department'], $_SESSION['test_type'], $_SESSION['subject_name'], $_SESSION['subject_code'])) {
+if (!isset($_SESSION['year'], $_SESSION['semester'], $_SESSION['department'],$_SESSION['section'], $_SESSION['test_type'], $_SESSION['subject_name'], $_SESSION['subject_code'])) {
     die("Session variables not set. Please configure the test first.");
 }
 
@@ -20,6 +20,7 @@ if (!isset($_SESSION['year'], $_SESSION['semester'], $_SESSION['department'], $_
 $year = $_SESSION['year'] ?? '';
 $semester = $_SESSION['semester'] ?? '';
 $department = $_SESSION['department'] ?? '';
+$section = $_SESSION['section'] ?? '';
 $test_type = $_SESSION['test_type'] ?? '';
 $subject_name = $_SESSION['subject_name'] ?? '';
 $subject_code = $_SESSION['subject_code'] ?? '';
@@ -30,10 +31,9 @@ $questionCount = isset($_GET['questionCount']) ? (int)$_GET['questionCount'] : 0
 // Fetch students from the stud table based on year and department
 $students = [];
 if (!empty($year) && !empty($department)) {
-    $query = "SELECT student_id, register_no, student_name FROM stud WHERE years = ? AND department = ?";
-    $stmt = $mysqli->prepare($query);
+    $query = "SELECT student_id, register_no, student_name, section FROM stud WHERE years = ? AND department = ? AND section = ?";    $stmt = $mysqli->prepare($query);
     if ($stmt) {
-        $stmt->bind_param("is", $year, $department);
+        $stmt->bind_param("iss", $year, $department,$section);
         $stmt->execute();
         $result = $stmt->get_result();
         while ($row = $result->fetch_assoc()) {
@@ -294,15 +294,20 @@ if (isset($_SESSION['failed'])) {
                             <tr>
                                 <th>Register No</th>
                                 <th>Student Name</th>
+                                <th>Section</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php if (!empty($students)): ?>
                                 <?php foreach ($students as $student): ?>
-                                    <tr class="student-row" data-register-no="<?php echo htmlspecialchars($student['register_no']); ?>" data-student-name="<?php echo htmlspecialchars($student['student_name']); ?>">
-                                        <td><?php echo htmlspecialchars($student['register_no']); ?></td>
-                                        <td><?php echo htmlspecialchars($student['student_name']); ?></td>
-                                    </tr>
+                                    <tr class="student-row" data-register-no="<?php echo htmlspecialchars($student['register_no']); ?>" 
+    data-student-name="<?php echo htmlspecialchars($student['student_name']); ?>"
+    data-section="<?php echo htmlspecialchars($student['section'] ?? 'N/A'); ?>">
+    <td><?php echo htmlspecialchars($student['register_no']); ?></td>
+    <td><?php echo htmlspecialchars($student['student_name']); ?></td>
+    <td><?php echo htmlspecialchars($student['section'] ?? 'Not Available'); ?></td>
+</tr>
+
                                 <?php endforeach; ?>
                             <?php else: ?>
                                 <tr>
@@ -360,6 +365,7 @@ if (isset($_SESSION['failed'])) {
                         <input type="hidden" name="year" value="<?php echo htmlspecialchars($year); ?>">
                         <input type="hidden" name="semester" value="<?php echo htmlspecialchars($semester); ?>">
                         <input type="hidden" name="department" value="<?php echo htmlspecialchars($department); ?>">
+                        <input type="hidden" name="section" value="<?php echo htmlspecialchars($section); ?>">
                         <input type="hidden" name="test_type" value="<?php echo htmlspecialchars($test_type); ?>">
                         <input type="hidden" name="subject_name" value="<?php echo htmlspecialchars($subject_name); ?>">
                         <input type="hidden" name="subject_code" value="<?php echo htmlspecialchars($subject_code); ?>">
@@ -403,8 +409,10 @@ if (isset($_SESSION['failed'])) {
         $(document).on('click', '.student-row', function() {
             const registerNo = $(this).data('register-no');
             const studentName = $(this).data('student-name');
+            const section = $(this).data('section'); 
             $('#register_no').val(registerNo);
             $('#student_name').val(studentName);
+            $('#section').val(section);
         });
 
         // Calculate total marks

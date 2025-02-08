@@ -8,6 +8,7 @@ $staff_name =isset($_SESSION['staff_name'] ) ? $_SESSION['staff_name'] : '';
 $year = isset($_SESSION['year']) ? $_SESSION['year'] : '';
 $semester = isset($_SESSION['semester']) ? $_SESSION['semester'] : '';
 $department = isset($_SESSION['department']) ? $_SESSION['department'] : '';
+$section = isset($_SESSION['section']) ? $_SESSION['section'] : '';
 $test_type = isset($_SESSION['test_type']) ? $_SESSION['test_type'] : '';
 $subject_name = isset($_SESSION['subject_name']) ? $_SESSION['subject_name'] : '';
 $subject_code = isset($_SESSION['subject_code']) ? $_SESSION['subject_code'] : '';
@@ -54,26 +55,28 @@ $testmark = isset($_SESSION['testmark']) ? (int)$_SESSION['testmark'] : 0;
                 <table class="table table-bordered">
                     <thead>
                         <tr>
-                            <th>Staff Name</th>
-                            <th>Year</th>
-                            <th>Semester</th>
-                            <th>Department</th>
-                            <th>Test Type</th>
-                            <th>Subject Name</th>
-                            <th>Subject Code</th>
-                            <th>Test Mark</th>
+                            <th class="text-center">Staff Name</th>
+                            <th class="text-center">Year</th>
+                            <th class="text-center">Semester</th>
+                            <th class="text-center">Department</th>
+                            <th class="text-center">section</th>
+                            <th class="text-center">Test Type</th>
+                            <th class="text-center">Subject Name</th>
+                            <th class="text-center">Subject Code</th>
+                            <th class="text-center">Test Mark</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td><?php echo htmlspecialchars($staff_name); ?></td>
-                            <td><?php echo htmlspecialchars($year); ?></td>
-                            <td><?php echo htmlspecialchars($semester); ?></td>
-                            <td><?php echo htmlspecialchars($department); ?></td>
-                            <td><?php echo htmlspecialchars($test_type); ?></td>
-                            <td><?php echo htmlspecialchars($subject_name); ?></td>
-                            <td><?php echo htmlspecialchars($subject_code); ?></td>
-                            <td><?php echo htmlspecialchars($testmark); ?></td>
+                            <td class="text-center"><?php echo htmlspecialchars($staff_name); ?></td>
+                            <td class="text-center"><?php echo htmlspecialchars($year); ?></td>
+                            <td class="text-center"><?php echo htmlspecialchars($semester); ?></td>
+                            <td class="text-center"><?php echo htmlspecialchars($department); ?></td>
+                            <td class="text-center"><?php echo htmlspecialchars($section); ?></td>
+                            <td class="text-center"><?php echo htmlspecialchars($test_type); ?></td>
+                            <td class="text-center"><?php echo htmlspecialchars($subject_name); ?></td>
+                            <td class="text-center"><?php echo htmlspecialchars($subject_code); ?></td>
+                            <td class="text-center"><?php echo htmlspecialchars($testmark); ?></td>
                         </tr>
                     </tbody>
                 </table>
@@ -85,16 +88,16 @@ $testmark = isset($_SESSION['testmark']) ? (int)$_SESSION['testmark'] : 0;
                 <table class="table table-bordered" id="marksTable">
                     <thead>
                         <tr>
-                            <th>S.No</th>
-                            <th>Marks</th>
-                            <th>Count</th>
+                            <th class="text-center">S.No</th>
+                            <th class="text-center">Marks</th>
+                            <th class="text-center">Count</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td>1</td>
-                            <td><input type="number" class="form-control marks" name="marks[]" required></td>
-                            <td><input type="number" class="form-control count" name="count[]" required></td>
+                            <td class="text-center">1</td>
+                            <td class="text-center"><input type="number" class="form-control marks" name="marks[]" required></td>
+                            <td class="text-center"><input type="number" class="form-control count" name="count[]" required></td>
                         </tr>
                     </tbody>
                 </table>
@@ -232,6 +235,7 @@ $testmark = isset($_SESSION['testmark']) ? (int)$_SESSION['testmark'] : 0;
     formData.append('year', '<?php echo $year; ?>');
     formData.append('semester', '<?php echo $semester; ?>');
     formData.append('department', '<?php echo $department; ?>');
+    formData.append('section', '<?php echo $section; ?>');
     formData.append('test_type', '<?php echo $test_type; ?>');
     formData.append('testmark', '<?php echo $testmark; ?>');
     formData.append('subject_name', '<?php echo $subject_name; ?>');

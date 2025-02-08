@@ -59,6 +59,18 @@
                     <option value="Cyber Security">Cyber Security</option>
                 </select>
             </div>
+            <!-- Section Selection -->
+<div class="mb-3">
+    <label for="section" class="form-label">Select Section:</label>
+    <select name="section" id="section" class="form-select" required>
+        <option value="">--Select Section--</option>
+        <option value="A">Section A</option>
+        <option value="B">Section B</option>
+        <option value="C">Section C</option>
+        <option value="D">Section D</option>
+    </select>
+</div>
+
 
             <!-- Subject Name -->
             <div class="mb-3">

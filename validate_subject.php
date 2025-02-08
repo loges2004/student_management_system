@@ -11,6 +11,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $test_type = $_POST['test_type'];
     $semester = $_POST['semester'];
     $department = $_POST['department'];
+    $section = $_POST['section'];
     $subject_name = $_POST['subject_name'];
     $subject_code = $_POST['subject_code'];
     $testmark = $_POST['testmark']; // Get the testmark value from POST
@@ -22,6 +23,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $_SESSION['test_type'] = $test_type;
     $_SESSION['semester'] = $semester;
     $_SESSION['department'] = $department;
+    $_SESSION['section'] = $section;
     $_SESSION['subject_name'] = $subject_name;
     $_SESSION['subject_code'] = $subject_code;
     $_SESSION['testmark'] = $testmark;
