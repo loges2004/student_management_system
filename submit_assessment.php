@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $co_questions[] = $_POST["co_question_$i"];
         } else {
             $co_questions[] = $_POST["co_question_{$i}a"];
-            $co_questions[] = $_POST["co_question_{$i}b"];
+            $co_questions[] = $_POST["co_question_{$i}b "];
         }
     }
 

@@ -14,6 +14,7 @@ $subject_name = isset($_SESSION['subject_name']) ? $_SESSION['subject_name'] : '
 $subject_code = isset($_SESSION['subject_code']) ? $_SESSION['subject_code'] : '';
 $testmark = isset($_SESSION['testmark']) ? (int)$_SESSION['testmark'] : 0;
 
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -225,7 +226,20 @@ $testmark = isset($_SESSION['testmark']) ? (int)$_SESSION['testmark'] : 0;
                 document.getElementById('questionSection').style.display = 'block';
             }
         });
+
         document.getElementById('saveQuestions').addEventListener('click', function() {
+    // Collect marks and counts from input fields
+    const marksInputs = document.getElementsByClassName('marks');
+    const countsInputs = document.getElementsByClassName('count');
+    
+    // Create arrays from input values
+    const marksArray = Array.from(marksInputs).map(input => input.value);
+    const countsArray = Array.from(countsInputs).map(input => input.value);
+    
+    // Convert to JSON for URL
+    const marksJson = encodeURIComponent(JSON.stringify(marksArray));
+    const countsJson = encodeURIComponent(JSON.stringify(countsArray));
+
     const questionTableBody = document.getElementById('questionsTable').getElementsByTagName('tbody')[0];
     const questions = questionTableBody.getElementsByTagName('tr');
     let formData = new FormData();
@@ -240,14 +254,14 @@ $testmark = isset($_SESSION['testmark']) ? (int)$_SESSION['testmark'] : 0;
     formData.append('testmark', '<?php echo $testmark; ?>');
     formData.append('subject_name', '<?php echo $subject_name; ?>');
     formData.append('subject_code', '<?php echo $subject_code; ?>');
-            
+
     // Add COs to formData
     for (let i = 0; i < questions.length; i++) {
         const co = questions[i].querySelector('select').value;
         formData.append(`course_outcome[${i + 1}]`, co);
     }
 
-    // Submit form data to PHP script
+    // Submit form data
     fetch('save_questions.php', {
         method: 'POST',
         body: formData
@@ -255,14 +269,14 @@ $testmark = isset($_SESSION['testmark']) ? (int)$_SESSION['testmark'] : 0;
     .then(response => response.text())
     .then(data => {
         if (data === 'Success') {
-            const questionCount = questions.length;
             Swal.fire({
                 title: 'Success!',
                 text: 'Data inserted successfully!',
                 icon: 'success',
                 confirmButtonText: 'OK'
             }).then(() => {
-                window.location.href = `test_enter.php?questionCount=${questionCount}`; // Redirect after success
+                // Redirect with proper parameters
+                window.location.href = `test_enter.php?questionCount=${questions.length}&marks=${marksJson}&counts=${countsJson}`;
             });
         } else {
             Swal.fire({
@@ -283,11 +297,10 @@ $testmark = isset($_SESSION['testmark']) ? (int)$_SESSION['testmark'] : 0;
         });
     });
 });
-
-        function backfunc() {
-            window.location.href = "mark_entry.php";
-        }
-    </script>
+function backfunc() {
+    window.location.href = "mark_entry.php";
+}
+</script>
 </body>
 
 </html>

@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             // For questions 11 to 16 with 'a' and 'b' suffixes
             $co_key_a = "co_question_{$i}a";
-            $co_key_b = "co_question_{$i}b";
+            $co_key_b = "co_question_{$i}b ";
             $co_questions[] = isset($_POST[$co_key_a]) ? $_POST[$co_key_a] : '';
             $co_questions[] = isset($_POST[$co_key_b]) ? $_POST[$co_key_b] : '';
         }

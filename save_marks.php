@@ -13,7 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 $register_no = $_POST['register_no'] ?? '';
 $marks = $_POST['marks'] ?? [];
 $attended = $_POST['attended'] ?? [];
-$attendance = isset($_POST['attendance']) ? 1 : 0; // Student attendance (present/absent)
+$attendance = isset($_POST['attendance']) ? 'P' : 'A';
 $questionCount = (int)($_POST['questionCount'] ?? 0);
 
 // Validate required fields
@@ -26,6 +26,7 @@ if (empty($_POST['department'])) $errors[] = "Department is required.";
 if (empty($_POST['section'])) $errors[] = "Section is required.";
 if (empty($_POST['test_type'])) $errors[] = "Test Type is required.";
 if (empty($_POST['subject_code'])) $errors[] = "Subject Code is required.";
+if (empty($_POST['testmark'])) $errors[] = "test mark is required.";
 
 if (!empty($errors)) {
     $_SESSION['failed'] = implode("<br>", $errors);
@@ -58,7 +59,7 @@ try {
     if (!$test_result) {
         // Insert a new record into test_results if no matching record is found
         $insert_test = $mysqli->prepare("INSERT INTO test_results (year, semester, department, section, test_type, subject_code, subject_name, testmark) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-        $testmark = 100; // Default test mark, adjust as needed
+        $testmark ;
         $insert_test->bind_param("iisssssi", $_POST['year'], $_POST['semester'], $_POST['department'], $_POST['section'], $_POST['test_type'], $_POST['subject_code'], $_POST['subject_name'], $testmark);
         if (!$insert_test->execute()) {
             throw new Exception("Error creating test configuration: " . $insert_test->error);
@@ -88,7 +89,7 @@ try {
         $co_result = $co_stmt->get_result()->fetch_assoc();
         $course_outcome = $co_result['course_outcome'] ?? null;
 
-        $insert_mark->bind_param("iisiiissssssis", $test_id, $student_id, $register_no, $questionNo, $mark, $is_attended, $course_outcome, $student_name, $test_type_db, $testmark_db, $subject_code_db, $subject_name_db, $attendance, $section);
+        $insert_mark->bind_param("iisiiissssssss", $test_id, $student_id, $register_no, $questionNo, $mark, $is_attended, $course_outcome, $student_name, $test_type_db, $testmark_db, $subject_code_db, $subject_name_db, $attendance, $section);
         if (!$insert_mark->execute()) {
             throw new Exception("Error saving marks for question $questionNo: " . $insert_mark->error);
         }

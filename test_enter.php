@@ -3,8 +3,14 @@ include('db.php');
 
 session_start();
 
-// Retrieve questionCount from the session
+// Retrieve questionCount, marks, and counts from the URL
 $questionCount = $_GET['questionCount'] ?? 0;
+$marksJson = $_GET['marks'] ?? '[]';
+$countsJson = $_GET['counts'] ?? '[]';
+
+// Decode the JSON strings back into PHP arrays
+$marksArray = json_decode(urldecode($marksJson), true);
+$countsArray = json_decode(urldecode($countsJson), true);
 
 // Ensure questionCount is not reset after saving marks
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -12,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $_SESSION['questionCount'] = $questionCount;
 }
 
-if (!isset($_SESSION['year'], $_SESSION['semester'], $_SESSION['department'],$_SESSION['section'], $_SESSION['test_type'], $_SESSION['subject_name'], $_SESSION['subject_code'])) {
+if (!isset($_SESSION['year'], $_SESSION['semester'], $_SESSION['department'], $_SESSION['section'], $_SESSION['test_type'], $_SESSION['subject_name'], $_SESSION['subject_code'])) {
     die("Session variables not set. Please configure the test first.");
 }
 
@@ -24,16 +30,24 @@ $section = $_SESSION['section'] ?? '';
 $test_type = $_SESSION['test_type'] ?? '';
 $subject_name = $_SESSION['subject_name'] ?? '';
 $subject_code = $_SESSION['subject_code'] ?? '';
+$testmark = $_SESSION['testmark'] ?? '';
 
 // Retrieve question count from URL
 $questionCount = isset($_GET['questionCount']) ? (int)$_GET['questionCount'] : 0;
 
 // Fetch students from the stud table based on year and department
 $students = [];
-if (!empty($year) && !empty($department)) {
-    $query = "SELECT student_id, register_no, student_name, section FROM stud WHERE years = ? AND department = ? AND section = ?";    $stmt = $mysqli->prepare($query);
+if (!empty($year) && !empty($department) && !empty($section)) {
+    // Query to fetch students along with their total_marks
+    $query = "
+        SELECT DISTINCT s.student_id, s.register_no, s.student_name, s.section, COALESCE(sm.total_marks, 0) AS total_marks, COALESCE(sm.attendance, 0) AS attendance
+        FROM stud s
+        LEFT JOIN student_marks sm ON s.student_id = sm.student_id
+        WHERE s.years = ? AND s.department = ? AND s.section = ?
+    ";
+    $stmt = $mysqli->prepare($query);
     if ($stmt) {
-        $stmt->bind_param("iss", $year, $department,$section);
+        $stmt->bind_param("iss", $year, $department, $section);
         $stmt->execute();
         $result = $stmt->get_result();
         while ($row = $result->fetch_assoc()) {
@@ -42,7 +56,6 @@ if (!empty($year) && !empty($department)) {
         $stmt->close();
     }
 }
-
 // Display success or error messages
 
 if (isset($_SESSION['success'])) {
@@ -288,25 +301,31 @@ if (isset($_SESSION['failed'])) {
                 <div class="form-group">
                     <input type="text" id="searchBox" class="form-control" placeholder="Search by Register No or Student Name">
                 </div>
-                <div class="table-responsive" style="max-height: 300px; overflow-y: scroll;">
+                <div class="table-responsive mt-5" style="max-height: 300px; overflow-y: scroll;">
                     <table class="table table-bordered table-striped" id="studentTable">
                         <thead class="table-dark">
                             <tr>
                                 <th>Register No</th>
                                 <th>Student Name</th>
                                 <th>Section</th>
+                                <th>Total Mark</th>
+                                <th>attendance</th>
+
                             </tr>
                         </thead>
                         <tbody>
                             <?php if (!empty($students)): ?>
                                 <?php foreach ($students as $student): ?>
-                                    <tr class="student-row" data-register-no="<?php echo htmlspecialchars($student['register_no']); ?>" 
-    data-student-name="<?php echo htmlspecialchars($student['student_name']); ?>"
-    data-section="<?php echo htmlspecialchars($student['section'] ?? 'N/A'); ?>">
-    <td><?php echo htmlspecialchars($student['register_no']); ?></td>
-    <td><?php echo htmlspecialchars($student['student_name']); ?></td>
-    <td><?php echo htmlspecialchars($student['section'] ?? 'Not Available'); ?></td>
-</tr>
+                                    <tr class="student-row" data-register-no="<?php echo htmlspecialchars($student['register_no']); ?>"
+                                        data-student-name="<?php echo htmlspecialchars($student['student_name']); ?>"
+                                        data-section="<?php echo htmlspecialchars($student['section'] ?? 'N/A'); ?>">
+                                        <td><?php echo htmlspecialchars($student['register_no']); ?></td>
+                                        <td><?php echo htmlspecialchars($student['student_name']); ?></td>
+                                        <td><?php echo htmlspecialchars($student['section'] ?? 'Not Available'); ?></td>
+                                        <td><?php echo htmlspecialchars($student['total_marks']); ?></td>
+        
+                                        <td><?php echo htmlspecialchars($student['attendance']); ?></td>
+                                    </tr>
 
                                 <?php endforeach; ?>
                             <?php else: ?>
@@ -355,9 +374,11 @@ if (isset($_SESSION['failed'])) {
                                 </tr>
                                 <tr>
                                     <td class="attendance-checkbox" colspan="2">
-                                        <input type="checkbox" name="attendance" value="1" checked>
+                                        <input type="hidden" name="attendance" value="A"> <!-- Default as Absent -->
+                                        <input type="checkbox" name="attendance" value="P" checked>
                                         <label for="attendance">Attendance</label>
                                     </td>
+
                                 </tr>
                             </tbody>
                         </table>
@@ -367,6 +388,7 @@ if (isset($_SESSION['failed'])) {
                         <input type="hidden" name="department" value="<?php echo htmlspecialchars($department); ?>">
                         <input type="hidden" name="section" value="<?php echo htmlspecialchars($section); ?>">
                         <input type="hidden" name="test_type" value="<?php echo htmlspecialchars($test_type); ?>">
+                        <input type="hidden" name="testmark" value="<?php echo htmlspecialchars($testmark); ?>">
                         <input type="hidden" name="subject_name" value="<?php echo htmlspecialchars($subject_name); ?>">
                         <input type="hidden" name="subject_code" value="<?php echo htmlspecialchars($subject_code); ?>">
                         <input type="hidden" name="questionCount" value="<?php echo htmlspecialchars($questionCount); ?>">
@@ -379,16 +401,16 @@ if (isset($_SESSION['failed'])) {
                                 </tr>
                             </thead>
                             <tbody>
-                            <?php for ($i = 1; $i <= $questionCount; $i++): ?>
-    <tr>
-        <td><?php echo $i; ?></td>
-        <td><input type="number" class="form-control marks-input" name="marks[<?= $i ?>]" required></td>
-        <td>
-            <input type="hidden" name="attended[<?= $i ?>]" value="0"> <!-- Ensures unchecked checkboxes send '0' -->
-            <input type="checkbox" name="attended[<?= $i ?>]" value="1" checked> Attended
-        </td>
-    </tr>
-<?php endfor; ?>
+                                <?php for ($i = 1; $i <= $questionCount; $i++): ?>
+                                    <tr>
+                                        <td><?php echo $i; ?></td>
+                                        <td><input type="number" class="form-control marks-input" name="marks[<?= $i ?>]" required></td>
+                                        <td>
+                                            <input type="hidden" name="attended[<?= $i ?>]" value="0"> <!-- Ensures unchecked checkboxes send '0' -->
+                                            <input type="checkbox" name="attended[<?= $i ?>]" value="1" checked> Attended
+                                        </td>
+                                    </tr>
+                                <?php endfor; ?>
 
                             </tbody>
                         </table>
@@ -405,39 +427,62 @@ if (isset($_SESSION['failed'])) {
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        // Populate student details when a row is clicked
-        $(document).on('click', '.student-row', function() {
-            const registerNo = $(this).data('register-no');
-            const studentName = $(this).data('student-name');
-            const section = $(this).data('section'); 
-            $('#register_no').val(registerNo);
-            $('#student_name').val(studentName);
-            $('#section').val(section);
-        });
+        // Pass the PHP arrays to JavaScript
+        const marks = <?php echo json_encode($marksArray); ?>;
+        const counts = <?php echo json_encode($countsArray); ?>;
 
-        // Calculate total marks
-        $('.marks-input').on('input', function() {
-            let total = 0;
+        $(document).ready(function() {
+            let questionIndex = 0;
+            let markIndex = 0;
+            let count = 0;
+
+            // Set min and max attributes for each input field
             $('.marks-input').each(function() {
-                total += parseFloat($(this).val()) || 0;
+                if (count >= counts[markIndex]) {
+                    markIndex++;
+                    count = 0;
+                }
+                if (markIndex < marks.length) {
+                    $(this).attr('min', 0);
+                    $(this).attr('max', marks[markIndex]);
+                    count++;
+                }
             });
-            $('#total_mark').val(total);
-        });
 
-        // Search functionality
-        $('#searchBox').on('keyup', function() {
-            const value = $(this).val().toLowerCase();
-            $('#studentTable tr').filter(function() {
-                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+            // Populate student details when a row is clicked
+            $(document).on('click', '.student-row', function() {
+                const registerNo = $(this).data('register-no');
+                const studentName = $(this).data('student-name');
+                const section = $(this).data('section');
+                $('#register_no').val(registerNo);
+                $('#student_name').val(studentName);
+                $('#section').val(section);
             });
-        });
 
-        // Form validation
-        $('#marksForm').on('submit', function(e) {
-            if ($('#register_no').val() === '') {
-                alert('Please select a student by clicking on a row in the student list.');
-                e.preventDefault();
-            }
+            // Calculate total marks
+            $('.marks-input').on('input', function() {
+                let total = 0;
+                $('.marks-input').each(function() {
+                    total += parseFloat($(this).val()) || 0;
+                });
+                $('#total_mark').val(total);
+            });
+
+            // Search functionality
+            $('#searchBox').on('keyup', function() {
+                const value = $(this).val().toLowerCase();
+                $('#studentTable tr').filter(function() {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+                });
+            });
+
+            // Form validation
+            $('#marksForm').on('submit', function(e) {
+                if ($('#register_no').val() === '') {
+                    alert('Please select a student by clicking on a row in the student list.');
+                    e.preventDefault();
+                }
+            });
         });
     </script>
 </body>
