@@ -1,3 +1,13 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+</head>
+<body>
 <?php
 // Include your database connection
 include('db.php');
@@ -32,27 +42,42 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 
     // Prepare the SQL statement to check if the subject already exists
-    $stmt = $mysqli->prepare("SELECT * FROM subjects WHERE subject_name = ? AND subject_code = ? AND department = ? AND semester = ?");
+    $stmt = $mysqli->prepare("SELECT * FROM subjects WHERE subject_name COLLATE utf8mb4_general_ci = ? AND subject_code = ? AND department = ? AND semester = ?");
     $stmt->bind_param("ssss", $subject_name, $subject_code, $department, $semester);
 
     // Execute the statement
     $stmt->execute();
     $result = $stmt->get_result();
+ // Check if any row exists
+ if ($result->num_rows > 0) {
+    // Subject exists, show a success message and redirect
+    echo "<script>
+        Swal.fire({
+            title: 'Success!',
+            text: 'Subject found! Redirecting...',
+            icon: 'success'
+        }).then(() => {
+            window.location.href = 'table_page.php';
+        });
+    </script>";
+} else {
+    // Subject does not exist, show an error message
+    echo "<script>
+        Swal.fire({
+            title: 'Error!',
+            text: 'Subject does not exist. You can insert it if needed.',
+            icon: 'error'
+        }).then(() => {
+            window.history.back();
+        });
+    </script>";
+}
 
-    // Check if any row exists
-    if ($result->num_rows > 0) {
-        // Subject exists, redirect based on testmark
-        header("Location: table_page.php");
-    } else {
-        // Subject does not exist, show a message
-        echo "<script>alert('Subject does not exist. You can insert it if needed.'); window.history.back();</script>";
-        exit();
-    }
-
-    // Close the statement
-    $stmt->close();
-
-    // Close the database connection
-    $mysqli->close();
+// Close the statement and database connection
+$stmt->close();
+$mysqli->close();
 }
 ?>
+
+</body>
+</html>
