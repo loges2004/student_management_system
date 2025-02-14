@@ -265,8 +265,24 @@ if (isset($_SESSION['failed'])) {
                                 </tr>
                             <?php endif; ?>
                         </tbody>
+                        
                     </table>
+                    
                 </div>
+                <!-- Add this near the student list section -->
+<div class="col-md-12 mt-3">
+    <h4>Excel To Upload Marks</h4>
+    <form id="uploadForm" action="upload_marks.php" method="POST" enctype="multipart/form-data">
+        <div class="input-group mb-3">
+            <input type="file" class="form-control" name="excelFile" accept=".xlsx,.xls" required>
+            <input type="hidden" name="questionCount" value="<?= $questionCount ?>">
+            <input type="hidden" name="marks" value="<?= htmlspecialchars(json_encode($marksArray)) ?>">
+            <input type="hidden" name="counts" value="<?= htmlspecialchars(json_encode($countsArray)) ?>">
+            <button class="btn btn-primary" type="submit">Upload Excel</button>
+        </div>
+        <small class="text-muted">Download template <a href="#" id="downloadTemplate">here</a></small>
+        </form>
+</div>
             </div>
 
             <!-- Right Side: Marks Entry Form -->
@@ -352,6 +368,7 @@ if (isset($_SESSION['failed'])) {
                             <input type="number" id="total_mark" class="form-control" readonly>
                         </div>
                         <button type="submit" class="btn btn-success">Save</button>
+                        <button type="buttun" class="btn btn-danger ms-3 me-5 w-75">Submit</button>
                     </form>
                 </div>
             </div>
@@ -421,7 +438,31 @@ if (isset($_SESSION['failed'])) {
             }
         });
     });
-</script>
+
+
+    const questionCount = <?php echo json_encode($questionCount); ?>;
+
+        // Download template functionality
+        document.getElementById('downloadTemplate').addEventListener('click', function() {
+            // Create CSV headers
+            let headers = ['Register No', 'Student Name'];
+            for (let i = 1; i <= questionCount; i++) {
+                headers.push(`Q${i}`);
+            }
+            headers.push('Total Mark');
+
+         
+            // Combine headers and sample row into CSV content
+            const csvContent = headers.join(',') + '\n' + sampleRow.join(',');
+
+            // Create a Blob and trigger the download
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'marks_template.csv';
+            link.click();
+        });
+    </script>
 </body>
 
 </html>
