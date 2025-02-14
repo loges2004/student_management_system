@@ -227,20 +227,20 @@ if (isset($_SESSION['failed'])) {
         <h2>ENTER SERIAL TEST MARK</h2>
         <div class="row">
             <!-- Left Side: Scrollable Table -->
-            <div class="col-md-4">
-                <h4>Student Lists</h4>
+            <div class="col-md-4" >
+                <h4 class="text-center mb-3">Student Lists</h4>
                 <div class="form-group">
-                    <input type="text" id="searchBox" class="form-control" placeholder="Search by Register No or Student Name">
+                    <input type="text" id="searchBox" class="form-control " style="width:100%;" placeholder="Search by Register No or Student Name" >
                 </div>
-                <div class="table-responsive mt-5" style="max-height: 300px; overflow-y: scroll;">
-                    <table class="table table-bordered table-striped" id="studentTable">
-                        <thead class="table-dark">
+                <div class="table-responsive mt-5" style="max-height: 600px;height:400px;width:550px; overflow-y: scroll;">
+                    <table class="table table-bordered table-striped"  id="studentTable">
+                        <thead class="table-dark" >
                             <tr>
-                                <th>Register No</th>
-                                <th>Student Name</th>
-                                <th>Section</th>
-                                <th>Total Mark</th>
-                                <th>attendance</th>
+                                <th class="text-center fw-bold ">Register No</th>
+                                <th class="text-center fw-bold ">Student Name</th>
+                                <th class="text-center fw-bold ">Section</th>
+                                <th class="text-center fw-bold ">Total Mark</th>
+                                <th class="text-center fw-bold ">attendance</th>
 
                             </tr>
                         </thead>
@@ -269,6 +269,8 @@ if (isset($_SESSION['failed'])) {
                     </table>
                     
                 </div>
+                <button type="buttun" class="btn btn-danger me-5 mt-4 mb-5 w-100 text-center">Submit</button>
+
                 <!-- Add this near the student list section -->
 <div class="col-md-12 mt-3">
     <h4>Excel To Upload Marks</h4>
@@ -287,7 +289,7 @@ if (isset($_SESSION['failed'])) {
 
             <!-- Right Side: Marks Entry Form -->
             <div class="col-md-8">
-                <table class="table table-sm table-bordered readonly-table">
+                <table class="table table-sm table-bordered readonly-table" style="margin-left: 80px;" >
                     <tbody>
                         <tr>
                             <td><strong>Year:</strong> <?php echo htmlspecialchars($year); ?></td>
@@ -303,9 +305,9 @@ if (isset($_SESSION['failed'])) {
                         </tr>
                     </tbody>
                 </table>
-                <div class="form-section">
+                <div class="form-section" style="margin-left:80px ;">
                     <form id="marksForm" action="save_marks.php" method="POST">
-                        <table class="table table-bordered">
+                        <table class="table table-bordered ">
                             <tbody>
                                 <tr>
                                     <td class="small-text"><label for="register_no"><strong>Register Number:</strong></label></td>
@@ -321,8 +323,8 @@ if (isset($_SESSION['failed'])) {
                                 </tr>
                                 <tr>
                                     <td class="attendance-checkbox" colspan="2">
-                                        <input type="hidden" name="attendance" value="A"> <!-- Default as Absent -->
-                                        <input type="checkbox" name="attendance" value="P" checked>
+                                        <input type="hidden" name="attendance" value="Absent"> <!-- Default as Absent -->
+                                        <input type="checkbox" name="attendance" value="Present" checked>
                                         <label for="attendance">Attendance</label>
                                     </td>
 
@@ -368,7 +370,7 @@ if (isset($_SESSION['failed'])) {
                             <input type="number" id="total_mark" class="form-control" readonly>
                         </div>
                         <button type="submit" class="btn btn-success">Save</button>
-                        <button type="buttun" class="btn btn-danger ms-3 me-5 w-75">Submit</button>
+                        <button type="reset" class="btn btn-danger ms-4">cancel</button>
                     </form>
                 </div>
             </div>
