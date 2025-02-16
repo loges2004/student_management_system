@@ -438,28 +438,50 @@ if (isset($_SESSION['failed'])) {
     };
 
     console.log("Sending AJAX request with data:", requestData); // Debugging
-
     $.ajax({
-        url: 'fetch_student_marks.php',
-        type: 'GET',
-        data: requestData,
-        success: function(response) {
-            console.log("Raw Response:", response); // Debugging
-            console.log("Type of Response:", typeof response); // Debugging
+    url: 'fetch_student_marks.php',
+    type: 'GET',
+    data: requestData,
+    success: function(response) {
+        console.log("Raw Response:", response); // Debugging
+        console.log("Type of Response:", typeof response); // Debugging
 
-            if (response.success) {
-                // Populate form fields
-                populateMarks(response.marks, response.total_marks);
-            } else {
-                console.error("Error:", response.message);
-                alert("Error: " + response.message);
-            }
-        },
-        error: function(xhr, status, error) {
-            console.error('AJAX Error:', status, error);
-            alert('Error fetching student marks.');
+        if (response && response.success) {
+            // Ensure marks and total_marks are defined
+            let marks = response.marks !== undefined && response.marks !== null ? response.marks : 0;
+            let total_marks = response.total_marks !== undefined && response.total_marks !== null ? response.total_marks : 0;
+
+            // Populate form fields
+            populateMarks(marks, total_marks);
+        } else {
+            console.warn("Warning:", response.message || "No data found. Please enter the marks and save.");
+            showAlert("warning", response.message || "No data found. Please enter the marks and save.");
+            populateMarks(0, 0); // Fill input boxes with 0
         }
-    });
+    },
+    error: function(xhr, status, error) {
+        console.error("Error:", error);
+        showAlert("danger", "Error fetching student marks.");
+        populateMarks(0, 0); // Ensure input fields are set to 0 even on AJAX error
+    }
+});}
+// Function to display Bootstrap 5 alert dynamically
+function showAlert(type, message) {
+    let alertBox = `
+        <div class="alert alert-${type} alert-dismissible fade show" role="alert" 
+             style="position: fixed; top: 10px; left: 50%; transform: translateX(-50%); z-index: 1050;">
+            <strong>${type === "danger" ? "Error" : "Warning"}:</strong> ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>`;
+
+    $("body").append(alertBox); // Append the alert to the body
+
+    // Remove the alert after 3 seconds
+    setTimeout(() => {
+        $(".alert").fadeOut("slow", function () {
+            $(this).remove();
+        });
+    }, 3000);
 }
 
 function populateMarks(marks, totalMarks) {
