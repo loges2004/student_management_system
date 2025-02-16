@@ -1,68 +1,64 @@
 <?php
-include('db.php');
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 header('Content-Type: application/json');
 
-try {
-    // Validate input
-    $required = ['register_no', 'year', 'semester', 'department', 'section', 'test_type', 'subject_code'];
-    foreach ($required as $param) {
-        if (!isset($_GET[$param])) {
-            throw new Exception("Missing parameter: $param");
-        }
-    }
+require 'db.php'; // Ensure DB connection is correct
 
-    // Get test_id
-    $stmt = $mysqli->prepare("SELECT id FROM test_results 
-        WHERE year = ? 
-        AND semester = ? 
-        AND department = ? 
-        AND section = ? 
-        AND test_type = ? 
-        AND subject_code = ?");
-    $stmt->bind_param("iissss", 
-        $_GET['year'],
-        $_GET['semester'],
-        $_GET['department'],
-        $_GET['section'],
-        $_GET['test_type'],
-        $_GET['subject_code']
-    );
-    $stmt->execute();
-    $test = $stmt->get_result()->fetch_assoc();
-    
-    if (!$test) {
-        throw new Exception("Test configuration not found");
-    }
+// Validate input
+$register_no = $_GET['register_no'] ?? '';
+$year = $_GET['year'] ?? '';
+$semester = $_GET['semester'] ?? '';
+$department = $_GET['department'] ?? '';
+$section = $_GET['section'] ?? '';
+$test_type = $_GET['test_type'] ?? '';
+$subject_code = $_GET['subject_code'] ?? '';
 
-    // Get student marks
-    $stmt = $mysqli->prepare("SELECT question_number, marks, attended 
-        FROM student_marks 
-        WHERE test_id = ? AND register_no = ?");
-    $stmt->bind_param("is", $test['id'], $_GET['register_no']);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    $marks = [];
-    $total_marks = 0;
-    while ($row = $result->fetch_assoc()) {
-        $marks[] = [
-            'question_number' => $row['question_number'],
-            'marks' => $row['marks'],
-            'attended' => $row['attended']
-        ];
-        $total_marks += $row['marks'];
-    }
-
-    echo json_encode([
-        'success' => true,
-        'marks' => $marks,
-        'total_marks' => $total_marks
-    ]);
-
-} catch (Exception $e) {
-    echo json_encode([
-        'success' => false,
-        'message' => $e->getMessage()
-    ]);
+if (!$register_no) {
+    echo json_encode(['success' => false, 'error' => 'Register number missing']);
+    exit;
 }
+
+// Fetch marks
+$query = "SELECT question_number, marks, attended, total_marks 
+          FROM student_marks 
+          WHERE register_no = ? 
+          AND year = ? 
+          AND semester = ? 
+          AND department = ? 
+          AND section = ? 
+          AND test_type = ? 
+          AND subject_code = ?";
+$stmt = $mysqli->prepare($query);
+if (!$stmt) {
+    echo json_encode(['success' => false, 'error' => 'Database error']);
+    exit;
+}
+
+$stmt->bind_param("sisssss", $register_no, $year, $semester, $department, $section, $test_type, $subject_code);
+if (!$stmt->execute()) {
+    echo json_encode(['success' => false, 'error' => 'Database error']);
+    exit;
+}
+
+$result = $stmt->get_result();
+$marksData = [];
+$total_marks = 0;
+
+while ($row = $result->fetch_assoc()) {
+    $marksData[$row['question_number']] = [
+        'marks' => $row['marks'],
+        'attended' => $row['attended']
+    ];
+    $total_marks += $row['marks'];
+}
+
+if (!empty($marksData)) {
+    echo json_encode(['success' => true, 'marks' => $marksData, 'total_marks' => $total_marks]);
+} else {
+    echo json_encode(['success' => false, 'error' => 'No marks found']);
+}
+
+$stmt->close();
+exit;
 ?>

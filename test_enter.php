@@ -424,44 +424,58 @@ if (isset($_SESSION['failed'])) {
             // Fetch and populate marks for the selected student
             fetchStudentMarks(registerNo);
         });
-    // Function to fetch student marks from the server
-    function fetchStudentMarks(registerNo) {
-        $.ajax({
-            url: 'fetch_student_marks.php',
-            type: 'GET',
-            data: {
-                register_no: registerNo,
-                year: <?php echo json_encode($year); ?>,
-                semester: <?php echo json_encode($semester); ?>,
-                department: <?php echo json_encode($department); ?>,
-                section: <?php echo json_encode($section); ?>,
-                test_type: <?php echo json_encode($test_type); ?>,
-                subject_code: <?php echo json_encode($subject_code); ?>
-            },
-            success: function(response) {
-                const data = JSON.parse(response);
-                if (data.success) {
-                    // Populate marks and attended checkboxes
-                    for (let i = 1; i <= questionCount; i++) {
-                        const mark = data.marks[i] || 0;
-                        const attended = data.attended[i] || 0;
 
-                        $(`input[name="marks[${i}]"]`).val(mark);
-                        $(`input[name="attended[${i}]"]`).prop('checked', attended === 1);
-                    }
-                    $('#total_mark').val(data.total_marks || 0);
-                } else {
-                    // Default to zeros if no marks found
-                    resetMarksInputFields();
-                }
-            },
-            error: function() {
-                alert('Error fetching student marks.');
-                resetMarksInputFields();
+
+        function fetchStudentMarks(registerNo) {
+    const requestData = {
+        register_no: registerNo,
+        year: <?php echo json_encode($year); ?>,
+        semester: <?php echo json_encode($semester); ?>,
+        department: <?php echo json_encode($department); ?>,
+        section: <?php echo json_encode($section); ?>,
+        test_type: <?php echo json_encode($test_type); ?>,
+        subject_code: <?php echo json_encode($subject_code); ?>
+    };
+
+    console.log("Sending AJAX request with data:", requestData); // Debugging
+
+    $.ajax({
+        url: 'fetch_student_marks.php',
+        type: 'GET',
+        data: requestData,
+        success: function(response) {
+            console.log("Raw Response:", response); // Debugging
+            console.log("Type of Response:", typeof response); // Debugging
+
+            if (response.success) {
+                // Populate form fields
+                populateMarks(response.marks, response.total_marks);
+            } else {
+                console.error("Error:", response.message);
+                alert("Error: " + response.message);
             }
-        });
+        },
+        error: function(xhr, status, error) {
+            console.error('AJAX Error:', status, error);
+            alert('Error fetching student marks.');
+        }
+    });
+}
+
+function populateMarks(marks, totalMarks) {
+    // Reset all input fields to zero
+    $('.marks-input').val(0);
+    $('input[name^="attended"]').prop('checked', false);
+
+    // Populate marks and attendance
+    for (const [questionNumber, data] of Object.entries(marks)) {
+        $(`input[name="marks[${questionNumber}]"]`).val(data.marks);
+        $(`input[name="attended[${questionNumber}]"]`).prop('checked', data.attended === 1);
     }
 
+    // Set total marks
+    $('#total_mark').val(totalMarks);
+}
         // Calculate total marks dynamically
         $(document).on('input', '.marks-input', function() {
             let total = 0;
