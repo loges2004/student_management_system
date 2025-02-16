@@ -73,7 +73,7 @@ try {
                 INSERT INTO test_results (
                     staffname, year, semester, department, 
                     section, test_type, testmark, subject_name, subject_code, staff_id
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ) VALUES (UPPER(?), ?, ?, ?, ?, ?, ?, UPPER(?), UPPER(?), ?)
             ");
             $staffname = $_SESSION['staffname'] ?? '';
             $staff_id = $_SESSION['staff_id'] ?? 0;
@@ -101,7 +101,7 @@ try {
         $co_stmt->execute();
         $co_result = $co_stmt->get_result();
         while ($row = $co_result->fetch_assoc()) {
-            $co_mapping[$row['question_number']] = $row['course_outcome'];
+            $co_mapping[$row['question_number']] = strtoupper($row['course_outcome']);
         }
 
         $file = $_FILES['excelFile']['tmp_name'];
@@ -116,7 +116,7 @@ try {
 
         foreach ($rows as $row) {
             $register_no = $row[0];
-            $student_name = $row[1];
+            $student_name = strtoupper($row[1]); // Convert to uppercase
             $total_mark = array_pop($row);
             $marks = array_slice($row, 2, $questionCount);
 
@@ -164,24 +164,33 @@ try {
                 error_log("Question $question_number: Max Mark = $maxMark, Actual Mark = $mark");
 
                 // Get CO from mapping or calculate
-                $co = $co_mapping[$question_number] ?? getCourseOutcome($question_number, $countsArray);
+                $co = $co_mapping[$question_number] ?? strtoupper(getCourseOutcome($question_number, $countsArray));
 
                 // Prepare insert statement
                 $insert_stmt = $mysqli->prepare("
                     INSERT INTO student_marks (
-                        test_id, student_id, register_no, student_name, section,
+                        test_id, year, department, semester, student_id, register_no, student_name, section,
                         question_number, marks, attended, course_outcome,
                         test_type, testmark, subject_code, subject_name, attendance, total_marks
                     ) VALUES (
-                        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+                        ?, ?, UPPER(?), ?, ?, ?, UPPER(?), UPPER(?), ?, ?, ?, UPPER(?), UPPER(?), ?, UPPER(?), UPPER(?), UPPER(?), ?
                     )
+                    ON DUPLICATE KEY UPDATE
+                        marks = VALUES(marks),
+                        attended = VALUES(attended),
+                        attendance = VALUES(attendance),
+                        section = VALUES(section),
+                        total_marks = VALUES(total_marks)
                 ");
 
-                $attendance = ($total_mark > 0) ? 'Present' : 'Absent';
+                $attendance = ($total_mark > 0) ? 'PRESENT' : 'ABSENT'; // Uppercase
 
                 $insert_stmt->bind_param(
-                    "iiissiiissssssi",
+                    "iisiisssiisssssssi",
                     $test_id,
+                    $_SESSION['year'], // Year
+                    $_SESSION['department'], // Department
+                    $_SESSION['semester'], // Semester
                     $student_id,
                     $register_no,
                     $student_name,

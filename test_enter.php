@@ -3,20 +3,12 @@ include('db.php');
 
 session_start();
 
-
 // Retrieve questionCount, marks, and counts from session or URL
-if (isset($_SESSION['questionCount'], $_SESSION['marksArray'], $_SESSION['countsArray'])) {
-    $questionCount = $_SESSION['questionCount'];
-    $marksArray = $_SESSION['marksArray'];
-    $countsArray = $_SESSION['countsArray'];
-    // Clear session variables to prevent reuse on refresh
-    unset($_SESSION['questionCount'], $_SESSION['marksArray'], $_SESSION['countsArray']);
-} else {
-    $questionCount = isset($_GET['questionCount']) ? (int)$_GET['questionCount'] : 0;
-    $marksJson = $_GET['marks'] ?? '[]';
-    $countsJson = $_GET['counts'] ?? '[]';
-    $marksArray = json_decode(urldecode($marksJson), true);
-    $countsArray = json_decode(urldecode($countsJson), true);
+if (isset($_GET['questionCount'], $_GET['marks'], $_GET['counts'])) {
+    // If values are passed via URL, store them in the session
+    $_SESSION['questionCount'] = (int)$_GET['questionCount'];
+    $_SESSION['marksArray'] = json_decode(urldecode($_GET['marks']), true);
+    $_SESSION['countsArray'] = json_decode(urldecode($_GET['counts']), true);
 }
 
 if (!isset($_SESSION['year'], $_SESSION['semester'], $_SESSION['department'], $_SESSION['section'], $_SESSION['test_type'], $_SESSION['subject_name'], $_SESSION['subject_code'])) {
@@ -35,39 +27,43 @@ $testmark = $_SESSION['testmark'] ?? '';
 
 // Retrieve question count from URL
 $questionCount = isset($_GET['questionCount']) ? (int)$_GET['questionCount'] : 0;
+$marksArray = $_SESSION['marksArray'] ?? [];
+$countsArray = $_SESSION['countsArray'] ?? [];
 
-// Fetch students from the stud table based on year and department
+// Fetch students and their marks
 $students = [];
 if (!empty($year) && !empty($department) && !empty($section)) {
-    // Query to fetch students along with their total_marks
     $query = "
-    SELECT DISTINCT 
-        s.student_id, 
-        s.register_no, 
-        s.student_name, 
-        s.section, 
-        COALESCE(sm.total_marks, 0) AS total_marks, 
-        CASE 
-            WHEN sm.attendance IS NULL THEN 'Absent' 
-            ELSE sm.attendance 
-        END AS attendance
-    FROM stud s
-    LEFT JOIN student_marks sm ON s.student_id = sm.student_id
-    WHERE s.years = ? AND s.department = ? AND s.section = ?
-";
+        SELECT DISTINCT 
+            s.register_no, 
+            s.student_name, 
+            s.section, 
+            COALESCE(sm.total_marks, 0) AS total_marks, 
+            CASE 
+                WHEN sm.attendance IS NULL THEN 'Absent' 
+                ELSE sm.attendance 
+            END AS attendance
+        FROM stud s
+        LEFT JOIN student_marks sm ON s.register_no = sm.register_no
+        WHERE s.years = ? AND s.department = ? AND s.section = ?
+    ";
     $stmt = $mysqli->prepare($query);
     if ($stmt) {
         $stmt->bind_param("iss", $year, $department, $section);
-        $stmt->execute();
+        if (!$stmt->execute()) {
+            die("Query execution failed: " . $stmt->error);
+        }
         $result = $stmt->get_result();
         while ($row = $result->fetch_assoc()) {
             $students[] = $row;
         }
         $stmt->close();
+    } else {
+        die("Query preparation failed: " . $mysqli->error);
     }
+} else {
+    die("Year, department, or section is empty.");
 }
-
-// Display success or error messages
 
 if (isset($_SESSION['success'])) {
     echo "
@@ -245,26 +241,24 @@ if (isset($_SESSION['failed'])) {
                             </tr>
                         </thead>
                         <tbody>
-                            <?php if (!empty($students)): ?>
-                                <?php foreach ($students as $student): ?>
-                                    <tr class="student-row" data-register-no="<?php echo htmlspecialchars($student['register_no']); ?>"
-                                        data-student-name="<?php echo htmlspecialchars($student['student_name']); ?>"
-                                        data-section="<?php echo htmlspecialchars($student['section'] ?? 'N/A'); ?>">
-                                        <td><?php echo htmlspecialchars($student['register_no']); ?></td>
-                                        <td><?php echo htmlspecialchars($student['student_name']); ?></td>
-                                        <td><?php echo htmlspecialchars($student['section'] ?? 'Not Available'); ?></td>
-                                        <td><?php echo htmlspecialchars($student['total_marks']); ?></td>
-        
-                                        <td><?php echo htmlspecialchars($student['attendance']); ?></td>
-                                    </tr>
-
-                                <?php endforeach; ?>
-                            <?php else: ?>
-                                <tr>
-                                    <td colspan="2" class="text-center">No students found.</td>
-                                </tr>
-                            <?php endif; ?>
-                        </tbody>
+    <?php if (!empty($students)): ?>
+        <?php foreach ($students as $student): ?>
+            <tr class="student-row" data-register-no="<?= htmlspecialchars($student['register_no']) ?>"
+                data-student-name="<?= htmlspecialchars($student['student_name']) ?>"
+                data-section="<?= htmlspecialchars($student['section'] ?? 'N/A') ?>">
+                <td><?= htmlspecialchars($student['register_no']) ?></td>
+                <td><?= htmlspecialchars($student['student_name']) ?></td>
+                <td><?= htmlspecialchars($student['section'] ?? 'N/A') ?></td>
+                <td><?= htmlspecialchars($student['total_marks']) ?></td>
+                <td><?= htmlspecialchars($student['attendance']) ?></td>
+            </tr>
+        <?php endforeach; ?>
+    <?php else: ?>
+        <tr>
+            <td colspan="5" class="text-center">No students found.</td> <!-- Fix colspan to 5 -->
+        </tr>
+    <?php endif; ?>
+</tbody>
                         
                     </table>
                     
@@ -377,52 +371,132 @@ if (isset($_SESSION['failed'])) {
         </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
+    <script>
     // Pass the PHP arrays to JavaScript
     const marks = <?php echo json_encode($marksArray); ?>;
     const counts = <?php echo json_encode($countsArray); ?>;
+    const questionCount = <?php echo json_encode($questionCount); ?>;
 
     // Function to set min and max attributes for marks input fields
     function setMarksInputAttributes() {
-        let questionIndex = 0;
-        let markIndex = 0;
-        let count = 0;
+        let markIndex = 0; // Index for marksArray
+        let count = 0; // Counter for countsArray
 
-        $('.marks-input').each(function() {
+        // Loop through each question input field
+        $('.marks-input').each(function(index) {
+            // If the count exceeds the current count in countsArray, move to the next mark
             if (count >= counts[markIndex]) {
                 markIndex++;
-                count = 0;
+                count = 0; // Reset the counter
             }
+
+            // Set min and max attributes for the current input field
             if (markIndex < marks.length) {
-                $(this).attr('min', 0);
-                $(this).attr('max', marks[markIndex]);
-                count++;
+                $(this).attr({
+                    'min': 0,
+                    'max': marks[markIndex]
+                });
+                count++; // Increment the counter
             }
         });
     }
+
+    function resetMarksInputFields() {
+    $('.marks-input').val(0).prop('disabled', true); // Reset all marks to 0 and disable them
+    $('input[name^="attended"]').prop('checked', false); // Uncheck all attendance checkboxes
+    $('#total_mark').val(0); // Reset total marks
+}
 
     $(document).ready(function() {
         // Set min and max attributes for marks input fields on page load
         setMarksInputAttributes();
 
-        // Populate student details when a row is clicked
+        // Populate student details and marks when a row is clicked
         $(document).on('click', '.student-row', function() {
             const registerNo = $(this).data('register-no');
             const studentName = $(this).data('student-name');
             const section = $(this).data('section');
+
             $('#register_no').val(registerNo);
             $('#student_name').val(studentName);
             $('#section').val(section);
-        });
 
-        // Calculate total marks
-        $('.marks-input').on('input', function() {
+            // Fetch and populate marks for the selected student
+            fetchStudentMarks(registerNo);
+        });
+    // Function to fetch student marks from the server
+    function fetchStudentMarks(registerNo) {
+        $.ajax({
+            url: 'fetch_student_marks.php',
+            type: 'GET',
+            data: {
+                register_no: registerNo,
+                year: <?php echo json_encode($year); ?>,
+                semester: <?php echo json_encode($semester); ?>,
+                department: <?php echo json_encode($department); ?>,
+                section: <?php echo json_encode($section); ?>,
+                test_type: <?php echo json_encode($test_type); ?>,
+                subject_code: <?php echo json_encode($subject_code); ?>
+            },
+            success: function(response) {
+                const data = JSON.parse(response);
+                if (data.success) {
+                    // Populate marks and attended checkboxes
+                    for (let i = 1; i <= questionCount; i++) {
+                        const mark = data.marks[i] || 0;
+                        const attended = data.attended[i] || 0;
+
+                        $(`input[name="marks[${i}]"]`).val(mark);
+                        $(`input[name="attended[${i}]"]`).prop('checked', attended === 1);
+                    }
+                    $('#total_mark').val(data.total_marks || 0);
+                } else {
+                    // Default to zeros if no marks found
+                    resetMarksInputFields();
+                }
+            },
+            error: function() {
+                alert('Error fetching student marks.');
+                resetMarksInputFields();
+            }
+        });
+    }
+
+        // Calculate total marks dynamically
+        $(document).on('input', '.marks-input', function() {
             let total = 0;
             $('.marks-input').each(function() {
                 total += parseFloat($(this).val()) || 0;
             });
             $('#total_mark').val(total);
         });
+
+        // Handle attendance checkboxes
+        $(document).on('change', 'input[name^="attended"]', function() {
+            const questionNo = $(this).attr('name').match(/\d+/)[0];
+            if (!$(this).is(':checked')) {
+                $(`input[name="marks[${questionNo}]"]`).val(0).prop('disabled', true);
+            } else {
+                $(`input[name="marks[${questionNo}]"]`).prop('disabled', false).val('');
+            }
+        });
+
+
+// Function to enable marks input fields when attendance is checked
+function enableMarksInputFields() {
+    $('.marks-input').prop('disabled', false).val(''); // Enable all marks input fields and clear 0 values
+}
+
+
+$(document).on('change', 'input[name="attendance"]', function() {
+    const row = $(this).closest('tr'); // Get the row of the checkbox
+
+    if (!$(this).is(':checked')) {
+        resetMarksInputFields(); // If unchecked, reset marks to 0 and disable input fields
+    } else {
+        enableMarksInputFields(); // If checked, enable input fields
+    }
+});
 
         // Search functionality
         $('#searchBox').on('keyup', function() {
@@ -441,30 +515,26 @@ if (isset($_SESSION['failed'])) {
         });
     });
 
+    // Download template functionality
+    document.getElementById('downloadTemplate').addEventListener('click', function() {
+        // Create CSV headers
+        let headers = ['Register No', 'Student Name'];
+        for (let i = 1; i <= questionCount; i++) {
+            headers.push(`Q${i}`);
+        }
+        headers.push('Total Mark');
 
-    const questionCount = <?php echo json_encode($questionCount); ?>;
+        // Combine headers and sample row into CSV content
+        const csvContent = headers.join(',') + '\n' + sampleRow.join(',');
 
-        // Download template functionality
-        document.getElementById('downloadTemplate').addEventListener('click', function() {
-            // Create CSV headers
-            let headers = ['Register No', 'Student Name'];
-            for (let i = 1; i <= questionCount; i++) {
-                headers.push(`Q${i}`);
-            }
-            headers.push('Total Mark');
-
-         
-            // Combine headers and sample row into CSV content
-            const csvContent = headers.join(',') + '\n' + sampleRow.join(',');
-
-            // Create a Blob and trigger the download
-            const blob = new Blob([csvContent], { type: 'text/csv' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = 'marks_template.csv';
-            link.click();
-        });
-    </script>
+        // Create a Blob and trigger the download
+        const blob = new Blob([csvContent], { type: 'text/csv' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'marks_template.csv';
+        link.click();
+    });
+</script>
 </body>
 
 </html>
