@@ -56,8 +56,8 @@
         }
 
         .profile-preview {
-            width: 100px;
-            height: 15+0px;
+            width: 150px;
+            height: 150px;
             border: 4px solid var(--secondary-color);
             border-radius: 50%;
             overflow: hidden;
@@ -74,6 +74,8 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
+            color: white;
+            font-size: smaller;
         }
 
         .upload-label {
@@ -203,6 +205,7 @@
     .profile-preview img {
     border-radius: 50%;
     object-fit: cover;
+    font-size: small;
     border: 3px solid white;
     box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.2);
     transition: transform 0.3s ease-in-out;
@@ -310,7 +313,7 @@
                             <div class="invalid-feedback">Please enter country.</div>
                         </div>
                         <div class="col-md-6 mb-3">
-                        <label for="profile_image" class="form-label">Profile Image</label>
+                        <label for="profile_image" class="form-label text-center">Profile Image</label>
                         <input type="file" class="form-control" id="profile_image" name="profile_image" required
                             onchange="previewImage(event)">
                         <div class="invalid-feedback">Please upload a profile image.</div>
