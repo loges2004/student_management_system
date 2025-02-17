@@ -1,4 +1,5 @@
 <?php
+//it is procedural methods
 $hostname = "localhost";
 $username = "root";
 $password = "";
