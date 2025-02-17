@@ -549,7 +549,19 @@ $(document).on('change', 'input[name="attendance"]', function() {
             }
         });
     });
-
+    
+// Automatically check attended checkbox when marks > 0
+$(document).on('input', '.marks-input', function() {
+    const value = parseFloat($(this).val()) || 0;
+    const checkbox = $(this).closest('tr').find('input[name^="attended"]');
+    checkbox.prop('checked', value > 0);
+    
+    // Force 0 if invalid or negative value
+    if (value <= 0) {
+        $(this).val(0);
+        checkbox.prop('checked', false);
+    }
+});
     // Download template functionality
     document.getElementById('downloadTemplate').addEventListener('click', function() {
         // Create CSV headers
