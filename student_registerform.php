@@ -56,8 +56,8 @@
         }
 
         .profile-preview {
-            width: 180px;
-            height: 180px;
+            width: 100px;
+            height: 15+0px;
             border: 4px solid var(--secondary-color);
             border-radius: 50%;
             overflow: hidden;
@@ -120,7 +120,12 @@
             border-radius: 30px;
             padding: 0.75rem 2rem;
         }
-
+        .btn-primary{
+            background:rgb(58, 113, 243);
+            color: white;
+            border-radius: 30px;
+            padding: 0.75rem 2rem;
+        }
         .progress-bar {
             height: 8px;
             background: #ecf0f1;
