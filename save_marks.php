@@ -49,13 +49,14 @@ try {
     $mysqli->begin_transaction();
 
     // Get student details and convert to uppercase
-    $stmt = $mysqli->prepare("SELECT student_name, section FROM stud WHERE register_no = ?");
+    $stmt = $mysqli->prepare("SELECT student_id, student_name, section FROM stud WHERE register_no = ?");
     $stmt->bind_param("s", $register_no);
     $stmt->execute();
     $student = $stmt->get_result()->fetch_assoc();
     $stmt->close();
 
     if (!$student) throw new Exception("Student not found!");
+    $student_id = $student['student_id'];
     $student_name = strtoupper($student['student_name']);
     $section = strtoupper($student['section']);
 
@@ -114,14 +115,19 @@ try {
     $insert_mark = $mysqli->prepare("
         INSERT INTO student_marks (
             test_id, register_no, student_name, section, question_number, marks, attended, 
-            course_outcome, test_type, testmark, subject_code, subject_name, attendance, total_marks
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            course_outcome, test_type, testmark, subject_code, subject_name, attendance, total_marks,
+            year, department, semester, student_id
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ON DUPLICATE KEY UPDATE
             marks = VALUES(marks),
             attended = VALUES(attended),
             attendance = VALUES(attendance),
             section = VALUES(section),
-            total_marks = VALUES(total_marks)
+            total_marks = VALUES(total_marks),
+            year = VALUES(year),
+            department = VALUES(department),
+            semester = VALUES(semester),
+            student_id = VALUES(student_id)
     ");
 
     // Calculate total marks and insert/update
@@ -140,21 +146,25 @@ try {
         $attendance_upper = strtoupper($attendance);
 
         $insert_mark->bind_param(
-            "isssiiissssssi",
+            "isssiiissssssiissi", // Adjust the types based on your schema
             $test_id,
-            $register_no, // Already uppercase
-            $student_name, // Already uppercase
-            $section,      // Already uppercase
+            $register_no,
+            $student_name,
+            $section,
             $questionNo,
             $mark,
             $is_attended,
             $course_outcome,
-            $test_type_db, // Already uppercase
+            $test_type_db,
             $testmark,
-            $subject_code_db, // Already uppercase
-            $subject_name_db, // Already uppercase
+            $subject_code_db,
+            $subject_name_db,
             $attendance_upper,
-            $total_marks
+            $total_marks,
+            $_POST['year'], // Add year
+            $_POST['department'], // Add department
+            $_POST['semester'], // Add semester
+            $student_id // Add student_id
         );
         if (!$insert_mark->execute()) {
             throw new Exception("Error saving marks for question $questionNo: " . $insert_mark->error);

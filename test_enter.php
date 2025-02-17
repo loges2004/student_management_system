@@ -456,7 +456,6 @@ if (isset($_SESSION['failed'])) {
         } else {
             console.warn("Warning:", response.message || "No data found. Please enter the marks and save.");
             showAlert("warning", response.message || "No data found. Please enter the marks and save.");
-            populateMarks(0, 0); // Fill input boxes with 0
         }
     },
     error: function(xhr, status, error) {
