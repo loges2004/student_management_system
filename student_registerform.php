@@ -314,8 +314,18 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="blood_group" class="form-label">Blood Group</label>
-                            <input type="text" class="form-control" id="blood_group" name="blood_group" required>
-                            <div class="invalid-feedback">Please enter blood group.</div>
+                            <select class="form-control" id="blood_group" name="blood_group" required>
+                                <option value="">-- Select Blood Group --</option>
+                                <option value="A+">A+</option>
+                                <option value="A-">A-</option>
+                                <option value="B+">B+</option>
+                                <option value="B-">B-</option>
+                                <option value="O+">O+</option>
+                                <option value="O-">O-</option>
+                                <option value="AB+">AB+</option>
+                                <option value="AB-">AB-</option>
+                            </select>
+                            <div class="invalid-feedback">Please select blood group.</div>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="address" class="form-label">Address</label>
@@ -362,29 +372,46 @@
                 <div class="form-section">
                     <h4>Contact and Academic Details</h4>
                     <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="email" class="form-label">Email</label>
-                            <input type="email" class="form-control" id="email" name="email" required>
-                            <div class="invalid-feedback">Please enter email.</div>
+                        <div class="col-md-5 mb-3">
+                            <label for="personal_email" class="form-label">Personal Email</label>
+                            <input type="email" class="form-control" id="personal_email" name="personal_email" required>
+                            <div class="invalid-feedback">Please enter personal email.</div>
                         </div>
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-5 mb-3">
+                            <label for="college_email" class="form-label">College Email</label>
+                            <input type="email" class="form-control" id="college_email" name="college_email"
+                                pattern="^[a-zA-Z0-9._%+-]+@psnacet\.edu\.in$"
+                                title="Enter a valid college email (e.g., example@psnacet.edu.in)" required>
+                            <div class="invalid-feedback">Please enter a valid college email.</div>
+                        </div>
+
+                        <div class="col-md-2 mb-3">
                             <label for="phone_no" class="form-label">Phone Number</label>
                             <input type="text" class="form-control" id="phone_no" name="phone_no" required>
                             <div class="invalid-feedback">Please enter phone number.</div>
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-4 mb-3">
                             <label for="admission_type" class="form-label">Admission Type</label>
                             <select class="form-control" id="admission_type" name="admission_type" required>
                                 <option value="">-- Select Admission Type --</option>
                                 <option value="government_quota">Government Quota</option>
                                 <option value="management_quota">Management Quota</option>
-                                <option value="7.4_reservation_quota">7.4% Reservation Quota</option>
+                                <option value="7.5_reservation_quota">7.5 Reservation Quota</option>
                             </select>
                             <div class="invalid-feedback">Please select admission type.</div>
                         </div>
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-4 mb-3">
+                            <label for="lateral_entry" class="form-label">Lateral Entry</label>
+                            <select class="form-control" id="lateral_entry" name="lateral_entry" required>
+                                <option value="">-- Select --</option>
+                                <option value="yes">Yes</option>
+                                <option value="no">No</option>
+                            </select>
+                            <div class="invalid-feedback">Please select lateral entry status.</div>
+                        </div>
+                        <div class="col-md-4 mb-3">
                             <label for="first_graduate" class="form-label">First Graduate</label>
                             <select class="form-control" id="first_graduate" name="first_graduate" required>
                                 <option value="">-- Select --</option>
@@ -393,6 +420,8 @@
                             </select>
                             <div class="invalid-feedback">Please select first graduate status.</div>
                         </div>
+
+
                     </div>
                     <div class="row">
                         <div class="col-md-6 mb-3">
@@ -419,9 +448,27 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="department" class="form-label">Department</label>
-                            <input type="text" class="form-control" id="department" name="department" required>
-                            <div class="invalid-feedback">Please enter department.</div>
+                            <select class="form-control" id="department" name="department" required>
+                                <option value="">-- Select Department --</option>
+                                <option value="civil">Civil Engineering</option>
+                                <option value="mechanical">Mechanical Engineering</option>
+                                <option value="ece">Electronics and Communication Engineering</option>
+                                <option value="eee">Electrical and Electronics Engineering</option>
+                                <option value="cse">Computer Science and Engineering</option>
+                                <option value="it">Information Technology</option>
+                                <option value="bme">Biomedical Engineering</option>
+                                <option value="csbs">Computer Science and Business Systems</option>
+                                <option value="ai_ds">Artificial Intelligence and Data Science</option>
+                                <option value="cse_cyber">CSE (Cyber Security)</option>
+                                <option value="cse_ai_ml">CSE (Artificial Intelligence and Machine Learning)</option>
+                                <option value="vlsi">Electronics Engineering (VLSI Design and Technology)</option>
+                                <option value="mba">Business Administration (MBA)</option>
+                                <option value="mca">Computer Applications (MCA)</option>
+                                <option value="sci_hum">Science and Humanities</option>
+                            </select>
+                            <div class="invalid-feedback">Please select department.</div>
                         </div>
+
                         <div class="col-md-6 mb-3">
                             <label for="section" class="form-label">Section</label>
                             <input type="text" class="form-control" id="section" name="section" required>
@@ -440,75 +487,125 @@
                 </div>
 
                 <!-- Section 3: Family and Academic Details -->
-                <div class="form-section">
-                    <h4>Family and Academic Details</h4>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="father_name" class="form-label">Father's Name</label>
-                            <input type="text" class="form-control" id="father_name" name="father_name" required>
-                            <div class="invalid-feedback">Please enter father's name.</div>
+<div class="form-section">
+    <h4>Family and Academic Details</h4>
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label for="father_name" class="form-label">Father's Name</label>
+            <input type="text" class="form-control" id="father_name" name="father_name" required>
+            <div class="invalid-feedback">Please enter father's name.</div>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label for="father_occupation" class="form-label">Father's Occupation</label>
+            <input type="text" class="form-control" id="father_occupation" name="father_occupation" required>
+            <div class="invalid-feedback">Please enter father's occupation.</div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-5 mb-3">
+            <label for="mother_name" class="form-label">Mother's Name</label>
+            <input type="text" class="form-control" id="mother_name" name="mother_name" required>
+            <div class="invalid-feedback">Please enter mother's name.</div>
+        </div>
+        <div class="col-md-5 mb-3">
+            <label for="mother_occupation" class="form-label">Mother's Occupation</label>
+            <input type="text" class="form-control" id="mother_occupation" name="mother_occupation" required>
+            <div class="invalid-feedback">Please enter mother's occupation.</div>
+        </div>
+        <div class="col-md-2 mb-3">
+            <label for="parent_number" class="form-label">Parent's Contact Number</label>
+            <input type="text" class="form-control" id="parent_number" name="parent_number" required>
+            <div class="invalid-feedback">Please enter parent's contact number.</div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <label for="tenth_school_name" class="form-label">10th School Name</label>
+            <input type="text" class="form-control" id="tenth_school_name" name="tenth_school_name" required>
+            <div class="invalid-feedback">Please enter 10th school name.</div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <label for="10th_medium" class="form-label">10th Grade Medium of Instruction</label>
+            <select class="form-control" id="10th_medium" name="10th_medium" required>
+                <option value="">-- Select Medium for 10th --</option>
+                <option value="english">English Medium</option>
+                <option value="tamil">Tamil Medium</option>
+            </select>
+            <div class="invalid-feedback">Please select medium for 10th grade.</div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <label for="tenth_passed_year" class="form-label">10th Passed Year</label>
+            <input type="number" class="form-control" id="tenth_passed_year" name="tenth_passed_year" required>
+            <div class="invalid-feedback">Please enter 10th passed year.</div>
+        </div>
+        <div class="col-md-2 mb-3">
+            <label for="tenth_percentage" class="form-label">10th Percentage</label>
+            <input type="number" class="form-control" id="tenth_percentage" name="tenth_percentage" required>
+            <div class="invalid-feedback">Please enter 10th percentage.</div>
+        </div>
+    </div>
+
+   <!-- Education Type Selection -->
+<div class="row">
+    <div class="col-md-12 mb-3">
+        <label for="education_type" class="form-label">12th Study or Diploma</label>
+        <select class="form-control" id="education_type" name="education_type" required>
+            <option value="">-- Select --</option>
+            <option value="12th">12th Study</option>
+            <option value="diploma">Diploma</option>
+        </select>
+        <div class="invalid-feedback">Please select education type.</div>
+    </div>
+</div>
+
+<!-- 12th Details (Conditional) -->
+<div class="row" id="12th_details" style="display: none;">
+    <div class="col-md-4 mb-3">
+        <label for="twelfth_school_name" class="form-label">12th School Name</label>
+        <input type="text" class="form-control" id="twelfth_school_name" name="twelfth_school_name">
+    </div>
+    <div class="col-md-3 mb-3">
+        <label for="12th_medium" class="form-label">12th Grade Medium of Instruction</label>
+        <select class="form-control" id="12th_medium" name="12th_medium" required>
+            <option value="">-- Select Medium for 12th --</option>
+            <option value="english">English Medium</option>
+            <option value="tamil">Tamil Medium</option>
+        </select>
+        <div class="invalid-feedback">Please select medium for 12th grade.</div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <label for="twelfth_passed_year" class="form-label">12th Passed Year</label>
+        <input type="number" class="form-control" id="twelfth_passed_year" name="twelfth_passed_year">
+    </div>
+    <div class="col-md-2 mb-3">
+        <label for="twelfth_cutoff" class="form-label">12th Cutoff Mark</label>
+        <input type="number" step="0.01" class="form-control" id="twelfth_cutoff" name="twelfth_cutoff">
+    </div>
+</div>
+
+<!-- Diploma Details (Conditional) -->
+<div class="row" id="diploma_details" style="display: none;">
+    <div class="col-md-6 mb-3">
+        <label for="diploma_school_name" class="form-label">Diploma School Name</label>
+        <input type="text" class="form-control" id="diploma_school_name" name="diploma_school_name">
+    </div>
+    <div class="col-md-6 mb-3">
+        <label for="diploma_passed_year" class="form-label">Diploma Passed Year</label>
+        <input type="number" class="form-control" id="diploma_passed_year" name="diploma_passed_year">
+    </div>
+</div>
+    <div class="row">
+    <div class="col-md-4 mb-3">
+                            <label for="emis_no" class="form-label">EMIS Number</label>
+                            <input type="text" class="form-control" id="emis_no" name="emis_no" required>
+                            <div class="invalid-feedback">Please enter EMIS number.</div>
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="father_occupation" class="form-label">Father's Occupation</label>
-                            <input type="text" class="form-control" id="father_occupation" name="father_occupation" required>
-                            <div class="invalid-feedback">Please enter father's occupation.</div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="mother_name" class="form-label">Mother's Name</label>
-                            <input type="text" class="form-control" id="mother_name" name="mother_name" required>
-                            <div class="invalid-feedback">Please enter mother's name.</div>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="mother_occupation" class="form-label">Mother's Occupation</label>
-                            <input type="text" class="form-control" id="mother_occupation" name="mother_occupation" required>
-                            <div class="invalid-feedback">Please enter mother's occupation.</div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="parent_number" class="form-label">Parent's Contact Number</label>
-                            <input type="text" class="form-control" id="parent_number" name="parent_number" required>
-                            <div class="invalid-feedback">Please enter parent's contact number.</div>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="passed_school_name" class="form-label">Passed School Name</label>
-                            <input type="text" class="form-control" id="passed_school_name" name="passed_school_name" required>
-                            <div class="invalid-feedback">Please enter passed school name.</div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="tenth_passed_year" class="form-label">10th Passed Year</label>
-                            <input type="number" class="form-control" id="tenth_passed_year" name="tenth_passed_year" required>
-                            <div class="invalid-feedback">Please enter 10th passed year.</div>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="tenth_percentage" class="form-label">10th Percentage</label>
-                            <input type="number" class="form-control" id="tenth_percentage" name="tenth_percentage" required>
-                            <div class="invalid-feedback">Please enter 10th percentage.</div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="twelfth_passed_year" class="form-label">12th Passed Year</label>
-                            <input type="number" class="form-control" id="twelfth_passed_year" name="twelfth_passed_year" required>
-                            <div class="invalid-feedback">Please enter 12th passed year.</div>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="twelfth_percentage" class="form-label">12th Percentage</label>
-                            <input type="number" class="form-control" id="twelfth_percentage" name="twelfth_percentage" required>
-                            <div class="invalid-feedback">Please enter 12th percentage.</div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-4 mb-3">
                             <label for="aadhaar_no" class="form-label">Aadhaar Number</label>
                             <input type="text" class="form-control" id="aadhaar_no" name="aadhaar_no" required>
                             <div class="invalid-feedback">Please enter Aadhaar number.</div>
                         </div>
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-4 mb-3">
                             <label for="pan_no" class="form-label">PAN Number</label>
                             <input type="text" class="form-control" id="pan_no" name="pan_no" required>
                             <div class="invalid-feedback">Please enter PAN number.</div>
@@ -538,22 +635,15 @@
                             <div class="invalid-feedback">Please enter mother tongue.</div>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="emis_no" class="form-label">EMIS Number</label>
-                            <input type="text" class="form-control" id="emis_no" name="emis_no" required>
-                            <div class="invalid-feedback">Please enter EMIS number.</div>
-                        </div>
-                    </div>
-                    <div class="d-flex justify-content-start">
-                        <button type="button" class="btn btn-secondary prev-section">Previous</button>
+                   
+    <div class="d-flex justify-content-start">
+        <button type="button" class="btn btn-secondary prev-section">Previous</button>
+    </div>
+    <div class="d-flex justify-content-end">
+        <button type="button" class="btn btn-primary next-section">Next</button>
+    </div>
+</div>
 
-                    </div>
-                    <div class="d-flex justify-content-end">
-
-                        <button type="button" class="btn btn-primary next-section">Next</button>
-                    </div>
-                </div>
 
                 <!-- Section 4: Login Credentials -->
                 <div class="form-section">
@@ -573,25 +663,24 @@
                         </div>
 
                         <!-- Password Field -->
-                        <!-- Password Field -->
-<div class="col-md-12 mb-3">
-    <div class="input-group">
-        <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
-        <div class="form-floating flex-grow-1">
-            <input type="password" id="password" name="password" class="form-control" 
-                   pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" 
-                   title="Password must contain at least one number, one uppercase letter, one lowercase letter, and be at least 8 characters long." 
-                   placeholder="Enter your password" required>
-            <label for="password">Password</label>
-        </div>
-        <button class="btn btn-outline-secondary" type="button" id="showPassword" onclick="togglePasswordVisibility()">
-            <i class="bi bi-eye-slash-fill"></i>
-        </button>
-    </div>
-    <div class="invalid-feedback">
-        Password must contain at least one number, one uppercase letter, one lowercase letter, and be at least 8 characters long.
-    </div>
-</div>
+                        <div class="col-md-12 mb-3">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+                                <div class="form-floating flex-grow-1">
+                                    <input type="password" id="password" name="password" class="form-control"
+                                        pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+                                        title="Password must contain at least one number, one uppercase letter, one lowercase letter, and be at least 8 characters long."
+                                        placeholder="Enter your password" required>
+                                    <label for="password">Password</label>
+                                </div>
+                                <button class="btn btn-outline-secondary" type="button" id="showPassword" onclick="togglePasswordVisibility()">
+    <i class="bi bi-eye-slash-fill"></i>
+</button>
+                            </div>
+                            <div class="invalid-feedback">
+                                Password must contain at least one number, one uppercase letter, one lowercase letter, and be at least 8 characters long.
+                            </div>
+                        </div>
 
                         <!-- Confirm Password Field -->
                         <div class="col-md-12 mb-3">
@@ -624,196 +713,223 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        // Toggle password visibility
-        function togglePasswordVisibility() {
-            const password = document.getElementById('password');
-            const showPasswordBtn = document.getElementById('showPassword');
 
-            if (password && showPasswordBtn) {
-                if (password.type === 'password') {
-                    password.type = 'text';
-                    showPasswordBtn.innerHTML = '<i class="bi bi-eye-fill"></i>'; // Switch to eye-open icon
-                } else {
-                    password.type = 'password';
-                    showPasswordBtn.innerHTML = '<i class="bi bi-eye-slash-fill"></i>'; // Switch to eye-closed icon
-                }
+function togglePasswordVisibility() {
+            const password = document.getElementById('password'); // Define password inside the function
+            const showPasswordBtn = document.getElementById('showPassword');
+            if (password.type === 'password') {
+                password.type = 'text';
+                showPasswordBtn.innerHTML = '<i class="bi bi-eye-fill"></i>'; // Switch to eye-open icon
+            } else {
+                password.type = 'password';
+                showPasswordBtn.innerHTML = '<i class="bi bi-eye-slash-fill"></i>'; // Switch to eye-closed icon
             }
         }
-        // Password validation
-       
-        // Input validation for username
-        const usernameInput = document.getElementById('username');
-        if (usernameInput) {
-            usernameInput.addEventListener('input', function(event) {
-                if (this.checkValidity()) {
-                    this.classList.remove('is-invalid');
-                    this.classList.add('is-valid');
-                } else {
-                    this.classList.remove('is-valid');
-                    this.classList.add('is-invalid');
-                }
-            });
-        }
-
-        // Input validation for password
-        const password = document.getElementById('password');
-        if (password) {
-            password.addEventListener('input', function(event) {
-                if (this.checkValidity()) {
-                    this.classList.remove('is-invalid');
-                    this.classList.add('is-valid');
-                } else {
-                    this.classList.remove('is-valid');
-                    this.classList.add('is-invalid');
-                }
-            });
-        }
-
     document.addEventListener('DOMContentLoaded', function() {
-    const form = document.getElementById('registrationForm');
-
-    // Function to validate a single input field
-    function validateInput(input) {
-        if (input.checkValidity()) {
-            input.classList.remove('is-invalid');
-            input.classList.add('is-valid'); // Add valid class
-        } else {
-            input.classList.remove('is-valid');
-            input.classList.add('is-invalid'); // Add invalid class
-        }
-    }
-
-    const password = document.getElementById('password');
+        const form = document.getElementById('registrationForm');
+        const password = document.getElementById('password');
         const confirm_password = document.getElementById('confirm_password');
+        const usernameInput = document.getElementById('username'); // Ensure usernameInput is defined
 
-        password.addEventListener('invalid', function(event) {
-        if (password.validity.patternMismatch) {
-            password.setCustomValidity(
-                'Password must contain at least one number, one uppercase letter, one lowercase letter, and be at least 8 characters long.'
-            );
-        } else {
-            password.setCustomValidity('');
-        }
-    });
+       
 
-    password.addEventListener('input', function(event) {
-        password.setCustomValidity('');
-    });
-
-        
-        if (password && confirm_password) {
+        // Validate password and confirm password match
+        if (confirm_password) {
             confirm_password.addEventListener('input', function() {
                 if (password.value !== confirm_password.value) {
+                    confirm_password.setCustomValidity("Passwords do not match.");
+                    confirm_password.classList.add('is-invalid');
+                } else {
+                    confirm_password.setCustomValidity("");
+                    confirm_password.classList.remove('is-invalid');
+                }
+            });
+        }
+
+        // Validate input fields
+        function validateInput(input) {
+            if (input.checkValidity()) {
+                input.classList.remove('is-invalid');
+                input.classList.add('is-valid'); // Add valid class
+            } else {
+                input.classList.remove('is-valid');
+                input.classList.add('is-invalid'); // Add invalid class
+            }
+        }
+
+        // Event listener for username validation
+        if (usernameInput) {
+            usernameInput.addEventListener('input', function() {
+                validateInput(usernameInput);
+            });
+        }
+
+        // Event listener for password validation
+        if (password) {
+            password.addEventListener('input', function() {
+                validateInput(password);
+            });
+        }
+
+        // Prevent form submission if invalid
+        if (form) {
+            form.addEventListener('submit', function(event) {
+                event.preventDefault();
+
+                const isUsernameValid = usernameInput ? usernameInput.checkValidity() : true;
+                const isPasswordValid = password ? password.checkValidity() : true;
+                const isConfirmPasswordValid = confirm_password ? confirm_password.checkValidity() : true;
+
+                if (isUsernameValid && isPasswordValid && isConfirmPasswordValid) {
+                    // Submit the form if everything is valid
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Form Submitted Successfully!',
+                        showConfirmButton: true,
+                    }).then(() => {
+                        form.submit(); // Only submit if validation passes
+                    });
+                } else {
                     Swal.fire({
                         icon: 'error',
-                        title: 'Password and Confirm Password do not match.',
-                        position: 'top',
+                        title: 'Please fill in all the required fields correctly.',
                         showConfirmButton: true,
                     });
                 }
             });
         }
 
-    // Validate all inputs in the current section
-    function validateSection(section) {
-        const inputs = section.querySelectorAll('input, select, textarea');
-        let isSectionValid = true;
+        // Validate all inputs in the current section
+        function validateSection(section) {
+            const inputs = section.querySelectorAll('input, select, textarea');
+            let isSectionValid = true;
 
-        inputs.forEach(input => {
-            validateInput(input); // Validate each input
-            if (!input.checkValidity()) {
-                isSectionValid = false;
-            }
-        });
-
-        return isSectionValid;
-    }
-
-    // Prevent form submission on Enter key press
-    form.addEventListener('keydown', function(event) {
-        if (event.key === 'Enter') {
-            event.preventDefault(); // Prevent default form submission
-
-            const currentSection = document.querySelector('.form-section.active');
-            const isSectionValid = validateSection(currentSection);
-
-            if (!isSectionValid) {
-                const firstInvalidInput = currentSection.querySelector('.is-invalid');
-                if (firstInvalidInput) {
-                    firstInvalidInput.focus(); // Focus on the first invalid input
+            inputs.forEach(input => {
+                validateInput(input);
+                if (!input.checkValidity()) {
+                    isSectionValid = false;
                 }
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Missing Information',
-                    text: 'Please fill out all required fields.',
-                    confirmButtonText: 'OK'
+            });
+
+            return isSectionValid;
+        }
+
+        // Prevent form submission on Enter key press
+        if (form) {
+            form.addEventListener('keydown', function(event) {
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+                    const currentSection = document.querySelector('.form-section.active');
+                    const isSectionValid = validateSection(currentSection);
+
+                    if (!isSectionValid) {
+                        const firstInvalidInput = currentSection.querySelector('.is-invalid');
+                        if (firstInvalidInput) {
+                            firstInvalidInput.focus();
+                        }
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Missing Information',
+                            text: 'Please fill out all required fields.',
+                            confirmButtonText: 'OK'
+                        });
+                    } else {
+                        const nextButton = currentSection.querySelector('.next-section');
+                        if (nextButton) {
+                            nextButton.click();
+                        } else {
+                            form.submit();
+                        }
+                    }
+                }
+            });
+        }
+
+        // Add input event listeners to validate fields as the user types
+        if (form) {
+            form.querySelectorAll('input, select, textarea').forEach(input => {
+                input.addEventListener('input', function() {
+                    validateInput(input);
                 });
-            } else {
-                const nextButton = currentSection.querySelector('.next-section');
-                if (nextButton) {
-                    nextButton.click(); // Simulate click on the next button
+            });
+        }
+
+        // Section navigation
+        const formSections = document.querySelectorAll('.form-section');
+        let currentSectionIndex = 0;
+
+        document.querySelectorAll('.next-section').forEach(button => {
+            button.addEventListener('click', () => {
+                const currentSection = formSections[currentSectionIndex];
+                const isSectionValid = validateSection(currentSection);
+
+                if (isSectionValid && currentSectionIndex < formSections.length - 1) {
+                    currentSection.classList.remove('active');
+                    currentSectionIndex++;
+                    formSections[currentSectionIndex].classList.add('active');
                 } else {
-                    form.submit(); // Submit the form if it's the last section
+                    currentSection.classList.add('was-validated');
                 }
-            }
+            });
+        });
+
+        document.querySelectorAll('.prev-section').forEach(button => {
+            button.addEventListener('click', () => {
+                if (currentSectionIndex > 0) {
+                    formSections[currentSectionIndex].classList.remove('active');
+                    currentSectionIndex--;
+                    formSections[currentSectionIndex].classList.add('active');
+                }
+            });
+        });
+// Conditional Fields Handling
+const educationType = document.getElementById('education_type');
+const twelfthDetails = document.getElementById('12th_details');
+const diplomaDetails = document.getElementById('diploma_details');
+const transferSelect = document.getElementById('transferred_student');
+const transferReasonDiv = document.getElementById('transfer_reason_div');
+
+// Handle the display of 12th and Diploma details based on the selection
+if (educationType && twelfthDetails && diplomaDetails) {
+    educationType.addEventListener('change', function() {
+        if (this.value === '12th') {
+            twelfthDetails.style.display = 'flex';
+            diplomaDetails.style.display = 'none';
+        } else if (this.value === 'diploma') {
+            twelfthDetails.style.display = 'none';
+            diplomaDetails.style.display = 'flex';
+        } else {
+            twelfthDetails.style.display = 'none';
+            diplomaDetails.style.display = 'none';
         }
     });
+}
 
-    // Add input event listeners to validate fields as the user types
-    form.querySelectorAll('input, select, textarea').forEach(input => {
-        input.addEventListener('input', function() {
-            validateInput(input); // Validate the input on every keystroke
-        });
+// Handle the display of transfer reason based on selection
+if (transferSelect && transferReasonDiv) {
+    transferSelect.addEventListener('change', function() {
+        transferReasonDiv.style.display = this.value === 'yes' ? 'block' : 'none';
     });
-
-    // Existing code for next and previous section buttons
-    const formSections = document.querySelectorAll('.form-section');
-    let currentSectionIndex = 0;
-
-    document.querySelectorAll('.next-section').forEach(button => {
-        button.addEventListener('click', () => {
-            const currentSection = formSections[currentSectionIndex];
-            const isSectionValid = validateSection(currentSection);
-
-            if (isSectionValid && currentSectionIndex < formSections.length - 1) {
-                currentSection.classList.remove('active');
-                currentSectionIndex++;
-                formSections[currentSectionIndex].classList.add('active');
-            } else {
-                currentSection.classList.add('was-validated');
+}
+        // Profile image preview
+        function previewImage(event) {
+            const reader = new FileReader();
+            const preview = document.getElementById('profilePreview');
+            if (preview) {
+                reader.onload = function() {
+                    preview.src = reader.result;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(event.target.files[0]);
             }
-        });
-    });
-
-    document.querySelectorAll('.prev-section').forEach(button => {
-        button.addEventListener('click', () => {
-            if (currentSectionIndex > 0) {
-                formSections[currentSectionIndex].classList.remove('active');
-                currentSectionIndex--;
-                formSections[currentSectionIndex].classList.add('active');
-            }
-        });
-    });
-
-    // Existing code for profile image preview
-    function previewImage(event) {
-        const reader = new FileReader();
-        const preview = document.getElementById('profilePreview');
-        if (preview) {
-            reader.onload = function() {
-                preview.src = reader.result;
-                preview.style.display = 'block';
-            };
-            reader.readAsDataURL(event.target.files[0]);
         }
-    }
 
-    const profileImageInput = document.getElementById('profileImage');
-    if (profileImageInput) {
-        profileImageInput.addEventListener('change', previewImage);
-    }
-});
-    </script>
+        const profileImageInput = document.getElementById('profileImage');
+        if (profileImageInput) {
+            profileImageInput.addEventListener('change', previewImage);
+        }
+    });
+</script>
     <?php
     error_reporting(E_ALL); // Report all PHP errors
     ini_set('display_errors', 1); // Display errors to the browser
@@ -910,9 +1026,9 @@
         $zip_code = toUpper($_POST['zip_code']);
         $country = toUpper($_POST['country']);
 
-      // Validate Aadhaar, Phone, and EMIS
-if (!validateAadhaar($aadhaar_no)) {
-    echo "<script>
+        // Validate Aadhaar, Phone, and EMIS
+        if (!validateAadhaar($aadhaar_no)) {
+            echo "<script>
             Swal.fire({
                 icon: 'error',
                 title: 'Invalid Aadhaar',
@@ -922,11 +1038,11 @@ if (!validateAadhaar($aadhaar_no)) {
                 // You can add any redirect or further actions here if needed
             });
           </script>";
-    exit();
-}
+            exit();
+        }
 
-if (!validatePhone($phone_no)) {
-    echo "<script>
+        if (!validatePhone($phone_no)) {
+            echo "<script>
             Swal.fire({
                 icon: 'error',
                 title: 'Invalid Phone Number',
@@ -936,11 +1052,11 @@ if (!validatePhone($phone_no)) {
                 // You can add any redirect or further actions here if needed
             });
           </script>";
-    exit();
-}
+            exit();
+        }
 
-if (!validateEMIS($emis_no)) {
-    echo "<script>
+        if (!validateEMIS($emis_no)) {
+            echo "<script>
             Swal.fire({
                 icon: 'error',
                 title: 'Invalid EMIS Number',
@@ -950,8 +1066,8 @@ if (!validateEMIS($emis_no)) {
                 // You can add any redirect or further actions here if needed
             });
           </script>";
-    exit();
-}
+            exit();
+        }
 
 
         // Handle image upload
