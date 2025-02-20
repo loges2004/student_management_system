@@ -833,19 +833,34 @@
             }
 
             // Validate all inputs in the current section
-            function validateSection(section) {
-                const inputs = section.querySelectorAll('input, select, textarea');
-                let isSectionValid = true;
+           // Modify the validateSection function
+function validateSection(section) {
+    const inputs = section.querySelectorAll('input, select, textarea');
+    let isSectionValid = true;
 
-                inputs.forEach(input => {
-                    validateInput(input);
-                    if (!input.checkValidity()) {
-                        isSectionValid = false;
-                    }
-                });
+    // Handle conditional education fields
+    const eduType = document.getElementById('education_type');
+    if(eduType && eduType.value) {
+        const visibleFields = eduType.value === '12th_study' ? 
+            twelfthDetails.querySelectorAll('[required]') : 
+            diplomaDetails.querySelectorAll('[required]');
+            
+        visibleFields.forEach(input => {
+            validateInput(input);
+            if(!input.checkValidity()) isSectionValid = false;
+        });
+    }
 
-                return isSectionValid;
-            }
+    // Validate other visible fields
+    inputs.forEach(input => {
+        if(window.getComputedStyle(input.closest('.row')).display !== 'none') {
+            validateInput(input);
+            if(!input.checkValidity()) isSectionValid = false;
+        }
+    });
+
+    return isSectionValid;
+}
 
             // Prevent form submission on Enter key press
             if (form) {
@@ -923,20 +938,35 @@
             const transferReasonField = document.getElementById('transfer_reason_field');
 
             // Handle the display of 12th and Diploma details based on the selection
-            if (educationType && twelfthDetails && diplomaDetails) {
-                educationType.addEventListener('change', function() {
-                    if (this.value === '12th_study') {
-                        twelfthDetails.style.display = 'flex'; 
-                        diplomaDetails.style.display = 'none';
-                    } else if (this.value === 'diploma_study') {
-                        twelfthDetails.style.display = 'none';
-                        diplomaDetails.style.display = 'flex';
-                    } else {
-                        twelfthDetails.style.display = 'none';
-                        diplomaDetails.style.display = 'none';
-                    }
-                });
-            }
+           // Update the education type event handler
+if (educationType && twelfthDetails && diplomaDetails) {
+    educationType.addEventListener('change', function() {
+        // Toggle required attributes
+        const is12th = this.value === '12th_study';
+        
+        twelfthDetails.querySelectorAll('input, select').forEach(field => {
+            field.required = is12th;
+            field.disabled = !is12th;
+        });
+
+        diplomaDetails.querySelectorAll('input, select').forEach(field => {
+            field.required = !is12th;
+            field.disabled = is12th;
+        });
+
+        // Update visibility
+        twelfthDetails.style.display = is12th ? 'flex' : 'none';
+        diplomaDetails.style.display = is12th ? 'none' : 'flex';
+    });
+}
+
+// Set initial required states
+const eduType = document.getElementById('education_type');
+if(eduType) {
+    const is12th = eduType.value === '12th_study';
+    twelfthDetails.querySelectorAll('input, select').forEach(field => field.required = is12th);
+    diplomaDetails.querySelectorAll('input, select').forEach(field => field.required = !is12th);
+}
 
             // Handle the display of transfer reason based on selection
             if (transferSelect && transferReasonField) {
