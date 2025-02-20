@@ -258,7 +258,7 @@
             <div class="header-container">
                 <h2 class="header-title">Student Registration Form</h2>
                 <div class="profile-preview">
-                    <img id="profilePreview" src="#" alt="Profile Preview">
+                    <img id="profilePreview" src="./images/avatar-profile-icon-flat-style-male-user-profile-vector-illustration-isolated-background-man-profile-sign-business-concept_157943-38764.avif" alt="Profile Preview">
 
                 </div>
             </div>
@@ -487,115 +487,149 @@
                 </div>
 
                 <!-- Section 3: Family and Academic Details -->
-<div class="form-section">
-    <h4>Family and Academic Details</h4>
-    <div class="row">
-        <div class="col-md-6 mb-3">
-            <label for="father_name" class="form-label">Father's Name</label>
-            <input type="text" class="form-control" id="father_name" name="father_name" required>
-            <div class="invalid-feedback">Please enter father's name.</div>
-        </div>
-        <div class="col-md-6 mb-3">
-            <label for="father_occupation" class="form-label">Father's Occupation</label>
-            <input type="text" class="form-control" id="father_occupation" name="father_occupation" required>
-            <div class="invalid-feedback">Please enter father's occupation.</div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-5 mb-3">
-            <label for="mother_name" class="form-label">Mother's Name</label>
-            <input type="text" class="form-control" id="mother_name" name="mother_name" required>
-            <div class="invalid-feedback">Please enter mother's name.</div>
-        </div>
-        <div class="col-md-5 mb-3">
-            <label for="mother_occupation" class="form-label">Mother's Occupation</label>
-            <input type="text" class="form-control" id="mother_occupation" name="mother_occupation" required>
-            <div class="invalid-feedback">Please enter mother's occupation.</div>
-        </div>
-        <div class="col-md-2 mb-3">
-            <label for="parent_number" class="form-label">Parent's Contact Number</label>
-            <input type="text" class="form-control" id="parent_number" name="parent_number" required>
-            <div class="invalid-feedback">Please enter parent's contact number.</div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-4 mb-3">
-            <label for="tenth_school_name" class="form-label">10th School Name</label>
-            <input type="text" class="form-control" id="tenth_school_name" name="tenth_school_name" required>
-            <div class="invalid-feedback">Please enter 10th school name.</div>
-        </div>
-        <div class="col-md-3 mb-3">
-            <label for="10th_medium" class="form-label">10th Grade Medium of Instruction</label>
-            <select class="form-control" id="10th_medium" name="10th_medium" required>
-                <option value="">-- Select Medium for 10th --</option>
-                <option value="english">English Medium</option>
-                <option value="tamil">Tamil Medium</option>
-            </select>
-            <div class="invalid-feedback">Please select medium for 10th grade.</div>
-        </div>
-        <div class="col-md-3 mb-3">
-            <label for="tenth_passed_year" class="form-label">10th Passed Year</label>
-            <input type="number" class="form-control" id="tenth_passed_year" name="tenth_passed_year" required>
-            <div class="invalid-feedback">Please enter 10th passed year.</div>
-        </div>
-        <div class="col-md-2 mb-3">
-            <label for="tenth_percentage" class="form-label">10th Percentage</label>
-            <input type="number" class="form-control" id="tenth_percentage" name="tenth_percentage" required>
-            <div class="invalid-feedback">Please enter 10th percentage.</div>
-        </div>
-    </div>
+                <div class="form-section">
+                    <h4>Family and Academic Details</h4>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="father_name" class="form-label">Father's Name</label>
+                            <input type="text" class="form-control" id="father_name" name="father_name" required>
+                            <div class="invalid-feedback">Please enter father's name.</div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="father_occupation" class="form-label">Father's Occupation</label>
+                            <input type="text" class="form-control" id="father_occupation" name="father_occupation" required>
+                            <div class="invalid-feedback">Please enter father's occupation.</div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-5 mb-3">
+                            <label for="mother_name" class="form-label">Mother's Name</label>
+                            <input type="text" class="form-control" id="mother_name" name="mother_name" required>
+                            <div class="invalid-feedback">Please enter mother's name.</div>
+                        </div>
+                        <div class="col-md-5 mb-3">
+                            <label for="mother_occupation" class="form-label">Mother's Occupation</label>
+                            <input type="text" class="form-control" id="mother_occupation" name="mother_occupation" required>
+                            <div class="invalid-feedback">Please enter mother's occupation.</div>
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <label for="parent_number" class="form-label">Parent's Contact Number</label>
+                            <input type="text" class="form-control" id="parent_number" name="parent_number" required>
+                            <div class="invalid-feedback">Please enter parent's contact number.</div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="tenth_school_name" class="form-label">10th School Name</label>
+                            <input type="text" class="form-control" id="tenth_school_name" name="tenth_school_name" required>
+                            <div class="invalid-feedback">Please enter 10th school name.</div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="10th_medium" class="form-label">10th Grade Medium of Instruction</label>
+                            <select class="form-control" id="10th_medium" name="10th_medium" required>
+                                <option value="">-- Select Medium for 10th --</option>
+                                <option value="english">English Medium</option>
+                                <option value="tamil">Tamil Medium</option>
+                            </select>
+                            <div class="invalid-feedback">Please select medium for 10th grade.</div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="tenth_passed_year" class="form-label">10th Passed Year</label>
+                            <input type="number" class="form-control" id="tenth_passed_year" name="tenth_passed_year" required>
+                            <div class="invalid-feedback">Please enter 10th passed year.</div>
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <label for="tenth_percentage" class="form-label">10th Percentage</label>
+                            <input type="number" class="form-control" id="tenth_percentage" name="tenth_percentage" required>
+                            <div class="invalid-feedback">Please enter 10th percentage.</div>
+                        </div>
+                    </div>
+                    <!-- Education Type Selection -->
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label for="education_type" class="form-label">12th Study or Diploma</label>
+                            <select class="form-control" id="education_type" name="education_type" required>
+                                <option value="">-- Select --</option>
+                                <option value="12th_study">12th Study</option>
+                                <option value="diploma_study">Diploma</option>
+                            </select>
+                            <div class="invalid-feedback">Please select education type.</div>
+                        </div>
+                    </div>
 
-   <!-- Education Type Selection -->
-<div class="row">
-    <div class="col-md-12 mb-3">
-        <label for="education_type" class="form-label">12th Study or Diploma</label>
-        <select class="form-control" id="education_type" name="education_type" required>
-            <option value="">-- Select --</option>
-            <option value="12th">12th Study</option>
-            <option value="diploma">Diploma</option>
-        </select>
-        <div class="invalid-feedback">Please select education type.</div>
-    </div>
-</div>
+                    <!-- 12th Details (Conditional) -->
+                    <div class="row" id="12th_details" style="display: none;">
+                        <!-- 12th School Name -->
+                        <div class="col-md-3 mb-3">
+                            <label for="twelfth_school_name" class="form-label">12th School Name</label>
+                            <input type="text" class="form-control" id="twelfth_school_name" name="twelfth_school_name">
+                        </div>
 
-<!-- 12th Details (Conditional) -->
-<div class="row" id="12th_details" style="display: none;">
-    <div class="col-md-4 mb-3">
-        <label for="twelfth_school_name" class="form-label">12th School Name</label>
-        <input type="text" class="form-control" id="twelfth_school_name" name="twelfth_school_name">
-    </div>
-    <div class="col-md-3 mb-3">
-        <label for="12th_medium" class="form-label">12th Grade Medium of Instruction</label>
-        <select class="form-control" id="12th_medium" name="12th_medium" required>
-            <option value="">-- Select Medium for 12th --</option>
-            <option value="english">English Medium</option>
-            <option value="tamil">Tamil Medium</option>
-        </select>
-        <div class="invalid-feedback">Please select medium for 12th grade.</div>
-    </div>
-    <div class="col-md-3 mb-3">
-        <label for="twelfth_passed_year" class="form-label">12th Passed Year</label>
-        <input type="number" class="form-control" id="twelfth_passed_year" name="twelfth_passed_year">
-    </div>
-    <div class="col-md-2 mb-3">
-        <label for="twelfth_cutoff" class="form-label">12th Cutoff Mark</label>
-        <input type="number" step="0.01" class="form-control" id="twelfth_cutoff" name="twelfth_cutoff">
-    </div>
-</div>
+                        <!-- 12th Medium of Instruction -->
+                        <div class="col-md-3 mb-3">
+                            <label for="12th_medium" class="form-label">12th Grade Medium of Instruction</label>
+                            <select class="form-control" id="12th_medium" name="12th_medium" required>
+                                <option value="">-- Select Medium for 12th --</option>
+                                <option value="english">English Medium</option>
+                                <option value="tamil">Tamil Medium</option>
+                            </select>
+                            <div class="invalid-feedback">Please select medium for 12th grade.</div>
+                        </div>
 
-<!-- Diploma Details (Conditional) -->
-<div class="row" id="diploma_details" style="display: none;">
-    <div class="col-md-6 mb-3">
-        <label for="diploma_school_name" class="form-label">Diploma School Name</label>
-        <input type="text" class="form-control" id="diploma_school_name" name="diploma_school_name">
-    </div>
-    <div class="col-md-6 mb-3">
-        <label for="diploma_passed_year" class="form-label">Diploma Passed Year</label>
-        <input type="number" class="form-control" id="diploma_passed_year" name="diploma_passed_year">
-    </div>
-</div>
-    <div class="row">
-    <div class="col-md-4 mb-3">
+                        <!-- 12th Passed Year -->
+                        <div class="col-md-2 mb-3">
+                            <label for="twelfth_passed_year" class="form-label">12th Passed Year</label>
+                            <input type="number" class="form-control" id="twelfth_passed_year" name="twelfth_passed_year">
+                        </div>
+
+                        <!-- 12th Percentage -->
+                        <div class="col-md-2 mb-3">
+                            <label for="twelfth_percentage" class="form-label">12th Percentage</label>
+                            <input type="number" class="form-control" id="twelfth_percentage" name="twelfth_percentage" required>
+                            <div class="invalid-feedback">Please enter 12th percentage.</div>
+                        </div>
+
+                        <!-- 12th Cutoff Mark -->
+                        <div class="col-md-2 mb-3">
+                            <label for="twelfth_cutoff" class="form-label">12th Cutoff Mark</label>
+                            <input type="number" step="0.01" class="form-control" id="twelfth_cutoff" name="twelfth_cutoff">
+                        </div>
+                    </div>
+                    <!-- Diploma Details (Conditional) -->
+                    <div class="row" id="diploma_details" style="display: none;">
+                        <div class="col-md-4 mb-3">
+                            <label for="diploma_school_name" class="form-label">Diploma School Name</label>
+                            <input type="text" class="form-control" id="diploma_school_name" name="diploma_school_name">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="diploma_passed_year" class="form-label">Diploma Passed Year</label>
+                            <input type="number" class="form-control" id="diploma_passed_year" name="diploma_passed_year">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="diploma_percentage" class="form-label">Diploma Percentage</label>
+                            <input type="number" step="0.01" class="form-control" id="diploma_percentage" name="diploma_percentage" min="0" max="100">
+                        </div>
+                    </div>
+
+                    <!-- Transferred Student Section -->
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="transferred_student" class="form-label">Are you a Transferred Student?</label>
+                            <select class="form-control" id="transferred_student" name="transferred_student" required>
+                                <option value="">-- Select --</option>
+                                <option value="YES">Yes</option>
+                                <option value="NO">No</option>
+                            </select>
+                            <div class="invalid-feedback">Please select transferred student status.</div>
+                        </div>
+                        <div class="col-md-6 mb-3" id="transfer_reason_field" style="display: none;">
+                            <label for="transfer_reason" class="form-label">Transfer Reason</label>
+                            <input type="text" class="form-control" id="transfer_reason" name="transfer_reason">
+                            <div class="invalid-feedback">Please enter transfer reason.</div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
                             <label for="emis_no" class="form-label">EMIS Number</label>
                             <input type="text" class="form-control" id="emis_no" name="emis_no" required>
                             <div class="invalid-feedback">Please enter EMIS number.</div>
@@ -635,14 +669,14 @@
                             <div class="invalid-feedback">Please enter mother tongue.</div>
                         </div>
                     </div>
-                   
-    <div class="d-flex justify-content-start">
-        <button type="button" class="btn btn-secondary prev-section">Previous</button>
-    </div>
-    <div class="d-flex justify-content-end">
-        <button type="button" class="btn btn-primary next-section">Next</button>
-    </div>
-</div>
+
+                    <div class="d-flex justify-content-start">
+                        <button type="button" class="btn btn-secondary prev-section">Previous</button>
+                    </div>
+                    <div class="d-flex justify-content-end">
+                        <button type="button" class="btn btn-primary next-section">Next</button>
+                    </div>
+                </div>
 
 
                 <!-- Section 4: Login Credentials -->
@@ -674,8 +708,8 @@
                                     <label for="password">Password</label>
                                 </div>
                                 <button class="btn btn-outline-secondary" type="button" id="showPassword" onclick="togglePasswordVisibility()">
-    <i class="bi bi-eye-slash-fill"></i>
-</button>
+                                    <i class="bi bi-eye-slash-fill"></i>
+                                </button>
                             </div>
                             <div class="invalid-feedback">
                                 Password must contain at least one number, one uppercase letter, one lowercase letter, and be at least 8 characters long.
@@ -713,8 +747,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-
-function togglePasswordVisibility() {
+        function togglePasswordVisibility() {
             const password = document.getElementById('password'); // Define password inside the function
             const showPasswordBtn = document.getElementById('showPassword');
             if (password.type === 'password') {
@@ -725,211 +758,215 @@ function togglePasswordVisibility() {
                 showPasswordBtn.innerHTML = '<i class="bi bi-eye-slash-fill"></i>'; // Switch to eye-closed icon
             }
         }
-    document.addEventListener('DOMContentLoaded', function() {
-        const form = document.getElementById('registrationForm');
-        const password = document.getElementById('password');
-        const confirm_password = document.getElementById('confirm_password');
-        const usernameInput = document.getElementById('username'); // Ensure usernameInput is defined
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('registrationForm');
+            const password = document.getElementById('password');
+            const confirm_password = document.getElementById('confirm_password');
+            const usernameInput = document.getElementById('username'); // Ensure usernameInput is defined
 
-       
 
-        // Validate password and confirm password match
-        if (confirm_password) {
-            confirm_password.addEventListener('input', function() {
-                if (password.value !== confirm_password.value) {
-                    confirm_password.setCustomValidity("Passwords do not match.");
-                    confirm_password.classList.add('is-invalid');
-                } else {
-                    confirm_password.setCustomValidity("");
-                    confirm_password.classList.remove('is-invalid');
-                }
-            });
-        }
 
-        // Validate input fields
-        function validateInput(input) {
-            if (input.checkValidity()) {
-                input.classList.remove('is-invalid');
-                input.classList.add('is-valid'); // Add valid class
-            } else {
-                input.classList.remove('is-valid');
-                input.classList.add('is-invalid'); // Add invalid class
+            // Validate password and confirm password match
+            if (confirm_password) {
+                confirm_password.addEventListener('input', function() {
+                    if (password.value !== confirm_password.value) {
+                        confirm_password.setCustomValidity("Passwords do not match.");
+                        confirm_password.classList.add('is-invalid');
+                    } else {
+                        confirm_password.setCustomValidity("");
+                        confirm_password.classList.remove('is-invalid');
+                    }
+                });
             }
-        }
 
-        // Event listener for username validation
-        if (usernameInput) {
-            usernameInput.addEventListener('input', function() {
-                validateInput(usernameInput);
-            });
-        }
-
-        // Event listener for password validation
-        if (password) {
-            password.addEventListener('input', function() {
-                validateInput(password);
-            });
-        }
-
-        // Prevent form submission if invalid
-        if (form) {
-            form.addEventListener('submit', function(event) {
-                event.preventDefault();
-
-                const isUsernameValid = usernameInput ? usernameInput.checkValidity() : true;
-                const isPasswordValid = password ? password.checkValidity() : true;
-                const isConfirmPasswordValid = confirm_password ? confirm_password.checkValidity() : true;
-
-                if (isUsernameValid && isPasswordValid && isConfirmPasswordValid) {
-                    // Submit the form if everything is valid
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Form Submitted Successfully!',
-                        showConfirmButton: true,
-                    }).then(() => {
-                        form.submit(); // Only submit if validation passes
-                    });
+            // Validate input fields
+            function validateInput(input) {
+                if (input.checkValidity()) {
+                    input.classList.remove('is-invalid');
+                    input.classList.add('is-valid'); // Add valid class
                 } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Please fill in all the required fields correctly.',
-                        showConfirmButton: true,
-                    });
+                    input.classList.remove('is-valid');
+                    input.classList.add('is-invalid'); // Add invalid class
                 }
-            });
-        }
+            }
 
-        // Validate all inputs in the current section
-        function validateSection(section) {
-            const inputs = section.querySelectorAll('input, select, textarea');
-            let isSectionValid = true;
+            // Event listener for username validation
+            if (usernameInput) {
+                usernameInput.addEventListener('input', function() {
+                    validateInput(usernameInput);
+                });
+            }
 
-            inputs.forEach(input => {
-                validateInput(input);
-                if (!input.checkValidity()) {
-                    isSectionValid = false;
-                }
-            });
+            // Event listener for password validation
+            if (password) {
+                password.addEventListener('input', function() {
+                    validateInput(password);
+                });
+            }
 
-            return isSectionValid;
-        }
-
-        // Prevent form submission on Enter key press
-        if (form) {
-            form.addEventListener('keydown', function(event) {
-                if (event.key === 'Enter') {
+            // Prevent form submission if invalid
+            if (form) {
+                form.addEventListener('submit', function(event) {
                     event.preventDefault();
-                    const currentSection = document.querySelector('.form-section.active');
-                    const isSectionValid = validateSection(currentSection);
 
-                    if (!isSectionValid) {
-                        const firstInvalidInput = currentSection.querySelector('.is-invalid');
-                        if (firstInvalidInput) {
-                            firstInvalidInput.focus();
-                        }
+                    const isUsernameValid = usernameInput ? usernameInput.checkValidity() : true;
+                    const isPasswordValid = password ? password.checkValidity() : true;
+                    const isConfirmPasswordValid = confirm_password ? confirm_password.checkValidity() : true;
+
+                    if (isUsernameValid && isPasswordValid && isConfirmPasswordValid) {
+                        // Submit the form if everything is valid
                         Swal.fire({
-                            icon: 'error',
-                            title: 'Missing Information',
-                            text: 'Please fill out all required fields.',
-                            confirmButtonText: 'OK'
+                            icon: 'success',
+                            title: 'Form Submitted Successfully!',
+                            showConfirmButton: true,
+                        }).then(() => {
+                            form.submit(); // Only submit if validation passes
                         });
                     } else {
-                        const nextButton = currentSection.querySelector('.next-section');
-                        if (nextButton) {
-                            nextButton.click();
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Please fill in all the required fields correctly.',
+                            showConfirmButton: true,
+                        });
+                    }
+                });
+            }
+
+            // Validate all inputs in the current section
+            function validateSection(section) {
+                const inputs = section.querySelectorAll('input, select, textarea');
+                let isSectionValid = true;
+
+                inputs.forEach(input => {
+                    validateInput(input);
+                    if (!input.checkValidity()) {
+                        isSectionValid = false;
+                    }
+                });
+
+                return isSectionValid;
+            }
+
+            // Prevent form submission on Enter key press
+            if (form) {
+                form.addEventListener('keydown', function(event) {
+                    if (event.key === 'Enter') {
+                        event.preventDefault();
+                        const currentSection = document.querySelector('.form-section.active');
+                        const isSectionValid = validateSection(currentSection);
+
+                        if (!isSectionValid) {
+                            const firstInvalidInput = currentSection.querySelector('.is-invalid');
+                            if (firstInvalidInput) {
+                                firstInvalidInput.focus();
+                            }
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Missing Information',
+                                text: 'Please fill out all required fields.',
+                                confirmButtonText: 'OK'
+                            });
                         } else {
-                            form.submit();
+                            const nextButton = currentSection.querySelector('.next-section');
+                            if (nextButton) {
+                                nextButton.click();
+                            } else {
+                                form.submit();
+                            }
                         }
                     }
-                }
-            });
-        }
+                });
+            }
 
-        // Add input event listeners to validate fields as the user types
-        if (form) {
-            form.querySelectorAll('input, select, textarea').forEach(input => {
-                input.addEventListener('input', function() {
-                    validateInput(input);
+            // Add input event listeners to validate fields as the user types
+            if (form) {
+                form.querySelectorAll('input, select, textarea').forEach(input => {
+                    input.addEventListener('input', function() {
+                        validateInput(input);
+                    });
+                });
+            }
+
+            // Section navigation
+            const formSections = document.querySelectorAll('.form-section');
+            let currentSectionIndex = 0;
+
+            document.querySelectorAll('.next-section').forEach(button => {
+                button.addEventListener('click', () => {
+                    const currentSection = formSections[currentSectionIndex];
+                    const isSectionValid = validateSection(currentSection);
+
+                    if (isSectionValid && currentSectionIndex < formSections.length - 1) {
+                        currentSection.classList.remove('active');
+                        currentSectionIndex++;
+                        formSections[currentSectionIndex].classList.add('active');
+                    } else {
+                        currentSection.classList.add('was-validated');
+                    }
                 });
             });
-        }
 
-        // Section navigation
-        const formSections = document.querySelectorAll('.form-section');
-        let currentSectionIndex = 0;
-
-        document.querySelectorAll('.next-section').forEach(button => {
-            button.addEventListener('click', () => {
-                const currentSection = formSections[currentSectionIndex];
-                const isSectionValid = validateSection(currentSection);
-
-                if (isSectionValid && currentSectionIndex < formSections.length - 1) {
-                    currentSection.classList.remove('active');
-                    currentSectionIndex++;
-                    formSections[currentSectionIndex].classList.add('active');
-                } else {
-                    currentSection.classList.add('was-validated');
-                }
+            document.querySelectorAll('.prev-section').forEach(button => {
+                button.addEventListener('click', () => {
+                    if (currentSectionIndex > 0) {
+                        formSections[currentSectionIndex].classList.remove('active');
+                        currentSectionIndex--;
+                        formSections[currentSectionIndex].classList.add('active');
+                    }
+                });
             });
-        });
+            // Conditional Fields Handling
+            const educationType = document.getElementById('education_type');
+            const twelfthDetails = document.getElementById('12th_details');
+            const diplomaDetails = document.getElementById('diploma_details');
+            const transferSelect = document.getElementById('transferred_student');
+            const transferReasonField = document.getElementById('transfer_reason_field');
 
-        document.querySelectorAll('.prev-section').forEach(button => {
-            button.addEventListener('click', () => {
-                if (currentSectionIndex > 0) {
-                    formSections[currentSectionIndex].classList.remove('active');
-                    currentSectionIndex--;
-                    formSections[currentSectionIndex].classList.add('active');
-                }
-            });
-        });
-// Conditional Fields Handling
-const educationType = document.getElementById('education_type');
-const twelfthDetails = document.getElementById('12th_details');
-const diplomaDetails = document.getElementById('diploma_details');
-const transferSelect = document.getElementById('transferred_student');
-const transferReasonDiv = document.getElementById('transfer_reason_div');
-
-// Handle the display of 12th and Diploma details based on the selection
-if (educationType && twelfthDetails && diplomaDetails) {
-    educationType.addEventListener('change', function() {
-        if (this.value === '12th') {
-            twelfthDetails.style.display = 'flex';
-            diplomaDetails.style.display = 'none';
-        } else if (this.value === 'diploma') {
-            twelfthDetails.style.display = 'none';
-            diplomaDetails.style.display = 'flex';
-        } else {
-            twelfthDetails.style.display = 'none';
-            diplomaDetails.style.display = 'none';
-        }
-    });
-}
-
-// Handle the display of transfer reason based on selection
-if (transferSelect && transferReasonDiv) {
-    transferSelect.addEventListener('change', function() {
-        transferReasonDiv.style.display = this.value === 'yes' ? 'block' : 'none';
-    });
-}
-        // Profile image preview
-        function previewImage(event) {
-            const reader = new FileReader();
-            const preview = document.getElementById('profilePreview');
-            if (preview) {
-                reader.onload = function() {
-                    preview.src = reader.result;
-                    preview.style.display = 'block';
-                };
-                reader.readAsDataURL(event.target.files[0]);
+            // Handle the display of 12th and Diploma details based on the selection
+            if (educationType && twelfthDetails && diplomaDetails) {
+                educationType.addEventListener('change', function() {
+                    if (this.value === '12th_study') {
+                        twelfthDetails.style.display = 'flex'; 
+                        diplomaDetails.style.display = 'none';
+                    } else if (this.value === 'diploma_study') {
+                        twelfthDetails.style.display = 'none';
+                        diplomaDetails.style.display = 'flex';
+                    } else {
+                        twelfthDetails.style.display = 'none';
+                        diplomaDetails.style.display = 'none';
+                    }
+                });
             }
-        }
 
-        const profileImageInput = document.getElementById('profileImage');
-        if (profileImageInput) {
-            profileImageInput.addEventListener('change', previewImage);
-        }
-    });
-</script>
+            // Handle the display of transfer reason based on selection
+            if (transferSelect && transferReasonField) {
+                transferSelect.addEventListener('change', function() {
+                    if (this.value === 'YES') {
+                        transferReasonField.style.display = 'block';
+                    } else {
+                        transferReasonField.style.display = 'none';
+                    }
+                });
+            }
+            // Profile image preview
+            function previewImage(event) {
+                const reader = new FileReader();
+                const preview = document.getElementById('profilePreview');
+                if (preview) {
+                    reader.onload = function() {
+                        preview.src = reader.result;
+                        preview.style.display = 'block';
+                    };
+                    reader.readAsDataURL(event.target.files[0]);
+                }
+            }
+
+            const profileImageInput = document.getElementById('profileImage');
+            if (profileImageInput) {
+                profileImageInput.addEventListener('change', previewImage);
+            }
+        });
+    </script>
     <?php
     error_reporting(E_ALL); // Report all PHP errors
     ini_set('display_errors', 1); // Display errors to the browser
@@ -960,6 +997,7 @@ if (transferSelect && transferReasonDiv) {
     {
         return strtoupper(trim($data));
     }
+
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         // Validate and sanitize inputs
         $register_no = toUpper($_POST['register_no']);
@@ -973,19 +1011,22 @@ if (transferSelect && transferReasonDiv) {
         if ($check_query->num_rows > 0) {
             // Student is already registered
             echo "<script>
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Already Registered',
-                        text: 'This student is already registered. Please log in.',
-                        confirmButtonText: 'OK'
-                    }).then(() => {
-                        window.location.href = 'login.php'; // Redirect to login page
-                    });
-                  </script>";
+            Swal.fire({
+                icon: 'warning',
+                title: 'Already Registered',
+                text: 'This student is already registered. Please log in.',
+                confirmButtonText: 'OK'
+            }).then(() => {
+                window.location.href = 'login.php'; // Redirect to login page
+            });
+          </script>";
             exit();
         }
 
-
+        // Extract form data
+        $first_name = toUpper($_POST['first_name']);
+        $middle_name = toUpper($_POST['middle_name']);
+        $last_name = toUpper($_POST['last_name']);
         $roll_no = toUpper($_POST['roll_no']);
         $gender = toUpper($_POST['gender']);
         $year = $_POST['year'];
@@ -994,9 +1035,15 @@ if (transferSelect && transferReasonDiv) {
         $dob = $_POST['dob'];
         $blood_group = toUpper($_POST['blood_group']);
         $address = toUpper($_POST['address']);
-        $email = strtolower(trim($_POST['email']));
+        $city = toUpper($_POST['city']);
+        $state = toUpper($_POST['state']);
+        $zip_code = toUpper($_POST['zip_code']);
+        $country = toUpper($_POST['country']);
+        $personal_email = strtolower(trim($_POST['personal_email']));
+        $college_email = strtolower(trim($_POST['college_email']));
         $phone_no = $_POST['phone_no'];
         $admission_type = toUpper($_POST['admission_type']);
+        $lateral_entry = $_POST['lateral_entry'];
         $first_graduate = $_POST['first_graduate'];
         $day_scholar_hosteller = toUpper($_POST['day_scholar_hosteller']);
         $father_name = toUpper($_POST['father_name']);
@@ -1004,27 +1051,50 @@ if (transferSelect && transferReasonDiv) {
         $mother_name = toUpper($_POST['mother_name']);
         $mother_occupation = toUpper($_POST['mother_occupation']);
         $parent_number = $_POST['parent_number'];
-        $passed_school_name = toUpper($_POST['passed_school_name']);
+        $tenth_school_name = toUpper($_POST['tenth_school_name']);
+        $tenth_medium = $_POST['10th_medium'];
         $tenth_passed_year = $_POST['tenth_passed_year'];
         $tenth_percentage = $_POST['tenth_percentage'];
-        $twelfth_passed_year = $_POST['twelfth_passed_year'];
         $twelfth_percentage = $_POST['twelfth_percentage'];
+        $education_type = $_POST['education_type'];
+        $twelfth_school_name = ($education_type === '12th_study') ? toUpper($_POST['twelfth_school_name']) : null;
+        $twelfth_medium = ($education_type === '12th_study') ? $_POST['12th_medium'] : null;
+        $twelfth_passed_year = ($education_type === '12th_study') ? $_POST['twelfth_passed_year'] : null;
+        $twelfth_cutoff = ($education_type === '12th_study') ? $_POST['twelfth_cutoff'] : null;
+        $diploma_school_name = ($education_type === 'diploma_study') ? toUpper($_POST['diploma_school_name']) : null;
+        $diploma_passed_year = ($education_type === 'diploma_study') ? $_POST['diploma_passed_year'] : null;
+        $diploma_percentage = ($education_type === 'diploma_study') ? $_POST['diploma_percentage'] : null;
+        $emis_no = $_POST['emis_no'];
         $aadhaar_no = $_POST['aadhaar_no'];
         $pan_no = toUpper($_POST['pan_no']);
         $caste = toUpper($_POST['caste']);
         $religion = toUpper($_POST['religion']);
         $nationality = toUpper($_POST['nationality']);
         $mother_tongue = toUpper($_POST['mother_tongue']);
-        $emis_no = $_POST['emis_no'];
         $username = $_POST['username'];
         $password = password_hash($_POST['password'], PASSWORD_BCRYPT);
-        $first_name = toUpper($_POST['first_name']);
-        $middle_name = toUpper($_POST['middle_name']);
-        $last_name = toUpper($_POST['last_name']);
-        $city = toUpper($_POST['city']);
-        $state = toUpper($_POST['state']);
-        $zip_code = toUpper($_POST['zip_code']);
-        $country = toUpper($_POST['country']);
+        $transferred_student = $_POST['transferred_student'];
+        $transfer_reason = ($transferred_student === 'YES') ? toUpper($_POST['transfer_reason']) : null;
+
+        // Handle profile image upload
+        $profile_image = null;
+        if ($_FILES['profile_image']['error'] == UPLOAD_ERR_OK) {
+            $target_dir = "uploads/";
+            $target_file = $target_dir . basename($_FILES['profile_image']['name']);
+            if (move_uploaded_file($_FILES['profile_image']['tmp_name'], $target_file)) {
+                $profile_image = $target_file;
+            } else {
+                echo "<script>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'File Upload Error',
+                    text: 'Failed to upload profile image.',
+                    confirmButtonText: 'OK'
+                });
+              </script>";
+                exit();
+            }
+        }
 
         // Validate Aadhaar, Phone, and EMIS
         if (!validateAadhaar($aadhaar_no)) {
@@ -1034,8 +1104,6 @@ if (transferSelect && transferReasonDiv) {
                 title: 'Invalid Aadhaar',
                 text: 'Invalid Aadhaar number. It must be 12 digits.',
                 confirmButtonText: 'OK'
-            }).then(() => {
-                // You can add any redirect or further actions here if needed
             });
           </script>";
             exit();
@@ -1048,8 +1116,6 @@ if (transferSelect && transferReasonDiv) {
                 title: 'Invalid Phone Number',
                 text: 'Invalid phone number. It must be 10 digits.',
                 confirmButtonText: 'OK'
-            }).then(() => {
-                // You can add any redirect or further actions here if needed
             });
           </script>";
             exit();
@@ -1062,138 +1128,25 @@ if (transferSelect && transferReasonDiv) {
                 title: 'Invalid EMIS Number',
                 text: 'Invalid EMIS number. It must be 10-16 digits.',
                 confirmButtonText: 'OK'
-            }).then(() => {
-                // You can add any redirect or further actions here if needed
             });
           </script>";
             exit();
         }
 
-
-        // Handle image upload
-        if ($_FILES['profile_image']['error'] == UPLOAD_ERR_OK) {
-            $target_dir = "uploads/";
-            $target_file = $target_dir . basename($_FILES['profile_image']['name']);
-            if (move_uploaded_file($_FILES['profile_image']['tmp_name'], $target_file)) {
-            } else {
-                echo "<script>
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'File Upload Error',
-                            text: 'Failed to upload profile image.',
-                            confirmButtonText: 'OK'
-                        });
-                      </script>";
-                exit();
-            }
-        }
-
-
-        // Validate required names
-        if (empty($first_name) || empty($last_name)) {
-            echo "<script>
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Name Error',
-                            text: 'First Name and Last Name are required fields',
-                            confirmButtonText: 'OK'
-                        });
-                      </script>";
-            exit();
-        }
-
-
-        // Check for existing records
-        $check_query = $mysqli->prepare("
-        SELECT 
-            register_no, roll_no, email, phone_no, aadhaar_no, pan_no, emis_no 
-        FROM stud 
-        WHERE register_no = ? OR roll_no = ? OR email = ? OR phone_no = ? OR aadhaar_no = ? OR pan_no = ? OR emis_no = ?
-    ");
-        $check_query->bind_param(
-            "sssssss",
-            $register_no,
-            $roll_no,
-            $email,
-            $phone_no,
-            $aadhaar_no,
-            $pan_no,
-            $emis_no
-        );
-        $check_query->execute();
-        $check_query->store_result();
-
-        if ($check_query->num_rows > 0) {
-            // Fetch the conflicting fields
-            $check_query->bind_result(
-                $conflict_register_no,
-                $conflict_roll_no,
-                $conflict_email,
-                $conflict_phone_no,
-                $conflict_aadhaar_no,
-                $conflict_pan_no,
-                $conflict_emis_no
-            );
-            $check_query->fetch();
-
-            // Determine which field(s) caused the conflict
-            $conflict_messages = [];
-            if ($conflict_register_no === $register_no) {
-                $conflict_messages[] = "Register Number";
-            }
-            if ($conflict_roll_no === $roll_no) {
-                $conflict_messages[] = "Roll Number";
-            }
-            if ($conflict_email === $email) {
-                $conflict_messages[] = "Email";
-            }
-            if ($conflict_phone_no === $phone_no) {
-                $conflict_messages[] = "Phone Number";
-            }
-            if ($conflict_aadhaar_no === $aadhaar_no) {
-                $conflict_messages[] = "Aadhaar Number";
-            }
-            if ($conflict_pan_no === $pan_no) {
-                $conflict_messages[] = "PAN Number";
-            }
-            if ($conflict_emis_no === $emis_no) {
-                $conflict_messages[] = "EMIS Number";
-            }
-
-            // Display error message
-            $conflict_message = implode(", ", $conflict_messages);
-            echo "<script>
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Oops! This Record Already Exists',
-                    text: 'The following fields already exist: $conflict_message',
-                    confirmButtonText: 'OK'
-                });
-              </script>";
-            exit();
-        }
-        // Modify your SQL insert statement
+        // Insert data into the database
         $stmt = $mysqli->prepare("
         INSERT INTO stud (
-            first_name, middle_name, last_name,
-            register_no, roll_no, gender, years, department, 
-            section, dob, blood_group, address, city, state,
-            zip_code, country, email, phone_no, admission_type,
-            first_graduate, day_scholar_hosteller, father_name,
-            father_occupation, mother_name, mother_occupation,
-            parent_number, passed_school_name, tenth_passed_year,
-            tenth_percentage, twelfth_passed_year, twelfth_percentage,
-            aadhaar_no, pan_no, caste, religion, nationality,
-            mother_tongue, emis_no, username, password, profile_image
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            first_name, middle_name, last_name, register_no, roll_no, gender, years, department, section, dob, blood_group, address, city, state, zip_code, country, personal_email, college_email, phone_no, admission_type, lateral_entry, first_graduate, day_scholar_hosteller, father_name, father_occupation, mother_name, mother_occupation, parent_number, tenth_school_name, tenth_medium, tenth_passed_year, tenth_percentage, education_type, twelfth_school_name, twelfth_medium, twelfth_passed_year,twelfth_percentage, twelfth_cutoff, diploma_school_name, diploma_passed_year, diploma_percentage, emis_no, aadhaar_no, pan_no, caste, religion, nationality, mother_tongue, username, password, profile_image, transferred_student, transfer_reason
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ");
 
         if (!$stmt) {
-            die("Prepare failed: " . $mysqli->error); // Debugging
+            die("Prepare failed: " . $mysqli->error);
         }
+
         // Bind parameters
         $stmt->bind_param(
-            "ssssssissssssssssssssssssssssssssssssssss",
+            "sssssssssssssssssssssssssssssssssssssssssssssssssssss",
             $first_name,
             $middle_name,
             $last_name,
@@ -1210,9 +1163,11 @@ if (transferSelect && transferReasonDiv) {
             $state,
             $zip_code,
             $country,
-            $email,
+            $personal_email,
+            $college_email,
             $phone_no,
             $admission_type,
+            $lateral_entry,
             $first_graduate,
             $day_scholar_hosteller,
             $father_name,
@@ -1220,46 +1175,55 @@ if (transferSelect && transferReasonDiv) {
             $mother_name,
             $mother_occupation,
             $parent_number,
-            $passed_school_name,
+            $tenth_school_name,
+            $tenth_medium,
             $tenth_passed_year,
             $tenth_percentage,
+            $education_type,
+            $twelfth_school_name,
+            $twelfth_medium,
             $twelfth_passed_year,
             $twelfth_percentage,
+            $twelfth_cutoff,
+            $diploma_school_name,
+            $diploma_passed_year,
+            $diploma_percentage,
+            $emis_no,
             $aadhaar_no,
             $pan_no,
             $caste,
             $religion,
             $nationality,
             $mother_tongue,
-            $emis_no,
             $username,
             $password,
-            $target_file
+            $profile_image,
+            $transferred_student,
+            $transfer_reason
         );
-
 
         if ($stmt->execute()) {
             // Registration successful
             echo "<script>
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Registration Successful',
-                        text: 'You have been successfully registered!',
-                        confirmButtonText: 'OK'
-                    }).then(() => {
-                        window.location.href = 'login.php'; // Redirect to login page
-                    });
-                  </script>";
+            Swal.fire({
+                icon: 'success',
+                title: 'Registration Successful',
+                text: 'You have been successfully registered!',
+                confirmButtonText: 'OK'
+            }).then(() => {
+                window.location.href = 'login.php'; // Redirect to login page
+            });
+          </script>";
             exit();
         } else {
             echo "<script>
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Database Error',
-                        text: 'An error occurred: " . addslashes($stmt->error) . "',
-                        confirmButtonText: 'OK'
-                    });
-                  </script>";
+            Swal.fire({
+                icon: 'error',
+                title: 'Database Error',
+                text: 'An error occurred: " . addslashes($stmt->error) . "',
+                confirmButtonText: 'OK'
+            });
+          </script>";
             exit();
         }
     }
