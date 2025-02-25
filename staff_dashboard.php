@@ -30,22 +30,56 @@ if (!$stmt->execute()) {
 $result = $stmt->get_result();
 $staff = $result->fetch_assoc();
 
-
-
 // Fetch recent test results
-$tests_query = "SELECT * FROM test_results WHERE staff_id = ? ORDER BY created_on DESC LIMIT 5";
+$tests_query = "
+    SELECT 
+        tr.*,
+        COUNT(sm.id) AS total_students,
+        AVG(sm.marks) AS average_marks,
+        MAX(sm.total_marks) AS highest_score
+    FROM test_results tr
+    LEFT JOIN student_marks sm ON tr.id = sm.test_id
+    WHERE tr.staff_id = ?
+    GROUP BY tr.id
+    ORDER BY tr.id DESC 
+    LIMIT 5
+";
+
 $tests_stmt = $mysqli->prepare($tests_query);
 
 if (!$tests_stmt) {
     die("Error preparing tests query: " . $mysqli->error);
 }
 
-$tests_stmt->bind_param("s", $staff_id);
+$tests_stmt->bind_param("s", $staff_id); 
 if (!$tests_stmt->execute()) {
     die("Error executing tests query: " . $tests_stmt->error);
 }
 
 $tests_result = $tests_stmt->get_result();
+
+// Fetch recent marks
+$marks_query = "
+    SELECT sm.*, tr.test_type, tr.subject_name 
+    FROM student_marks sm
+    JOIN test_results tr ON sm.test_id = tr.id
+    WHERE tr.staff_id = ?
+    ORDER BY sm.id DESC
+    LIMIT 5
+";
+
+$marks_stmt = $mysqli->prepare($marks_query);
+
+if (!$marks_stmt) {
+    die("Error preparing marks query: " . $mysqli->error);
+}
+
+$marks_stmt->bind_param("i", $staff_id);
+if (!$marks_stmt->execute()) {
+    die("Error executing marks query: " . $marks_stmt->error);
+}
+
+$marks_result = $marks_stmt->get_result();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -61,11 +95,20 @@ $tests_result = $tests_stmt->get_result();
             --secondary-color: #009ffd;
             --accent-color: #ff7f50;
             --light-bg: #f8f9fa;
+            --dark-bg: #1a1a1a;
+            --dark-text: #ffffff;
+            --light-text: #000000;
         }
 
         body {
             background-color: var(--light-bg);
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--light-text);
+        }
+
+        body.dark-mode {
+            background-color: var(--dark-bg);
+            color: var(--dark-text);
         }
 
         .navbar {
@@ -98,6 +141,11 @@ $tests_result = $tests_stmt->get_result();
             box-shadow: 0 4px 20px rgba(0,0,0,0.05);
         }
 
+        .dark-mode .dashboard-header {
+            background: linear-gradient(rgba(0,0,0,0.9), rgba(0,0,0,0.9)), url('assets/images/dashboard-bg.png');
+            color: var(--dark-text);
+        }
+
         .feature-card {
             background: white;
             border: none;
@@ -107,6 +155,11 @@ $tests_result = $tests_stmt->get_result();
             display: flex;
             flex-direction: column;
             justify-content: center;
+        }
+
+        .dark-mode .feature-card {
+            background: var(--dark-bg);
+            color: var(--dark-text);
         }
 
         .feature-card:hover {
@@ -141,6 +194,11 @@ $tests_result = $tests_stmt->get_result();
             box-shadow: 0 4px 15px rgba(0,0,0,0.05);
         }
 
+        .dark-mode .profile-section {
+            background: var(--dark-bg);
+            color: var(--dark-text);
+        }
+
         .profile-img {
             width: 100px;
             height: 100px;
@@ -157,6 +215,26 @@ $tests_result = $tests_stmt->get_result();
         .animated {
             animation: fadeIn 0.6s ease-out;
         }
+
+        .dark-mode-toggle {
+            cursor: pointer;
+        }
+        .dropdown-submenu {
+            display: none;
+            position: absolute;
+            top: 40px;
+            left: 0;
+            min-width: 180px;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 5px 0;
+        }
+
+        .dropdown-submenu.show {
+            display: block;
+        }
+
     </style>
 </head>
 <body>
@@ -180,9 +258,24 @@ $tests_result = $tests_stmt->get_result();
                             <i class="fas fa-user-circle"></i> <?php echo htmlspecialchars($staff['first_name'] . ' ' . $staff['last_name']); ?>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
+                            <li>
+                                <a class="dropdown-item" href="#" id="settings-toggle">
+                                    <i class="fas fa-cog me-2"></i>Settings
+                                </a>
+                            </li>
+                            <li>
+                                <div id="settings-submenu" class="dropdown-menu dropdown-submenu">
+                                    <a class="dropdown-item dark-mode-toggle" href="#">
+                                        <i class="fas fa-moon me-2"></i>Dark Mode
+                                    </a>
+                                </div>
+                            </li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item text-danger" href="logout.php"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                            <li>
+                                <a class="dropdown-item text-danger" href="logout.php">
+                                    <i class="fas fa-sign-out-alt me-2"></i>Logout
+                                </a>
+                            </li>
                         </ul>
                     </li>
                 </ul>
@@ -196,7 +289,6 @@ $tests_result = $tests_stmt->get_result();
             <div class="row align-items-center">
                 <div class="col-md-8">
                     <h1 class="display-5 fw-bold text-primary">Welcome Back, <?php echo htmlspecialchars($staff['first_name']); ?>!</h1>
-                    <p class="lead text-muted">Today's Schedule: 3 Classes | 2 Meetings</p>
                 </div>
                 <div class="col-md-4 text-center">
                     <img src="<?php echo htmlspecialchars($staff['profile_image']); ?>" alt="Profile Image" class="profile-img">
@@ -205,21 +297,21 @@ $tests_result = $tests_stmt->get_result();
         </div>
 
         <!-- Quick Actions Grid -->
-        <div class="row g-4 mt-3">
-            <div class="col-md-4">
+        <div class="row g-4 mt-3 ">
+            <div class="col-md-6">
                 <div class="feature-card text-center p-4 animated">
                     <i class="fas fa-clipboard-list card-icon"></i>
                     <h3 class="mb-3">Mark Entry</h3>
-                    <p class="text-muted">Submit and manage student assessment marks</p>
+                    <p class="text-white">Submit and manage student assessment marks</p>
                     <a href="mark_entry.php" class="btn btn-custom">Access Portal</a>
                 </div>
             </div>
 
-            <div class="col-md-4">
+            <div class="col-md-6">
                 <div class="feature-card text-center p-4 animated">
                     <i class="fas fa-calculator card-icon"></i>
                     <h3 class="mb-3">CGPA Calculator</h3>
-                    <p class="text-muted">Calculate and analyze student performance</p>
+                    <p class="text-white">Calculate and analyze student performance</p>
                     <a href="dashboard.php" class="btn btn-custom">Calculate Now</a>
                 </div>
             </div>
@@ -244,7 +336,7 @@ $tests_result = $tests_stmt->get_result();
                                 <?php endwhile; ?>
                             </ul>
                         <?php else: ?>
-                            <p class="text-muted">No recent marks found.</p>
+                            <p class="text-black">No recent marks found.</p>
                         <?php endif; ?>
                     </div>
                 </div>
@@ -268,7 +360,7 @@ $tests_result = $tests_stmt->get_result();
                                 <?php endwhile; ?>
                             </ul>
                         <?php else: ?>
-                            <p class="text-muted">No recent test results found.</p>
+                            <p class="text-black">No recent test results found.</p>
                         <?php endif; ?>
                     </div>
                 </div>
@@ -276,7 +368,69 @@ $tests_result = $tests_stmt->get_result();
         </div>
     </div>
 
-    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+    // Dark Mode Toggle
+    const darkModeToggle = document.querySelector('.dark-mode-toggle');
+    const body = document.body;
+
+    darkModeToggle.addEventListener('click', () => {
+        body.classList.toggle('dark-mode');
+        const isDarkMode = body.classList.contains('dark-mode');
+        localStorage.setItem('darkMode', isDarkMode);
+
+        // Update text colors based on mode
+        updateTextColors(isDarkMode);
+    });
+
+    // Check localStorage for dark mode preference
+    const savedDarkMode = localStorage.getItem('darkMode');
+    if (savedDarkMode === 'true') {
+        body.classList.add('dark-mode');
+        updateTextColors(true); // Update text colors for dark mode
+    } else {
+        updateTextColors(false); // Update text colors for normal mode
+    }
+
+    // Function to update text colors based on mode
+    function updateTextColors(isDarkMode) {
+        const textWhiteElements = document.querySelectorAll('.text-white');
+        const textMutedElements = document.querySelectorAll('.text-muted');
+
+        if (isDarkMode) {
+            // In dark mode, change .text-muted to .text-white
+            textMutedElements.forEach(element => {
+                element.classList.remove('text-muted');
+                element.classList.add('text-white');
+            });
+        } else {
+            // In normal mode, change .text-white to .text-muted
+            textWhiteElements.forEach(element => {
+                element.classList.remove('text-white');
+                element.classList.add('text-muted');
+            });
+        }
+    }
+
+    // Settings Dropdown Toggle
+    document.addEventListener("DOMContentLoaded", function () {
+        const settingsToggle = document.getElementById("settings-toggle");
+        const settingsSubmenu = document.getElementById("settings-submenu");
+
+        settingsToggle.addEventListener("click", function (event) {
+            event.preventDefault();
+            event.stopPropagation(); // Prevent event bubbling
+            settingsSubmenu.classList.toggle("show");
+        });
+
+        // Close submenu when clicking outside
+        document.addEventListener("click", function (event) {
+            if (!settingsToggle.contains(event.target)) {
+                settingsSubmenu.classList.remove("show");
+            }
+        });
+    });
+</script>
+
 </body>
 </html>
