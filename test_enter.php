@@ -243,48 +243,46 @@ if (isset($_SESSION['failed'])) {
                 <div class="form-group">
                     <input type="text" id="searchBox" class="form-control " style="width:100%;" placeholder="Search by Register No or Student Name">
                 </div>
-                <div class="table-responsive mt-5" style="max-height: 600px;height:400px;width:550px; overflow-y: scroll;">
-                    <table class="table table-bordered table-striped" id="studentTable">
-                        <thead class="table-dark">
-                            <tr>
-                                <th class="text-center fw-bold ">Register No</th>
-                                <th class="text-center fw-bold ">Student Name</th>
-                                <th class="text-center fw-bold ">Section</th>
-                                <th class="text-center fw-bold ">Total Mark</th>
-                                <th class="text-center fw-bold ">attendance</th>
+                <div class="table-responsive mt-5" style="max-height: 600px; height: 400px; width: 550px; overflow-y: scroll; position: relative;">
+    <table class="table table-bordered table-striped" id="studentTable">
+        <thead class="table-dark" style="position: sticky; top: 0; z-index: 100;">
+            <tr>
+                <th class="text-center fw-bold">Register No</th>
+                <th class="text-center fw-bold">Student Name</th>
+                <th class="text-center fw-bold">Section</th>
+                <th class="text-center fw-bold">Total Mark</th>
+                <th class="text-center fw-bold">Attendance</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php if (!empty($students)) : ?>
+                <?php foreach ($students as $student) : ?>
+                    <tr class="student-row"
+                        data-register-no="<?= htmlspecialchars($student['register_no']) ?>"
+                        data-student-name="<?= htmlspecialchars($student['student_name']) ?>"
+                        data-section="<?= htmlspecialchars($student['section']) ?>">
+                        <td><?= htmlspecialchars($student['register_no']) ?></td>
+                        <td><?= htmlspecialchars($student['student_name']) ?></td>
+                        <td><?= htmlspecialchars($student['section']) ?></td>
+                        <td><?= $student['total_marks'] === 'N/A' ?
+                                '<span class="text-muted">N/A</span>' :
+                                htmlspecialchars($student['total_marks']) ?></td>
+                        <td><?= $student['attendance'] === 'N/A' ?
+                                '<span class="text-muted">N/A</span>' :
+                                htmlspecialchars($student['attendance']) ?></td>
+                    </tr>
+                <?php endforeach; ?>
+            <?php else : ?>
+                <tr>
+                    <td colspan="5" class="text-center text-danger">
+                        No students found for selected criteria
+                    </td>
+                </tr>
+            <?php endif; ?>
+        </tbody>
+    </table>
+</div>
 
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php if (!empty($students)) : ?>
-                                <?php foreach ($students as $student) : ?>
-                                    <tr class="student-row"
-                                        data-register-no="<?= htmlspecialchars($student['register_no']) ?>"
-                                        data-student-name="<?= htmlspecialchars($student['student_name']) ?>"
-                                        data-section="<?= htmlspecialchars($student['section']) ?>">
-                                        <td><?= htmlspecialchars($student['register_no']) ?></td>
-                                        <td><?= htmlspecialchars($student['student_name']) ?></td>
-                                        <td><?= htmlspecialchars($student['section']) ?></td>
-                                        <td><?= $student['total_marks'] === 'N/A' ?
-                                                '<span class="text-muted">N/A</span>' :
-                                                htmlspecialchars($student['total_marks']) ?></td>
-                                        <td><?= $student['attendance'] === 'N/A' ?
-                                                '<span class="text-muted">N/A</span>' :
-                                                htmlspecialchars($student['attendance']) ?></td>
-                                    </tr>
-                                <?php endforeach; ?>
-                            <?php else : ?>
-                                <tr>
-                                    <td colspan="5" class="text-center text-danger">
-                                        No students found for selected criteria
-                                    </td>
-                                </tr>
-                            <?php endif; ?>
-                        </tbody>
-
-                    </table>
-
-                </div>
                 <button type="buttun" class="btn btn-danger me-5 mt-4 mb-5 w-100 text-center">Submit</button>
 
                 <!-- Add this near the student list section -->
@@ -557,12 +555,15 @@ if (isset($_SESSION['failed'])) {
             });
 
             // Search functionality
-            $('#searchBox').on('keyup', function() {
-                const value = $(this).val().toLowerCase();
-                $('#studentTable tr').filter(function() {
-                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
-                });
-            });
+         $('#searchBox').on('keyup', function() {
+    const value = $(this).val().toLowerCase();
+
+    // Filter only tbody rows to ensure thead remains visible
+    $('#studentTable tbody tr').each(function() {
+        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+    });
+});
+
 
             // Form validation
             $('#marksForm').on('submit', function(e) {
