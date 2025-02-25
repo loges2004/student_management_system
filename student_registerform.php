@@ -446,28 +446,28 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="department" class="form-label">Department</label>
-                            <select class="form-control" id="department" name="department" required>
-                                <option value="">-- Select Department --</option>
-                                <option value="civil">Civil Engineering</option>
-                                <option value="mechanical">Mechanical Engineering</option>
-                                <option value="ece">Electronics and Communication Engineering</option>
-                                <option value="eee">Electrical and Electronics Engineering</option>
-                                <option value="cse">Computer Science and Engineering</option>
-                                <option value="it">Information Technology</option>
-                                <option value="bme">Biomedical Engineering</option>
-                                <option value="csbs">Computer Science and Business Systems</option>
-                                <option value="ai_ds">Artificial Intelligence and Data Science</option>
-                                <option value="cse_cyber">CSE (Cyber Security)</option>
-                                <option value="cse_ai_ml">CSE (Artificial Intelligence and Machine Learning)</option>
-                                <option value="vlsi">Electronics Engineering (VLSI Design and Technology)</option>
-                                <option value="mba">Business Administration (MBA)</option>
-                                <option value="mca">Computer Applications (MCA)</option>
-                                <option value="sci_hum">Science and Humanities</option>
-                            </select>
-                            <div class="invalid-feedback">Please select department.</div>
-                        </div>
+                    <div class="col-md-6">
+    <label for="department" class="form-label">Department</label>
+    <select class="form-select" id="department" name="department" required>
+        <option value="">-- Select Department --</option>
+        <option value="Civil Engineering">Civil Engineering</option>
+        <option value="Mechanical Engineering">Mechanical Engineering</option>
+        <option value="Electronics and Communication Engineering">Electronics and Communication Engineering</option>
+        <option value="Electrical and Electronics Engineering">Electrical and Electronics Engineering</option>
+        <option value="Computer Science and Engineering">Computer Science and Engineering</option>
+        <option value="Information Technology">Information Technology</option>
+        <option value="Biomedical Engineering">Biomedical Engineering</option>
+        <option value="Computer Science and Business Systems">Computer Science and Business Systems</option>
+        <option value="Artificial Intelligence and Data Science">Artificial Intelligence and Data Science</option>
+        <option value="CSE Cyber Security">CSE Cyber Security</option>
+        <option value="CSE Artificial Intelligence and Machine Learning">CSE Artificial Intelligence and Machine Learning</option>
+        <option value="Electronics Engineering VLSI Design and Technology">Electronics Engineering VLSI Design and Technology</option>
+        <option value="Business Administration MBA">Business Administration MBA</option>
+        <option value="Computer Applications MCA">Computer Applications MCA</option>
+        <option value="Science and Humanities">Science and Humanities</option>
+    </select>
+</div>
+
 
                         <div class="col-md-6 mb-3">
                             <label for="section" class="form-label">Section</label>
