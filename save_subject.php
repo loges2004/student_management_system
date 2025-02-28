@@ -11,9 +11,6 @@
 // Database connection
 include("db.php");
 
-if (!$mysqli) {
-    die("Database connection failed: " . mysqli_connect_error());
-}
 
 // Get form data and convert to uppercase
 $subject_code = strtoupper($_POST['subject_code']);
