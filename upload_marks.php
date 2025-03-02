@@ -2,7 +2,6 @@
 include('db.php');
 session_start();
 
-// Enable error reporting
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
@@ -17,11 +16,10 @@ foreach ($required_session as $var) {
 require 'vendor/autoload.php';
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
-// Function to get CO based on question number and countsArray
+// Function to get CO
 function getCourseOutcome($questionNumber, $countsArray) {
     $coIndex = 0;
     $currentCount = 0;
-
     foreach ($countsArray as $count) {
         $currentCount += $count;
         if ($questionNumber <= $currentCount) {
@@ -35,14 +33,10 @@ function getCourseOutcome($questionNumber, $countsArray) {
 try {
     if (isset($_FILES['excelFile'])) {
         $questionCount = (int)$_POST['questionCount'];
-        $marksArray = json_decode($_POST['marks'], true); // Max marks for each question
-        $countsArray = json_decode($_POST['counts'], true); // Number of questions per CO
+        $marksArray = json_decode($_POST['marks'], true);
+        $countsArray = json_decode($_POST['counts'], true);
 
-        // Debug: Log marksArray and countsArray
-        error_log("marksArray: " . print_r($marksArray, true));
-        error_log("countsArray: " . print_r($countsArray, true));
-
-        // Get or create test_id from test_results
+        // Get or create test_id
         $stmt = $mysqli->prepare("
             SELECT id FROM test_results 
             WHERE year = ? 
@@ -65,9 +59,7 @@ try {
         $result = $stmt->get_result();
         $test = $result->fetch_assoc();
 
-        if ($test) {
-            $test_id = $test['id'];
-        } else {
+        if (!$test) {
             // Insert new test entry
             $insertStmt = $mysqli->prepare("
                 INSERT INTO test_results (
@@ -92,9 +84,11 @@ try {
             );
             $insertStmt->execute();
             $test_id = $mysqli->insert_id;
+        } else {
+            $test_id = $test['id'];
         }
 
-        // Fetch CO mapping from co_questions table
+        // Fetch CO mapping
         $co_mapping = [];
         $co_stmt = $mysqli->prepare("SELECT question_number, course_outcome FROM co_questions WHERE test_id = ?");
         $co_stmt->bind_param("i", $test_id);
@@ -108,7 +102,6 @@ try {
         $spreadsheet = IOFactory::load($file);
         $sheet = $spreadsheet->getActiveSheet();
         $rows = $sheet->toArray();
-
         array_shift($rows); // Remove header
 
         $mysqli->autocommit(false);
@@ -116,13 +109,9 @@ try {
 
         foreach ($rows as $row) {
             $register_no = $row[0];
-            $student_name = strtoupper($row[1]); // Convert to uppercase
+            $student_name = strtoupper($row[1]);
             $total_mark = array_pop($row);
             $marks = array_slice($row, 2, $questionCount);
-
-            // Debug: Log marks for each student
-            error_log("Processing student: $register_no");
-            error_log("Marks: " . print_r($marks, true));
 
             // Validate marks
             foreach ($marks as $mark) {
@@ -148,32 +137,26 @@ try {
                 throw new Exception("Student not found: $register_no");
             }
 
-            // Delete existing marks
-            $delete_stmt = $mysqli->prepare("DELETE FROM student_marks WHERE student_id = ? AND test_id = ?");
-            $delete_stmt->bind_param("ii", $student_id, $test_id);
-            $delete_stmt->execute();
-
-            // Insert new marks
+            // Insert/update marks
             for ($i = 0; $i < $questionCount; $i++) {
                 $question_number = $i + 1;
-                $maxMark = $marksArray[$i] ?? 0; // Get max mark from marksArray
-                $mark = $marks[$i]; // Use the actual mark from the Excel file
+                $maxMark = $marksArray[$i] ?? 0;
+                $mark = $marks[$i];
                 $attended = $mark > 0 ? 1 : 0;
-
-                // Debug: Log maxMark and actual mark
-                error_log("Question $question_number: Max Mark = $maxMark, Actual Mark = $mark");
-
-                // Get CO from mapping or calculate
                 $co = $co_mapping[$question_number] ?? strtoupper(getCourseOutcome($question_number, $countsArray));
+                $attendance = ($total_mark > 0) ? 'PRESENT' : 'ABSENT';
 
-                // Prepare insert statement
                 $insert_stmt = $mysqli->prepare("
                     INSERT INTO student_marks (
-                        test_id, year, department, semester, student_id, register_no, student_name, section,
-                        question_number, marks, attended, course_outcome,
+                        test_id, register_no, question_number, 
+                        year, department, semester, student_id, student_name, section,
+                        marks, attended, course_outcome,
                         test_type, testmark, subject_code, subject_name, attendance, total_marks
                     ) VALUES (
-                        ?, ?, UPPER(?), ?, ?, ?, UPPER(?), UPPER(?), ?, ?, ?, UPPER(?), UPPER(?), ?, UPPER(?), UPPER(?), UPPER(?), ?
+                        ?, ?, ?, 
+                        ?, ?, ?, ?, ?, ?,
+                        ?, ?, ?,
+                        ?, ?, ?, ?, ?, ?
                     )
                     ON DUPLICATE KEY UPDATE
                         marks = VALUES(marks),
@@ -183,19 +166,17 @@ try {
                         total_marks = VALUES(total_marks)
                 ");
 
-                $attendance = ($total_mark > 0) ? 'PRESENT' : 'ABSENT'; // Uppercase
-
                 $insert_stmt->bind_param(
-                    "iisiisssiisssssssi",
+                    "isiiissssiissssssi",
                     $test_id,
-                    $_SESSION['year'], // Year
-                    $_SESSION['department'], // Department
-                    $_SESSION['semester'], // Semester
-                    $student_id,
                     $register_no,
+                    $question_number,
+                    $_SESSION['year'],
+                    $_SESSION['department'],
+                    $_SESSION['semester'],
+                    $student_id,
                     $student_name,
                     $_SESSION['section'],
-                    $question_number,
                     $mark,
                     $attended,
                     $co,
@@ -208,13 +189,13 @@ try {
                 );
 
                 if (!$insert_stmt->execute()) {
-                    throw new Exception("Failed to insert marks: " . $insert_stmt->error);
+                    throw new Exception("Failed to insert/update marks: " . $insert_stmt->error);
                 }
             }
         }
 
         $mysqli->commit();
-        $_SESSION['success'] = "Marks uploaded successfully!";
+        $_SESSION['success'] = "Marks uploaded/updated successfully!";
     } else {
         $_SESSION['failed'] = "No file uploaded";
     }
@@ -225,3 +206,4 @@ try {
 
 header("Location: " . $_SERVER['HTTP_REFERER']);
 exit();
+?>

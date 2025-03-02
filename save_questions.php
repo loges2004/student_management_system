@@ -9,15 +9,15 @@ if (!isset($_SESSION['staff_id'], $_SESSION['staff_name'], $_SESSION['year'], $_
 
 // Fetch session variables
 $staff_id = $_SESSION['staff_id'];
-$staffname = $_SESSION['staff_name'];
+$staffname = strtoupper( $_SESSION['staff_name']);
 $year = $_SESSION['year'];
-$semester = $_SESSION['semester'];
-$department = $_SESSION['department'];
-$section = $_SESSION['section'];
-$test_type = $_SESSION['test_type'];
+$semester =$_SESSION['semester'];
+$department = strtoupper($_SESSION['department']);
+$section = strtoupper( $_SESSION['section']);
+$test_type = strtoUpper($_SESSION['test_type']);
 $testmark = $_SESSION['testmark'];
-$subject_name = $_SESSION['subject_name'];
-$subject_code = $_SESSION['subject_code'];
+$subject_name = strtoupper($_SESSION['subject_name']);
+$subject_code = strtoupper( $_SESSION['subject_code']);
 
 // Check if a record with the same combination already exists in test_results
 $query = "SELECT id FROM test_results WHERE staff_id = ? AND staffname = ? AND year = ? AND semester = ? AND department = ? AND section = ? AND test_type = ? AND testmark = ? AND subject_name = ? AND subject_code = ?";
