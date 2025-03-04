@@ -3,36 +3,37 @@ include('db.php'); // Include database connection
 
 // Handle Update
 if (isset($_POST['update'])) {
-    $register_no = $_POST['register_no'];
-    $student_name = $_POST['student_name'];
-    $roll_no = $_POST['roll_no'];
-    $gender = $_POST['gender'];
-    $dob = $_POST['dob'];
-    $blood_group = $_POST['blood_group'];
-    $address = $_POST['address'];
-    $phone_no = $_POST['phone_no'];
-    $admission_type = $_POST['admission_type'];
-    $first_graduate = $_POST['first_graduate'];
-    $day_scholar_hosteller = $_POST['day_scholar_hosteller'];
-    $father_name = $_POST['father_name'];
-    $father_occupation = $_POST['father_occupation'];
-    $mother_name = $_POST['mother_name'];
-    $mother_occupation = $_POST['mother_occupation'];
-    $parent_number = $_POST['parent_number'];
-    $tenth_passed_year = $_POST['tenth_passed_year'];
-    $tenth_percentage = $_POST['tenth_percentage'];
-    $twelfth_passed_year = $_POST['twelfth_passed_year'];
-    $twelfth_percentage = $_POST['twelfth_percentage'];
-    $aadhaar_no = $_POST['aadhaar_no'];
-    $pan_no = $_POST['pan_no'];
-    $caste = $_POST['caste'];
-    $religion = $_POST['religion'];
-    $nationality = $_POST['nationality'];
-    $mother_tongue = $_POST['mother_tongue'];
-    $emis_no = $_POST['emis_no'];
-    $username = $_POST['username'];
-    $department = $_POST['department'];
-    $section = $_POST['section'];
+    $register_no = strtoupper($_POST['register_no']);
+$student_name = strtoupper($_POST['student_name']);
+$roll_no = strtoupper($_POST['roll_no']);
+$gender = strtoupper($_POST['gender']);
+$dob = strtoupper($_POST['dob']);
+$blood_group = strtoupper($_POST['blood_group']);
+$address = strtoupper($_POST['address']);
+$phone_no = strtoupper($_POST['phone_no']);
+$admission_type = strtoupper($_POST['admission_type']);
+$first_graduate = strtoupper($_POST['first_graduate']);
+$day_scholar_hosteller = strtoupper($_POST['day_scholar_hosteller']);
+$father_name = strtoupper($_POST['father_name']);
+$father_occupation = strtoupper($_POST['father_occupation']);
+$mother_name = strtoupper($_POST['mother_name']);
+$mother_occupation = strtoupper($_POST['mother_occupation']);
+$parent_number = strtoupper($_POST['parent_number']);
+$tenth_passed_year = strtoupper($_POST['tenth_passed_year']);
+$tenth_percentage = strtoupper($_POST['tenth_percentage']);
+$twelfth_passed_year = strtoupper($_POST['twelfth_passed_year']);
+$twelfth_percentage = strtoupper($_POST['twelfth_percentage']);
+$aadhaar_no = strtoupper($_POST['aadhaar_no']);
+$pan_no = strtoupper($_POST['pan_no']);
+$caste = strtoupper($_POST['caste']);
+$religion = strtoupper($_POST['religion']);
+$nationality = strtoupper($_POST['nationality']);
+$mother_tongue = strtoupper($_POST['mother_tongue']);
+$emis_no = strtoupper($_POST['emis_no']);
+$username = strtoupper($_POST['username']);
+$department = strtoupper($_POST['department']);
+$section = strtoupper($_POST['section']);
+
 
     // Use prepared statements to prevent SQL injection
     $query = "UPDATE stud SET 
@@ -58,7 +59,7 @@ if (isset($_POST['update'])) {
 
     // Bind parameters (30 parameters total)
     $stmt->bind_param(
-        "sssssssssssssssssssssssssssss",
+        "ssssssssssssssssssssssssssssss",
         $student_name, $roll_no, $gender,
         $dob, $blood_group, $address,
         $phone_no, $admission_type,
@@ -76,12 +77,39 @@ if (isset($_POST['update'])) {
 
     // Execute the query
     if ($stmt->execute()) {
-        echo "<script>
-                Swal.fire('Success!', 'Student details updated!', 'success')
-                    .then(() => window.location.href = 'student_entry.php');
-              </script>";
+        echo "
+        <script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                    title: 'Success!',
+                    text: 'Student details updated successfully!',
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = 'student_entry.php';
+                    }
+                });
+            });
+        </script>";
     } else {
-        echo "<script>Swal.fire('Error!', 'Update failed.', 'error');</script>";
+        echo "
+        <script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Failed to update student details.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = 'student_entry.php';
+                    }
+                });
+            });
+        </script>";
     }
 
     $stmt->close();

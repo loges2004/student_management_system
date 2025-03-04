@@ -3,31 +3,31 @@ include('db.php'); // Include database connection
 
 // Handle Update
 if (isset($_POST['update'])) {
-    $staff_id = $_POST['staff_id'];
-    $first_name = $_POST['first_name'];
-    $middle_name = $_POST['middle_name'];
-    $last_name = $_POST['last_name'];
-    $date_of_birth = $_POST['date_of_birth'];
-    $gender = $_POST['gender'];
-    $blood_group = $_POST['blood_group'];
-    $caste = $_POST['caste'];
-    $religion = $_POST['religion'];
-    $phone_number = $_POST['phone_number'];
-    $alternate_phone_number = $_POST['alternate_phone_number'];
-    $email = $_POST['email'];
-    $alternate_email = $_POST['alternate_email'];
-    $address = $_POST['address'];
-    $city = $_POST['city'];
-    $state = $_POST['state'];
-    $zip_code = $_POST['zip_code'];
-    $country = $_POST['country'];
-    $department = $_POST['department'];
-    $qualification = $_POST['qualification'];
-    $aadhaar_number = $_POST['aadhaar_number'];
-    $pan_number = $_POST['pan_number'];
-    $username = $_POST['username'];
-    $designation = $_POST['designation'];
-
+    $staff_id = strtoupper($_POST['staff_id']);
+    $first_name = strtoupper($_POST['first_name']);
+    $middle_name = strtoupper($_POST['middle_name']);
+    $last_name = strtoupper($_POST['last_name']);
+    $date_of_birth = strtoupper($_POST['date_of_birth']);
+    $gender = strtoupper($_POST['gender']);
+    $blood_group = strtoupper($_POST['blood_group']);
+    $caste = strtoupper($_POST['caste']);
+    $religion = strtoupper($_POST['religion']);
+    $phone_number = strtoupper($_POST['phone_number']);
+    $alternate_phone_number = strtoupper($_POST['alternate_phone_number']);
+    $email = strtoupper($_POST['email']);
+    $alternate_email = strtoupper($_POST['alternate_email']);
+    $address = strtoupper($_POST['address']);
+    $city = strtoupper($_POST['city']);
+    $state = strtoupper($_POST['state']);
+    $zip_code = strtoupper($_POST['zip_code']);
+    $country = strtoupper($_POST['country']);
+    $department = strtoupper($_POST['department']);
+    $qualification = strtoupper($_POST['qualification']);
+    $aadhaar_number = strtoupper($_POST['aadhaar_number']);
+    $pan_number = strtoupper($_POST['pan_number']);
+    $username = strtoupper($_POST['username']);
+    $designation = strtoupper($_POST['designation']);
+    
     // Use prepared statements to prevent SQL injection
     $query = "UPDATE staff SET 
               first_name=?, middle_name=?, last_name=?, 
