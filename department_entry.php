@@ -129,6 +129,7 @@ if (isset($_SESSION['failed'])) {
                 <label for="year" class="form-label">Year</label>
                 <input type="number" class="form-control" id="year" name="year" min="1" max="5" required>
             </div>
+            <button type="button" class="btn btn-danger me-5" onclick="window.location.href='department_manage.php'">back</button>
 
             <!-- Submit Button -->
             <button type="submit" class="btn btn-custom w-75 ms-5">Save Department</button>

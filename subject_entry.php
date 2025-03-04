@@ -144,6 +144,7 @@
                     </div>
                     <!-- Submit Button -->
                     <div class="col-12">
+                        <button type="button" class="btn btn-danger me-5" onclick="window.location.href='subject_manage.php'">back</button>
                         <button type="submit" class="btn btn-custom">Submit</button>
                     </div>
                 </div>

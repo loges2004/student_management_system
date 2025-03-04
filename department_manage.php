@@ -1,23 +1,44 @@
 <?php
 include("db.php");
-
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
 // Handle Update Department Form Submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_department'])) {
-    $department_id = toUpper($_POST['department_id']);
-    $program_type =toUpper($_POST['program_type']);
-    $degree_type = toUpper($_POST['degree_type']);
-    $department_name =toUpper($_POST['department_name']);
-    $year = $_POST['year'];
+    // Debugging: Print received POST data
+    echo "<pre>";
+    print_r($_POST);
+    echo "</pre>";
 
+    $department_id = strtoupper($_POST['department_id']);
+    $program_type = strtoupper($_POST['program_type']);
+    $degree_type = strtoupper($_POST['degree_type']);
+    $department_name = strtoupper($_POST['department_name']);
+    $year = $_POST['year']; 
+
+    // Debugging: Print sanitized data
+    echo "Department ID: $department_id<br>";
+    echo "Program Type: $program_type<br>";
+    echo "Degree Type: $degree_type<br>";
+    echo "Department Name: $department_name<br>";
+    echo "Year: $year<br>";
+
+    // Correct SQL query for updating departments
     $sql = "UPDATE departments SET program_type=?, degree_type=?, department_name=?, year=? WHERE department_id=?";
     $stmt = $mysqli->prepare($sql);
+
+    if ($stmt === false) {
+        die("Prepare failed: " . $mysqli->error);
+    }
+
+    // Correct bind_param for departments table
     $stmt->bind_param("sssss", $program_type, $degree_type, $department_name, $year, $department_id);
 
     if ($stmt->execute()) {
         echo "<script>Swal.fire('Success!', 'Department updated successfully.', 'success');</script>";
     } else {
-        echo "<script>Swal.fire('Error!', 'Failed to update department.', 'error');</script>";
+        echo "<script>Swal.fire('Error!', 'Failed to update department: " . $stmt->error . "', 'error');</script>";
     }
     $stmt->close();
 }
@@ -46,11 +67,8 @@ if ($result->num_rows > 0) {
     <div class="container mt-5">
         <h2>Departments</h2>
         <button class="btn btn-primary mb-3" onclick="window.location.href='department_entry.php';">
-    Add Department
-</button>
-
-
-       
+            Add Department
+        </button>
 
         <table class="table table-bordered">
             <thead>
@@ -86,6 +104,7 @@ if ($result->num_rows > 0) {
                         <td>
                             <button class="btn btn-primary btn-edit">Edit</button>
                             <button class="btn btn-success btn-update" style="display:none;">Update</button>
+                            <button class="btn btn-danger btn-delete" data-id="<?php echo $dept['department_id']; ?>">Delete</button>
                         </td>
                     </tr>
                 <?php endforeach; ?>
@@ -119,7 +138,7 @@ if ($result->num_rows > 0) {
                     formData.append('department_name', row.querySelectorAll('.edit-mode')[2].value);
                     formData.append('year', row.querySelectorAll('.edit-mode')[3].value);
 
-                    fetch('index.php', {
+                    fetch('department_manage.php', {
                         method: 'POST',
                         body: formData
                     })
@@ -136,6 +155,25 @@ if ($result->num_rows > 0) {
                             row.querySelector('.btn-edit').style.display = 'inline-block';
                         } else {
                             Swal.fire('Error!', 'Failed to update department details.', 'error');
+                        }
+                    });
+                });
+            });
+
+            // Delete functionality
+            document.querySelectorAll('.btn-delete').forEach(button => {
+                button.addEventListener('click', function() {
+                    const departmentId = this.getAttribute('data-id');
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: 'You will not be able to recover this department record!',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'Yes, delete it!',
+                        cancelButtonText: 'No, cancel!'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = `delete_department.php?id=${departmentId}`;
                         }
                     });
                 });
