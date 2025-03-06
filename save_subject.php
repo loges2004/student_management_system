@@ -18,6 +18,7 @@ $subject_name = strtoupper($_POST['subject_name']);
 $department = strtoupper($_POST['department']);
 $year = $_POST['year'];
 $semester = $_POST['semester'];
+$regulation = $_POST['regulation'];
 $type = strtoupper($_POST['type']);
 $credit = $_POST['credit'];
 $total_hours = $_POST['total_hours'];
@@ -38,7 +39,7 @@ $result = $stmt->get_result();
 if ($result->num_rows > 0) {
     // Update existing record
     $update_query = "UPDATE subjects 
-                     SET subject_name = ?, department = ?, years = ?, semester = ?, type = ?, credit_points = ?, total_hours = ?, sub_type = ? 
+                     SET subject_name = ?, department = ?,regulation=?, years = ?, semester = ?, type = ?, credit_points = ?, total_hours = ?, sub_type = ? 
                      WHERE subject_code = ?";
     $stmt = $mysqli->prepare($update_query);
 
@@ -46,18 +47,18 @@ if ($result->num_rows > 0) {
         die("SQL Error: " . $mysqli->error);
     }
 
-    $stmt->bind_param("ssisssiss", $subject_name, $department, $year, $semester, $type, $credit, $total_hours, $sub_type, $subject_code);
+    $stmt->bind_param("ssiisssiss", $subject_name, $department,$regulation, $year, $semester, $type, $credit, $total_hours, $sub_type, $subject_code);
 } else {
     // Insert new record
-    $insert_query = "INSERT INTO subjects (subject_code, subject_name, department, years, semester, type, credit_points, total_hours, sub_type) 
-                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    $insert_query = "INSERT INTO subjects (subject_code, subject_name, department,regulation, years, semester, type, credit_points, total_hours, sub_type) 
+                     VALUES (?, ?, ?, ?,?, ?, ?, ?, ?, ?)";
     $stmt = $mysqli->prepare($insert_query);
 
     if (!$stmt) {
         die("SQL Error: " . $mysqli->error);
     }
 
-    $stmt->bind_param("ssssssiis", $subject_code, $subject_name, $department, $year, $semester, $type, $credit, $total_hours, $sub_type);
+    $stmt->bind_param("ssssssiis", $subject_code, $subject_name, $department,$regulation, $year, $semester, $type, $credit, $total_hours, $sub_type);
 }
 
 // Execute the query

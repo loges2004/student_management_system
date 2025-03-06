@@ -97,6 +97,22 @@
         <option value="Science and Humanities">Science and Humanities</option>
     </select>
 </div>
+<?php
+// Get the current year
+$currentYear = date("Y");
+
+// Define the range of years for the dropdown (e.g., current year to current year + 10)
+$startYear = $currentYear;
+$endYear = $currentYear + 10;
+
+// Generate the dropdown options
+echo '<label for="regulation">Regulation</label>';
+echo '<select name="regulation" id="regulation" required>';
+for ($year = $startYear; $year <= $endYear; $year++) {
+    echo "<option value='$year'>$year Regulation</option>";
+}
+echo '</select>';
+?>
 
                     <!-- Year -->
                     <div class="col-md-6">
