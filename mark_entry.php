@@ -175,6 +175,25 @@
                             <option value="D">Section D</option>
                         </select>
                     </div>
+                    <!-- Regulation Dropdown -->
+    <div class="col-md-6 mb-3">
+        <?php
+        // Get the current year
+        $currentYear = date("Y");
+        // Define the range of years for the dropdown (e.g., current year to current year + 10)
+        $startYear = 2020;
+        $endYear = $currentYear + 10;
+        // Generate the dropdown options for Regulation
+        echo '<label for="regulation" class="form-label">Regulation</label>';
+        echo '<select class="form-control" name="regulation" id="regulation" required>';
+        echo "<option value=''>---select the Regulation----</option>";
+        for ($year = $startYear; $year <= $endYear; $year++) {
+            echo "<option value='$year'>$year Regulation</option>";
+        }
+        echo '</select>';
+        ?>
+        <div class="invalid-feedback">Please select regulation.</div>
+    </div>
 
                     <div class="col-12">
                         <div class="section-divider"></div>
@@ -207,6 +226,13 @@
                             <option value="">-- Select Type --</option>
                             <option value="serialtest1">Serial Test 1</option>
                             <option value="serialtest2">Serial Test 2</option>
+                            <option value="Assignment1">Assignment 1</option>
+                            <option value="Assignment2">Assignment 2</option>
+                            <option value="Quiz1">Quiz 1</option>
+                            <option value="Quiz2">Quiz 2</option>
+                            <option value="Seminar1">Seminar1</option>
+                            <option value="Seminar2">Seminar2</option>
+                            
                         </select>
                     </div>
                     <div class="col-md-4">

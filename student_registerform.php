@@ -441,11 +441,12 @@
         // Get the current year
         $currentYear = date("Y");
         // Define the range of years for the dropdown (e.g., current year to current year + 10)
-        $startYear = $currentYear;
+        $startYear = 2020;
         $endYear = $currentYear + 10;
         // Generate the dropdown options for Regulation
         echo '<label for="regulation" class="form-label">Regulation</label>';
         echo '<select class="form-control" name="regulation" id="regulation" required>';
+        echo "<option value=''>---select the Regulation----</option>";
         for ($year = $startYear; $year <= $endYear; $year++) {
             echo "<option value='$year'>$year Regulation</option>";
         }
