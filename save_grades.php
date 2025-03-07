@@ -6,6 +6,7 @@ $register_no = $_POST['register_no'];
 $semester = $_POST['semester'];
 $grades = $_POST['grades'];
 $section = $_POST['section'];
+$regulation = $_POST['regulation'];
 
 // Fetch student by register number
 $stmt = $mysqli->prepare("SELECT student_id, student_name, years, department FROM stud WHERE register_no = ?");
@@ -47,8 +48,8 @@ foreach ($grades as $subject_id => $grade) {
 
     // Insert or update grades
     $stmt = $mysqli->prepare("
-        INSERT INTO student_grades (register_no, student_name, subject_id, subject_code, subject_name, grade, semester, department, section, years) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO student_grades (register_no, student_name, subject_id, subject_code, subject_name, grade, semester, department, section, years, regulation) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ON DUPLICATE KEY UPDATE 
             student_name = VALUES(student_name),
             subject_code = VALUES(subject_code),
@@ -56,14 +57,15 @@ foreach ($grades as $subject_id => $grade) {
             grade = VALUES(grade), 
             semester = VALUES(semester),
             section = VALUES(section),
-            years = VALUES(years)
+            years = VALUES(years),
+            regulation = VALUES(regulation)
     ");
 
     if ($stmt === false) {
         die('MySQL prepare error: ' . $mysqli->error);
     }
 
-    $stmt->bind_param('ssissssssi', $register_no, $student_name, $subject_id, $subject_code, $subject_name, $grade, $semester, $department, $section, $year);
+    $stmt->bind_param('ssissssssss', $register_no, $student_name, $subject_id, $subject_code, $subject_name, $grade, $semester, $department, $section, $year, $regulation);
     $stmt->execute();
 }
 
@@ -119,13 +121,14 @@ $stmt = $mysqli->prepare("
     AND TRIM(department) = TRIM(?) 
     AND section = ?
     AND years = ?
+    AND regulation = ?
 ");
 
 if ($stmt === false) {
     die('MySQL prepare error: ' . $mysqli->error);
 }
 
-$stmt->bind_param('dsssss', $truncated_cgpa, $register_no, $semester, $department, $section, $year);
+$stmt->bind_param('dssssss', $truncated_cgpa, $register_no, $semester, $department, $section, $year, $regulation);
 if (!$stmt->execute()) {
     die('MySQL execute error: ' . $stmt->error);
 }
