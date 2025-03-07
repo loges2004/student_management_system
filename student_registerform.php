@@ -358,7 +358,7 @@
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="profile_image" class="form-label text-center">Profile Image</label>
-                            <input name="profile_image" class="form-control" type="file" id="profileImage" accept="image/" required>
+                            <input name="profile_image" class="form-control" type="file" id="profileImage" accept="image/" >
                             <div class="invalid-feedback">Please upload a profile image.</div>
                         </div>
                     </div>
@@ -424,27 +424,51 @@
 
                     </div>
                     <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="day_scholar_hosteller" class="form-label">Day Scholar/Hosteller</label>
-                            <select class="form-control" id="day_scholar_hosteller" name="day_scholar_hosteller" required>
-                                <option value="">-- Select --</option>
-                                <option value="DAY_SCHOLAR">Day Scholar</option>
-                                <option value="HOSTELLER">Hosteller</option>
-                            </select>
-                            <div class="invalid-feedback">Please select day scholar/hosteller.</div>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="year" class="form-label">Year</label>
-                            <select class="form-control" id="year" name="year" required>
-                                <option value="">-- Select Year --</option>
-                                <option value="1">1st Year</option>
-                                <option value="2">2nd Year</option>
-                                <option value="3">3rd Year</option>
-                                <option value="4">4th Year</option>
-                            </select>
-                            <div class="invalid-feedback">Please select year.</div>
-                        </div>
-                    </div>
+    <!-- Day Scholar/Hosteller Dropdown -->
+    <div class="col-md-6 mb-3">
+        <label for="day_scholar_hosteller" class="form-label">Day Scholar/Hosteller</label>
+        <select class="form-control" id="day_scholar_hosteller" name="day_scholar_hosteller" required>
+            <option value="">-- Select --</option>
+            <option value="DAY_SCHOLAR">Day Scholar</option>
+            <option value="HOSTELLER">Hosteller</option>
+        </select>
+        <div class="invalid-feedback">Please select day scholar/hosteller.</div>
+    </div>
+
+    <!-- Regulation Dropdown -->
+    <div class="col-md-6 mb-3">
+        <?php
+        // Get the current year
+        $currentYear = date("Y");
+        // Define the range of years for the dropdown (e.g., current year to current year + 10)
+        $startYear = 2020;
+        $endYear = $currentYear + 10;
+        // Generate the dropdown options for Regulation
+        echo '<label for="regulation" class="form-label">Regulation</label>';
+        echo '<select class="form-control" name="regulation" id="regulation" required>';
+        echo "<option value=''>---select the Regulation----</option>";
+        for ($year = $startYear; $year <= $endYear; $year++) {
+            echo "<option value='$year'>$year Regulation</option>";
+        }
+        echo '</select>';
+        ?>
+        <div class="invalid-feedback">Please select regulation.</div>
+    </div>
+
+    <!-- Year Dropdown -->
+    <div class="col-md-6 mb-3">
+        <label for="year" class="form-label">Year</label>
+        <select class="form-control" id="year" name="year" required>
+            <option value="">-- Select Year --</option>
+            <option value="1">1st Year</option>
+            <option value="2">2nd Year</option>
+            <option value="3">3rd Year</option>
+            <option value="4">4th Year</option>
+        </select>
+        <div class="invalid-feedback">Please select year.</div>
+    </div>
+</div>
+
                     <div class="row">
                     <div class="col-md-6">
     <label for="department" class="form-label">Department</label>
@@ -1072,6 +1096,7 @@
         $personal_email = strtolower(trim($_POST['personal_email']));
         $college_email = strtolower(trim($_POST['college_email']));
         $phone_no = $_POST['phone_no'];
+        $regulation = $_POST['regulation'];
         $admission_type = toUpper($_POST['admission_type']);
         $lateral_entry = $_POST['lateral_entry'];
         $first_graduate = $_POST['first_graduate'];
@@ -1166,8 +1191,8 @@
         // Insert data into the database
         $stmt = $mysqli->prepare("
         INSERT INTO stud (
-            first_name, middle_name, last_name, register_no, roll_no, gender, years, department, section, dob, blood_group, address, city, state, zip_code, country, personal_email, college_email, phone_no, admission_type, lateral_entry, first_graduate, day_scholar_hosteller, father_name, father_occupation, mother_name, mother_occupation, parent_number, tenth_school_name, tenth_medium, tenth_passed_year, tenth_percentage, education_type, twelfth_school_name, twelfth_medium, twelfth_passed_year,twelfth_percentage, twelfth_cutoff, diploma_school_name, diploma_passed_year, diploma_percentage, emis_no, aadhaar_no, pan_no, caste, religion, nationality, mother_tongue, username, password, profile_image, transferred_student, transfer_reason
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            first_name, middle_name, last_name, register_no, roll_no, gender, years, department, section, dob, blood_group, address, city, state, zip_code, country, personal_email, college_email, phone_no, admission_type, lateral_entry, first_graduate, day_scholar_hosteller, father_name, father_occupation, mother_name, mother_occupation, parent_number, tenth_school_name, tenth_medium, tenth_passed_year, tenth_percentage, education_type, twelfth_school_name, twelfth_medium, twelfth_passed_year,twelfth_percentage, twelfth_cutoff, diploma_school_name, diploma_passed_year, diploma_percentage, emis_no, aadhaar_no, pan_no, caste, religion, nationality, mother_tongue, username, password, profile_image, transferred_student, transfer_reason,regulation
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ");
 
         if (!$stmt) {
@@ -1176,7 +1201,7 @@
 
         // Bind parameters
         $stmt->bind_param(
-            "sssssssssssssssssssssssssssssssssssssssssssssssssssss",
+            "sssssssssssssssssssssssssssssssssssssssssssssssssssssi",
             $first_name,
             $middle_name,
             $last_name,
@@ -1229,7 +1254,8 @@
             $password,
             $profile_image,
             $transferred_student,
-            $transfer_reason
+            $transfer_reason,
+            $regulation
         );
 
         if ($stmt->execute()) {

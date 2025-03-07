@@ -1,64 +1,47 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-header('Content-Type: application/json');
+session_start();
+require 'db.php';
 
-require 'db.php'; // Ensure DB connection is correct
+if (isset($_GET['register_no'], $_GET['semester'], $_GET['department'])) {
+    $register_no = trim($_GET['register_no']);
+    $semester = trim($_GET['semester']);
+    $department = trim($_GET['department']);
 
-// Validate input
-$register_no = $_GET['register_no'] ?? '';
-$year = $_GET['year'] ?? '';
-$semester = $_GET['semester'] ?? '';
-$department = $_GET['department'] ?? '';
-$section = $_GET['section'] ?? '';
-$test_type = $_GET['test_type'] ?? '';
-$subject_code = $_GET['subject_code'] ?? '';
+    // Debugging: Log the received parameters
+    error_log("Fetching grades for register_no: $register_no, semester: $semester, department: $department");
 
-if (!$register_no) {
-    echo json_encode(['success' => false, 'error' => 'Register number missing']);
-    exit;
-}
-
-// Fetch marks
-$query = "SELECT question_number, marks, attended, total_marks 
-          FROM student_marks 
-          WHERE register_no = ? 
-          AND year = ? 
+    // Fetch grades for the student
+    $stmt = $mysqli->prepare("
+        SELECT subject_id, grade 
+        FROM student_grades 
+        WHERE register_no = ? 
           AND semester = ? 
-          AND department = ? 
-          AND section = ? 
-          AND test_type = ? 
-          AND subject_code = ?";
-$stmt = $mysqli->prepare($query);
-if (!$stmt) {
-    echo json_encode(['success' => false, 'error' => 'Database error']);
-    exit;
-}
+          AND TRIM(department) = ?
+    ");
+    if (!$stmt) die("Prepare failed: " . $mysqli->error);
+    $stmt->bind_param('sss', $register_no, $semester, $department);
+    $stmt->execute();
+    $grades = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 
-$stmt->bind_param("sisssss", $register_no, $year, $semester, $department, $section, $test_type, $subject_code);
-if (!$stmt->execute()) {
-    echo json_encode(['success' => false, 'error' => 'Database error']);
-    exit;
-}
+    // Debugging: Log the fetched grades
+    error_log("Fetched grades: " . print_r($grades, true));
 
-$result = $stmt->get_result();
-$marksData = [];
-$total_marks = 0;
+    // Fetch profile image
+    $stmt = $mysqli->prepare("SELECT profile_image FROM stud WHERE register_no = ?");
+    if (!$stmt) die("Prepare failed: " . $mysqli->error);
+    $stmt->bind_param('s', $register_no);
+    $stmt->execute();
+    $result = $stmt->get_result()->fetch_assoc();
+    $profile_image = $result ? $result['profile_image'] : null;
 
-while ($row = $result->fetch_assoc()) {
-    $marksData[$row['question_number']] = [
-        'marks' => $row['marks'],
-        'attended' => $row['attended']
-    ];
-    $total_marks += $row['marks'];
-}
+    // Debugging: Log the fetched profile image
+    error_log("Fetched profile_image: $profile_image");
 
-if (!empty($marksData)) {
-    echo json_encode(['success' => true, 'marks' => $marksData, 'total_marks' => $total_marks]);
+    echo json_encode([
+        'grades' => $grades,
+        'profile_image' => $profile_image
+    ]);
 } else {
-    echo json_encode(['success' => false, 'error' => 'No marks found']);
+    echo json_encode(['error' => 'Missing parameters']);
 }
-
-$stmt->close();
-exit;
 ?>

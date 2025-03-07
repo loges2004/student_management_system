@@ -3,13 +3,14 @@ session_start();
 include 'db.php';
 
 // Check if session variables are set
-if (!isset($_SESSION['staff_id'], $_SESSION['staff_name'], $_SESSION['year'], $_SESSION['semester'], $_SESSION['department'], $_SESSION['test_type'], $_SESSION['testmark'], $_SESSION['subject_name'], $_SESSION['subject_code'])) {
+if (!isset($_SESSION['staff_id'],$_SESSION['regulation'], $_SESSION['staff_name'], $_SESSION['year'], $_SESSION['semester'], $_SESSION['department'], $_SESSION['test_type'], $_SESSION['testmark'], $_SESSION['subject_name'], $_SESSION['subject_code'])) {
     die('Error: Missing session data.');
 }
 
 // Fetch session variables
 $staff_id = $_SESSION['staff_id'];
 $staffname = strtoupper( $_SESSION['staff_name']);
+$regulation = strtoupper( $_SESSION['regulation']);
 $year = $_SESSION['year'];
 $semester =$_SESSION['semester'];
 $department = strtoupper($_SESSION['department']);

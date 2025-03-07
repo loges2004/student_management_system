@@ -3,6 +3,7 @@ session_start();
 
 // Retrieve the required parameters from the session
 $staff_id = isset($_SESSION['staff_id']) ? $_SESSION['staff_id'] : '';
+$regulation = isset($_SESSION['regulation']) ? $_SESSION['regulation'] : '';
 $staff_name = isset($_SESSION['staff_name']) ? $_SESSION['staff_name'] : '';
 $year = isset($_SESSION['year']) ? $_SESSION['year'] : '';
 $semester = isset($_SESSION['semester']) ? $_SESSION['semester'] : '';
@@ -212,6 +213,7 @@ $testmark = isset($_SESSION['testmark']) ? (int)$_SESSION['testmark'] : 0;
                     <thead>
                         <tr>
                             <th class="text-center">Staff Name</th>
+                            <th class="text-center">regulation</th>
                             <th class="text-center">Year</th>
                             <th class="text-center">Semester</th>
                             <th class="text-center">Department</th>
@@ -225,6 +227,7 @@ $testmark = isset($_SESSION['testmark']) ? (int)$_SESSION['testmark'] : 0;
                     <tbody>
                         <tr>
                             <td class="text-center"><?php echo htmlspecialchars($staff_name); ?></td>
+                            <td class="text-center"><?php echo htmlspecialchars($regulation); ?></td>
                             <td class="text-center"><?php echo htmlspecialchars($year); ?></td>
                             <td class="text-center"><?php echo htmlspecialchars($semester); ?></td>
                             <td class="text-center"><?php echo htmlspecialchars($department); ?></td>
@@ -400,7 +403,8 @@ $testmark = isset($_SESSION['testmark']) ? (int)$_SESSION['testmark'] : 0;
             let formData = new FormData();
 
             // Add session data to formData
-            formData.append('staffname', '<?php echo $staff_name; ?>');
+            formData.append('staffname', '<?php echo $staff_name; ?>'); 
+            formData.append('regulation', '<?php echo $regulation; ?>'); 
             formData.append('year', '<?php echo $year; ?>');
             formData.append('semester', '<?php echo $semester; ?>');
             formData.append('department', '<?php echo $department; ?>');

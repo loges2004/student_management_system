@@ -1,6 +1,6 @@
-
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -17,6 +17,7 @@
             background-color: #f8f9fa;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
+
         .form-container {
             background: white;
             border-radius: 15px;
@@ -25,19 +26,23 @@
             margin: 2rem auto;
             max-width: 800px;
         }
+
         .form-container h2 {
             color: #2a2a72;
             margin-bottom: 1.5rem;
             font-weight: 700;
         }
+
         .form-label {
             font-weight: 600;
             color: #333;
         }
+
         .form-control:focus {
             border-color: #2a2a72;
             box-shadow: 0 0 5px rgba(42, 42, 114, 0.5);
         }
+
         .btn-custom {
             background: linear-gradient(45deg, #2a2a72, #009ffd);
             color: white;
@@ -46,19 +51,30 @@
             border-radius: 25px;
             transition: all 0.3s ease;
         }
+
         .btn-custom:hover {
             transform: scale(1.05);
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         }
+
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
+
         .animated {
             animation: fadeIn 0.6s ease-out;
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <div class="form-container animated">
@@ -77,26 +93,43 @@
                     </div>
                     <!-- Department -->
                     <div class="col-md-6">
-    <label for="department" class="form-label">Department</label>
-    <select class="form-select" id="department" name="department" required>
-        <option value="">-- Select Department --</option>
-        <option value="Civil Engineering">Civil Engineering</option>
-        <option value="Mechanical Engineering">Mechanical Engineering</option>
-        <option value="Electronics and Communication Engineering">Electronics and Communication Engineering</option>
-        <option value="Electrical and Electronics Engineering">Electrical and Electronics Engineering</option>
-        <option value="Computer Science and Engineering">Computer Science and Engineering</option>
-        <option value="Information Technology">Information Technology</option>
-        <option value="Biomedical Engineering">Biomedical Engineering</option>
-        <option value="Computer Science and Business Systems">Computer Science and Business Systems</option>
-        <option value="Artificial Intelligence and Data Science">Artificial Intelligence and Data Science</option>
-        <option value="CSE Cyber Security">CSE Cyber Security</option>
-        <option value="CSE Artificial Intelligence and Machine Learning">CSE Artificial Intelligence and Machine Learning</option>
-        <option value="Electronics Engineering VLSI Design and Technology">Electronics Engineering VLSI Design and Technology</option>
-        <option value="Business Administration MBA">Business Administration MBA</option>
-        <option value="Computer Applications MCA">Computer Applications MCA</option>
-        <option value="Science and Humanities">Science and Humanities</option>
-    </select>
-</div>
+                        <label for="department" class="form-label">Department</label>
+                        <select class="form-select" id="department" name="department" required>
+                            <option value="">-- Select Department --</option>
+                            <option value="Civil Engineering">Civil Engineering</option>
+                            <option value="Mechanical Engineering">Mechanical Engineering</option>
+                            <option value="Electronics and Communication Engineering">Electronics and Communication Engineering</option>
+                            <option value="Electrical and Electronics Engineering">Electrical and Electronics Engineering</option>
+                            <option value="Computer Science and Engineering">Computer Science and Engineering</option>
+                            <option value="Information Technology">Information Technology</option>
+                            <option value="Biomedical Engineering">Biomedical Engineering</option>
+                            <option value="Computer Science and Business Systems">Computer Science and Business Systems</option>
+                            <option value="Artificial Intelligence and Data Science">Artificial Intelligence and Data Science</option>
+                            <option value="CSE Cyber Security">CSE Cyber Security</option>
+                            <option value="CSE Artificial Intelligence and Machine Learning">CSE Artificial Intelligence and Machine Learning</option>
+                            <option value="Electronics Engineering VLSI Design and Technology">Electronics Engineering VLSI Design and Technology</option>
+                            <option value="Business Administration MBA">Business Administration MBA</option>
+                            <option value="Computer Applications MCA">Computer Applications MCA</option>
+                            <option value="Science and Humanities">Science and Humanities</option>
+                        </select>
+                    </div>
+                    <?php
+                    // Get the current year
+                    $currentYear = date("Y");
+
+                    // Define the range of years for the dropdown (e.g., current year to current year + 10)
+                    $startYear = 2020;
+                    $endYear = $currentYear + 10;
+
+                    // Generate the dropdown options
+                    echo '<label for="regulation">Regulation</label>';
+                    echo '<select name="regulation" id="regulation" required>';
+                    echo "<option value=''>---select the Regulation----</option>";
+                    for ($year = $startYear; $year <= $endYear; $year++) {
+                        echo "<option value='$year'>$year Regulation</option>";
+                    }
+                    echo '</select>';
+                    ?>
 
                     <!-- Year -->
                     <div class="col-md-6">
@@ -144,6 +177,7 @@
                     </div>
                     <!-- Submit Button -->
                     <div class="col-12">
+                        <button type="button" class="btn btn-danger me-5" onclick="window.location.href='subject_manage.php'">back</button>
                         <button type="submit" class="btn btn-custom">Submit</button>
                     </div>
                 </div>
@@ -196,4 +230,5 @@
         });
     </script>
 </body>
+
 </html>

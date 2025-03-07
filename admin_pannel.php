@@ -82,7 +82,7 @@ include('db.php'); // Include database connection
                 <a href="subject_entry.php">
                     <i class="fas fa-book"></i> Subject Management
                 </a>
-                <a href="department_entry.php">
+                <a href="department_manage.php">
                     <i class="fas fa-building"></i> Department Management
                 </a>
             </div>

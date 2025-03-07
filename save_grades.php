@@ -5,6 +5,7 @@ require 'db.php';
 $register_no = $_POST['register_no'];
 $semester = $_POST['semester'];
 $grades = $_POST['grades'];
+$section = $_POST['section'];
 
 // Fetch student by register number
 $stmt = $mysqli->prepare("SELECT student_id, student_name, years, department FROM stud WHERE register_no = ?");
@@ -20,26 +21,49 @@ if (!$student) {
     die("Student not found.");
 }
 
-$student_id = $student['student_id'];
 $student_name = $student['student_name'];
 $year = $student['years'];
 $department = $student['department'];
+
+// Insert or update grades for each subject
 foreach ($grades as $subject_id => $grade) {
-    // Prepare the SQL query
+    // Fetch subject details (subject_code, subject_name, credit_points)
+    $stmt = $mysqli->prepare("SELECT subject_code, subject_name, credit_points FROM subjects WHERE subject_id = ?");
+    if ($stmt === false) {
+        die('MySQL prepare error: ' . $mysqli->error);
+    }
+
+    $stmt->bind_param('i', $subject_id);
+    $stmt->execute();
+    $subject = $stmt->get_result()->fetch_assoc();
+
+    if (!$subject) {
+        die("Subject not found.");
+    }
+
+    $subject_code = $subject['subject_code'];
+    $subject_name = $subject['subject_name'];
+    $credit_points = $subject['credit_points'];
+
+    // Insert or update grades
     $stmt = $mysqli->prepare("
-        INSERT INTO student_grades (student_id, subject_id, grade, semester, department) 
-        VALUES (?, ?, ?, ?, ?)
+        INSERT INTO student_grades (register_no, student_name, subject_id, subject_code, subject_name, grade, semester, department, section, years) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ON DUPLICATE KEY UPDATE 
+            student_name = VALUES(student_name),
+            subject_code = VALUES(subject_code),
+            subject_name = VALUES(subject_name),
             grade = VALUES(grade), 
-            semester = VALUES(semester)
+            semester = VALUES(semester),
+            section = VALUES(section),
+            years = VALUES(years)
     ");
 
     if ($stmt === false) {
         die('MySQL prepare error: ' . $mysqli->error);
     }
 
-    // Bind parameters
-    $stmt->bind_param('iisss', $student_id, $subject_id, $grade, $semester, $department);
+    $stmt->bind_param('ssissssssi', $register_no, $student_name, $subject_id, $subject_code, $subject_name, $grade, $semester, $department, $section, $year);
     $stmt->execute();
 }
 
@@ -49,7 +73,7 @@ $credit_total = 0;
 $grade_points_total = 0;
 
 foreach ($grades as $subject_id => $grade) {
-    // Get credit points for the subject
+    // Fetch subject details (credit_points)
     $stmt = $mysqli->prepare("SELECT credit_points FROM subjects WHERE subject_id = ?");
     if ($stmt === false) {
         die('MySQL prepare error: ' . $mysqli->error);
@@ -84,24 +108,24 @@ if ($credit_total > 0) {
     $cgpa = $grade_points_total / $credit_total;
 }
 
-// Truncate CGPA to 2 decimal places
 $truncated_cgpa = floor($cgpa * 100) / 100;
 
-// Insert or update CGPA in the cgpa_table
-$stmt = $mysqli->prepare("INSERT INTO cgpa_table (register_no, student_name, years, department, semester, cgpa_mark) 
-                          VALUES (?, ?, ?, ?, ?, ?) 
-                          ON DUPLICATE KEY UPDATE 
-                          student_name = VALUES(student_name), 
-                          years = VALUES(years), 
-                          department = VALUES(department), 
-                          semester = VALUES(semester), 
-                          cgpa_mark = VALUES(cgpa_mark)");
+// Update CGPA in all rows for the student in the current semester
+$stmt = $mysqli->prepare("
+    UPDATE student_grades 
+    SET cgpa_mark = ? 
+    WHERE register_no = ? 
+    AND semester = ? 
+    AND TRIM(department) = TRIM(?) 
+    AND section = ?
+    AND years = ?
+");
 
 if ($stmt === false) {
     die('MySQL prepare error: ' . $mysqli->error);
 }
 
-$stmt->bind_param('ssissd', $register_no, $student_name, $year, $department, $semester, $truncated_cgpa);
+$stmt->bind_param('dsssss', $truncated_cgpa, $register_no, $semester, $department, $section, $year);
 if (!$stmt->execute()) {
     die('MySQL execute error: ' . $stmt->error);
 }

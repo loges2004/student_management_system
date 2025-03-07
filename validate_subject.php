@@ -27,7 +27,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $testmark = $_POST['testmark']; // Get the testmark value from POST
     $staff_name = $_POST['staff_name']; // Get the testmark value from POST
     $staff_id = $_POST['staff_id']; // Get the testmark value from POST
-    
+    $regulation = $_POST['regulation'];
     // Store form data in session variables
     $_SESSION['year'] = $year;
     $_SESSION['test_type'] = $test_type;
@@ -39,6 +39,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $_SESSION['testmark'] = $testmark;
     $_SESSION['staff_name'] = $staff_name;
     $_SESSION['staff_id'] = $staff_id;
+    $_SESSION['regulation'] = $regulation;
 
 
     // Prepare the SQL statement to check if the subject already exists

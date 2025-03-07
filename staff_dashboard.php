@@ -1,5 +1,5 @@
 <?php
-// Start session and check staff authentication
+// Start session
 session_start();
 
 // Include database connection
@@ -11,7 +11,7 @@ if ($mysqli->connect_error) {
 }
 
 // Define staff id for testing purpose
-$staff_id = "IT2282";
+$staff_id = "IT2282"; // Replace this with dynamic staff_id if needed
 
 // Fetch staff details
 $query = "SELECT * FROM staff WHERE staff_id = ?";
@@ -29,6 +29,14 @@ if (!$stmt->execute()) {
 
 $result = $stmt->get_result();
 $staff = $result->fetch_assoc();
+
+// Check if staff exists
+if ($staff) {
+    // Store staff_name in session variable
+    $_SESSION['staff_name'] = $staff['staff_name'];
+} else {
+    die("Staff not found.");
+}
 
 // Fetch recent test results
 $tests_query = "
@@ -74,7 +82,7 @@ if (!$marks_stmt) {
     die("Error preparing marks query: " . $mysqli->error);
 }
 
-$marks_stmt->bind_param("i", $staff_id);
+$marks_stmt->bind_param("s", $staff_id);
 if (!$marks_stmt->execute()) {
     die("Error executing marks query: " . $marks_stmt->error);
 }
@@ -234,7 +242,6 @@ $marks_result = $marks_stmt->get_result();
         .dropdown-submenu.show {
             display: block;
         }
-
     </style>
 </head>
 <body>
@@ -312,7 +319,7 @@ $marks_result = $marks_stmt->get_result();
                     <i class="fas fa-calculator card-icon"></i>
                     <h3 class="mb-3">CGPA Calculator</h3>
                     <p class="text-white">Calculate and analyze student performance</p>
-                    <a href="dashboard.php" class="btn btn-custom">Calculate Now</a>
+                    <a href="dashboard.php?staff_name=<?php echo urlencode($_SESSION['staff_name']); ?>" class="btn btn-custom">Calculate Now</a>
                 </div>
             </div>
         </div>
@@ -431,6 +438,5 @@ $marks_result = $marks_stmt->get_result();
         });
     });
 </script>
-
 </body>
 </html>
