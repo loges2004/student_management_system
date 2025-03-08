@@ -16,14 +16,16 @@ if (!isset($_SESSION['year'], $_SESSION['semester'], $_SESSION['department'], $_
 }
 
 // Fetch and sanitize session variables
+$regulation = $_SESSION['regulation'] ?? '';
 $year = $_SESSION['year'] ?? '';
-$semester = $_SESSION['semester'] ?? '';
+$semester =strtoupper($_SESSION['semester']) ?? '';
 $department = strtoupper($_SESSION['department']) ?? '';
 $section =  strtoupper($_SESSION['section']) ?? '';
-$test_type = $_SESSION['test_type'] ?? '';
+$test_type = strtoupper($_SESSION['test_type']) ?? '';
 $subject_name = $_SESSION['subject_name'] ?? '';
 $subject_code = $_SESSION['subject_code'] ?? '';
 $testmark = $_SESSION['testmark'] ?? '';
+
 
 // Retrieve question count from URL
 $questionCount = isset($_GET['questionCount']) ? (int)$_GET['questionCount'] : 0;
@@ -346,6 +348,7 @@ if (isset($_SESSION['failed'])) {
                             </tbody>
                         </table>
 
+                        <input type="hidden" name="regulation" value="<?php echo htmlspecialchars($regulation); ?>">
                         <input type="hidden" name="year" value="<?php echo htmlspecialchars($year); ?>">
                         <input type="hidden" name="semester" value="<?php echo htmlspecialchars($semester); ?>">
                         <input type="hidden" name="department" value="<?php echo htmlspecialchars($department); ?>">

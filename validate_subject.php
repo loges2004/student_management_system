@@ -43,8 +43,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 
     // Prepare the SQL statement to check if the subject already exists
-    $stmt = $mysqli->prepare("SELECT * FROM subjects WHERE subject_name COLLATE utf8mb4_general_ci = ? AND subject_code = ? AND department = ? AND semester = ?");
-    $stmt->bind_param("ssss", $subject_name, $subject_code, $department, $semester);
+    $stmt = $mysqli->prepare("SELECT * FROM subjects WHERE subject_name COLLATE utf8mb4_general_ci = ? AND subject_code = ? AND department = ? AND semester = ? AND regulation=?");
+    $stmt->bind_param("sssss", $subject_name, $subject_code, $department, $semester,$regulation);
 
     // Execute the statement
     $stmt->execute();

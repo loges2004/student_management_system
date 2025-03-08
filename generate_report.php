@@ -15,8 +15,14 @@ if ($regulation_stmt === false) die('MySQL prepare error: ' . $mysqli->error);
 $regulation_stmt->bind_param('sis', $department, $year, $section);
 $regulation_stmt->execute();
 $regulation_result = $regulation_stmt->get_result();
-$regulation_row = $regulation_result->fetch_assoc();
-$regulation = $regulation_row['regulation'] ?? 'N/A';
+
+// Check if the query returned any results
+if ($regulation_result->num_rows > 0) {
+    $regulation_row = $regulation_result->fetch_assoc();
+    $regulation = $regulation_row['regulation'];
+} else {
+    $regulation = 'N/A'; // Default value if no regulation is found
+}
 
 // Fetch subjects for the selected criteria
 $stmt = $mysqli->prepare("SELECT subject_id, subject_code, subject_name FROM subjects WHERE department = ? AND years = ? AND semester = ?");
@@ -58,16 +64,35 @@ if ($result->num_rows > 0) {
     $arrearsCount = [1 => 0, 2 => 0, 3 => 0];
     $allPassCount = 0;
 
+    // Students with arrears
+    $studentsWithArrears = [
+        1 => [],
+        2 => [],
+        3 => []
+    ];
+
+    // Subject-wise arrears
+    $subjectArrears = [];
+    foreach ($subjects as $subject) {
+        $subjectArrears[$subject['subject_code']] = [];
+    }
+
     while ($row = $result->fetch_assoc()) {
         $arrears = 0;
         foreach ($subjects as $subject) {
             $subject_code = $subject['subject_code'];
-            if ($row[$subject_code] == 'U') $arrears++;
+            if ($row[$subject_code] == 'U') {
+                $arrears++;
+                $subjectArrears[$subject_code][] = $row;
+            }
             $subjectGrades[$subject_code][] = $row[$subject_code];
         }
         if ($arrears == 0) $allPassCount++;
-        elseif ($arrears >= 1 && $arrears <= 3) $arrearsCount[$arrears]++;
-        
+        elseif ($arrears >= 1 && $arrears <= 3) {
+            $arrearsCount[$arrears]++;
+            $studentsWithArrears[$arrears][] = $row;
+        }
+
         $students[] = $row;
     }
 
@@ -75,21 +100,27 @@ if ($result->num_rows > 0) {
     $subjectStats = [];
     foreach ($subjectGrades as $code => $grades) {
         $stats = [
-            'O' => 0, 'A+' => 0, 'A' => 0, 'B+' => 0,
-            'B' => 0, 'C' => 0, 'U' => 0, 'WH1' => 0
+            'O' => 0,
+            'A+' => 0,
+            'A' => 0,
+            'B+' => 0,
+            'B' => 0,
+            'C' => 0,
+            'U' => 0,
+            'WH1' => 0
         ];
         foreach ($grades as $grade) {
             $stats[$grade] = isset($stats[$grade]) ? $stats[$grade] + 1 : 1;
         }
         $total = count($grades);
-        
+
         // Check if $total is greater than zero to avoid division by zero
         if ($total > 0) {
             $passPercent = (($total - $stats['U']) / $total) * 100;
         } else {
             $passPercent = 0; // Set pass percentage to 0 if no grades are available
         }
-        
+
         $subjectStats[$code] = [
             'grades' => $stats,
             'pass_percent' => round($passPercent, 2),
@@ -112,35 +143,86 @@ if ($result->num_rows > 0) {
     <title>Academic Report</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+   
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        .header { text-align: center; margin-bottom: 20px; }
-        .bold { font-weight: bold; }
-        .subject-header td { background-color: #f0f0f0; }
-        canvas { max-width: 100%; height: auto; }
-        .signature { margin-top: 50px; }
-        .signature .left { float: left; }
-        .signature .right { float: right; }
-    </style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+    }
+    .header {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    .bold {
+        font-weight: bold;
+    }
+    .subject-header td {
+        background-color: #f0f0f0;
+    }
+    canvas {
+        max-width: 100%;
+        height: auto;
+    }
+    .signature {
+        position: absolute;
+        bottom: 20px;
+        left: 0;
+        right: 0;
+        display: flex;
+        justify-content: space-between;
+        padding: 0 20px;
+    }
+    .signature .left,
+    .signature .right {
+        width: 45%;
+    }
+    .pdf-page {
+        position: relative;
+        margin: 20px;
+        padding: 20px;
+        page-break-after: always; /* Ensure page breaks */
+        min-height: 100vh; /* Ensure each page takes full height */
+    }
+    table {
+        width: 100%;
+        margin-bottom: 20px;
+        border-collapse: collapse;
+    }
+    table, th, td {
+        border: 1px solid #000;
+    }
+    th, td {
+        padding: 8px;
+        text-align: center;
+    }
+    .arrear-section {
+        margin-bottom: 20px; /* Add space between arrear sections */
+    }
+</style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h2>PSNA College of Engineering and Technology, Dindigul</h2>
-            <h3>Department of Information Technology</h3>
-            <p>Year: <?= $year ?> &nbsp;&nbsp;&nbsp;&nbsp; Sem: <?= $semester ?> &nbsp;&nbsp;&nbsp;&nbsp; Section: <?= $section ?></p>
-            <h4>End Semester Result Analysis (Regulation: <?= $regulation ?>)</h4>
-        </div>
 
-        <!-- Download PDF Button -->
-        <div class="text-end mb-3">
+ <!-- Download PDF Button -->
+ <div class="text-end mb-3">
             <button id="downloadPdf" class="btn btn-primary">Download PDF</button>
         </div>
+     <!-- PDF Content Container -->
+     <div class="container" id="pdf-content">
+        <!-- Page 1 -->
+        <div class="pdf-page">
+            <div class="header">
+                <h2>PSNA College of Engineering and Technology, Dindigul</h2>
+                <h3>Department of Information Technology</h3>
+                <p>Year: <?= $year ?> &nbsp;&nbsp;&nbsp;&nbsp; Sem: <?= $semester ?> &nbsp;&nbsp;&nbsp;&nbsp; Section: <?= $section ?></p>
+                <h4>End Semester Result Analysis (Regulation: <?= $regulation ?>)</h4>
+            </div>
 
-        <!-- Subject Header -->
-        <table class="table table-bordered">
-            <tr class="subject-header">
+            <!-- Subject Header -->
+            <table class="table table-bordered">
+                <tr class="subject-header">
                 <td>Subject Code</td>
                 <?php foreach ($subjects as $subject): ?>
                     <td><?= $subject['subject_code'] ?></td>
@@ -154,11 +236,11 @@ if ($result->num_rows > 0) {
                 <?php endforeach; ?>
                 <td></td>
             </tr>
-        </table>
+            </table>
 
-        <!-- Student Grades Table -->
-        <table class="table table-bordered">
-            <tr>
+            <!-- Student Grades Table -->
+            <table class="table table-bordered">
+                 <tr>
                 <th>S.No.</th>
                 <th>Reg. No.</th>
                 <th>Name</th>
@@ -168,26 +250,29 @@ if ($result->num_rows > 0) {
                 <th>Arrears</th>
             </tr>
             <?php foreach ($students as $index => $student): ?>
-            <tr>
-                <td><?= $index + 1 ?></td>
-                <td><?= $student['register_no'] ?></td>
-                <td><?= $student['student_name'] ?></td>
-                <?php 
-                $arrears = 0;
-                foreach ($subjects as $subject) {
-                    $subject_code = $subject['subject_code'];
-                    echo "<td>" . $student[$subject_code] . "</td>";
-                    if ($student[$subject_code] == 'U') $arrears++;
-                }
-                ?>
-                <td><?= $arrears > 0 ? $arrears : '' ?></td>
-            </tr>
+                <tr>
+                    <td><?= $index + 1 ?></td>
+                    <td><?= $student['register_no'] ?></td>
+                    <td><?= $student['student_name'] ?></td>
+                    <?php
+                    $arrears = 0;
+                    foreach ($subjects as $subject) {
+                        $subject_code = $subject['subject_code'];
+                        echo "<td>" . $student[$subject_code] . "</td>";
+                        if ($student[$subject_code] == 'U') $arrears++;
+                    }
+                    ?>
+                    <td><?= $arrears > 0 ? $arrears : '' ?></td>
+                </tr>
             <?php endforeach; ?>
-        </table>
+            </table>
+        </div>
 
-        <!-- Summary Statistics -->
-        <table class="table table-bordered">
-            <tr class="bold">
+        <!-- Page 2 -->
+        <div class="pdf-page">
+            <h3>Summary Statistics</h3>
+            <table class="table table-bordered">
+               <tr class="bold">
                 <td>No. of Failures</td>
                 <?php foreach ($subjects as $subject): ?>
                     <td><?= $subjectStats[$subject['subject_code']]['failures'] ?></td>
@@ -205,11 +290,11 @@ if ($result->num_rows > 0) {
                 <td>Overall %</td>
                 <td colspan="<?= count($subjects) + 1 ?>"><?= round($overallPassPercent, 2) ?></td>
             </tr>
-        </table>
+            </table>
 
-        <!-- Arrears Summary -->
-        <table class="table table-bordered">
-            <tr>
+            <h3>Arrears Summary</h3>
+            <table class="table table-bordered">
+                  <tr>
                 <td colspan="2" class="bold">All Pass</td>
                 <td><?= $allPassCount ?></td>
             </tr>
@@ -225,28 +310,58 @@ if ($result->num_rows > 0) {
                 <td colspan="2" class="bold">3 Subjects Arrear</td>
                 <td><?= $arrearsCount[3] ?></td>
             </tr>
-        </table>
+            </table>
+        </div>
 
-        <!-- Grade Distribution -->
-        <table class="table table-bordered">
-            <tr>
-                <th>Grade</th>
-                <?php foreach ($subjects as $subject): ?>
-                    <th><?= $subject['subject_code'] ?></th>
-                <?php endforeach; ?>
-            </tr>
-            <?php foreach (['O', 'A+', 'A', 'B+', 'B', 'C', 'U', 'WH1'] as $grade): ?>
-            <tr>
-                <td class="bold"><?= $grade ?></td>
-                <?php foreach ($subjects as $subject): ?>
-                    <td><?= $subjectStats[$subject['subject_code']]['grades'][$grade] ?? 0 ?></td>
-                <?php endforeach; ?>
-            </tr>
-            <?php endforeach; ?>
-        </table>
+        <!-- Page 3 -->
+        <div class="pdf-page">
+           <?php foreach ([1, 2, 3] as $numArrears): ?>
+            <?php if (!empty($studentsWithArrears[$numArrears])): ?>
+                <h4><?= $numArrears ?> Subject Arrear</h4>
+                <table class="table table-bordered">
+                    <tr>
+                        <th>S.No.</th>
+                        <th>Reg. No.</th>
+                        <th>Name</th>
+                    </tr>
+                    <?php foreach ($studentsWithArrears[$numArrears] as $index => $student): ?>
+                        <tr>
+                            <td><?= $index + 1 ?></td>
+                            <td><?= $student['register_no'] ?></td>
+                            <td><?= $student['student_name'] ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                </table>
+            <?php endif; ?>
+        <?php endforeach; ?>
+        </div>
 
-        <!-- Graphs -->
+        <!-- Page 4 -->
+        <div class="pdf-page">
+            <?php foreach ($subjectArrears as $subjectCode => $students): ?>
+            <?php if (!empty($students)): ?>
+                <h4><?= $subjectCode ?> - <?= $subjects[array_search($subjectCode, array_column($subjects, 'subject_code'))]['subject_name'] ?></h4>
+                <table class="table table-bordered">
+                    <tr>
+                        <th>S.No.</th>
+                        <th>Reg. No.</th>
+                        <th>Name</th>
+                    </tr>
+                    <?php foreach ($students as $index => $student): ?>
+                        <tr>
+                            <td><?= $index + 1 ?></td>
+                            <td><?= $student['register_no'] ?></td>
+                            <td><?= $student['student_name'] ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                </table>
+            <?php endif; ?>
+        <?php endforeach; ?>
+        </div>
+
+        <div class="pdf-page">
         <div class="row mt-4">
+            <!-- Charts -->
             <div class="col-md-6">
                 <canvas id="passFailChart"></canvas>
             </div>
@@ -254,8 +369,6 @@ if ($result->num_rows > 0) {
                 <canvas id="gradeDistributionChart"></canvas>
             </div>
         </div>
-
-        <!-- Signature Section -->
         <div class="signature">
             <div class="left">
                 <p>Class Incharge</p>
@@ -267,16 +380,16 @@ if ($result->num_rows > 0) {
             </div>
         </div>
     </div>
+</div>
 
     <script>
-        // Pass/Fail Chart
         const passFailCtx = document.getElementById('passFailChart').getContext('2d');
         const passFailChart = new Chart(passFailCtx, {
             type: 'pie',
             data: {
                 labels: ['Pass', 'Fail'],
                 datasets: [{
-                    data: [<?= $allPassCount ?>, <?= $totalStudents - $allPassCount ?>],
+                    data: [<?= json_encode($allPassCount) ?>, <?= json_encode($totalStudents - $allPassCount) ?>],
                     backgroundColor: ['#4CAF50', '#F44336']
                 }]
             },
@@ -291,6 +404,19 @@ if ($result->num_rows > 0) {
             }
         });
 
+        <?php
+        // Define an array of colors for each subject
+        $colors = [
+            'rgba(255, 99, 132, 0.2)', // Red
+            'rgba(54, 162, 235, 0.2)', // Blue
+            'rgba(75, 192, 192, 0.2)', // Green
+            'rgba(255, 206, 86, 0.2)', // Yellow
+            'rgba(153, 102, 255, 0.2)', // Purple
+            'rgba(255, 159, 64, 0.2)', // Orange
+            'rgba(199, 199, 199, 0.2)', // Gray
+            'rgba(83, 102, 255, 0.2)', // Indigo
+        ];
+        ?>
         // Grade Distribution Chart
         const gradeDistributionCtx = document.getElementById('gradeDistributionChart').getContext('2d');
         const gradeDistributionChart = new Chart(gradeDistributionCtx, {
@@ -312,22 +438,25 @@ if ($result->num_rows > 0) {
                             'U' => 0,
                             'WH1' => 0
                         ];
-                    ?>
-                    {   label: '<?= $subjectCode ?>',
-                        data: [
-                            <?= $grades['O'] ?>,
-                            <?= $grades['A+'] ?>,
-                            <?= $grades['A'] ?>,
-                            <?= $grades['B+'] ?>,
-                            <?= $grades['B'] ?>,
-                            <?= $grades['C'] ?>,
-                            <?= $grades['U'] ?>,
-                            <?= $grades['WH1'] ?>
-                        ],
-                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                        borderColor: 'rgba(54, 162, 235, 1)',
-                        borderWidth: 1
-                    }<?= ($index < $subjectCount - 1) ? ',' : ''; ?>
+                        // Assign a unique color for each subject
+                        $color = $colors[$index % count($colors)];
+                    ?> {
+                            label: <?= json_encode($subjectCode) ?>,
+                            data: [
+                                <?= json_encode($grades['O']) ?>,
+                                <?= json_encode($grades['A+']) ?>,
+                                <?= json_encode($grades['A']) ?>,
+                                <?= json_encode($grades['B+']) ?>,
+                                <?= json_encode($grades['B']) ?>,
+                                <?= json_encode($grades['C']) ?>,
+                                <?= json_encode($grades['U']) ?>,
+                                <?= json_encode($grades['WH1']) ?>
+                            ],
+                            backgroundColor: <?= json_encode($color) ?>,
+                            borderColor: <?= json_encode(str_replace('0.2', '1', $color)) ?>, // Darker border color
+                            borderWidth: 1
+                        }
+                        <?= ($index < $subjectCount - 1) ? ',' : ''; ?>
                     <?php endforeach; ?>
                 ]
             },
@@ -347,21 +476,47 @@ if ($result->num_rows > 0) {
             }
         });
 
-        // Download PDF
-        document.getElementById('downloadPdf').addEventListener('click', () => {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
+        document.getElementById('downloadPdf').addEventListener('click', async () => {
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF('p', 'mm', 'a4'); // Create a new PDF in A4 size
 
-            // Add content to PDF
-            doc.text("Academic Report", 10, 10);
-            doc.text(`Year: ${<?= $year ?>}`, 10, 20);
-            doc.text(`Semester: ${<?= $semester ?>}`, 10, 30);
-            doc.text(`Section: ${<?= $section ?>}`, 10, 40);
-            doc.text(`Regulation: ${<?= $regulation ?>}`, 10, 50);
+        // Function to capture and add a page to the PDF
+        const addPageToPdf = (element) => {
+            return html2canvas(element, {
+                scale: 2, // Increase scale for better quality
+                useCORS: true, // Enable CORS for external resources
+                allowTaint: true, // Allow tainted canvas
+                logging: true, // Enable logging for debugging
+                scrollY: -window.scrollY, // Adjust for scroll position
+                windowHeight: element.scrollHeight // Set height to content height
+            }).then((canvas) => {
+                const imgData = canvas.toDataURL('image/png'); // Convert canvas to image
+                const imgWidth = 210; // A4 width in mm
+                const imgHeight = (canvas.height * imgWidth) / canvas.width; // Calculate height to maintain aspect ratio
 
-            // Save PDF
-            doc.save('academic_report.pdf');
-        });
+                pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight); // Add the image to the PDF
+            });
+        };
+
+        // Capture the entire content and add it to the PDF
+        const content = document.getElementById('pdf-content'); // Use the correct ID
+        if (!content) {
+            console.error('Element with id "pdf-content" not found.');
+            return;
+        }
+
+        // Capture each page and add it to the PDF
+        const pages = content.querySelectorAll('.pdf-page');
+        for (let i = 0; i < pages.length; i++) {
+            await addPageToPdf(pages[i]);
+            if (i < pages.length - 1) {
+                pdf.addPage(); // Add a new page for the next section
+            }
+        }
+
+        // Save the PDF
+        pdf.save('academic_report.pdf');
+    });
     </script>
 </body>
 </html>

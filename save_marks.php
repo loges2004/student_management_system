@@ -27,6 +27,12 @@ $attendance = isset($_POST['attendance']) ? 'Present' : 'Absent';
 $questionCount = (int)($_POST['questionCount'] ?? 0);
 $testmark = (int)($_POST['testmark'] ?? 0);
 
+// Validate regulation
+$regulation = isset($_POST['regulation']) ? trim($_POST['regulation']) : '';
+if (!preg_match('/^\d{4}$/', $regulation)) {
+    $errors[] = "Invalid regulation format. It should be a 4-digit year (e.g., 2022).";
+}
+
 // Validate required fields
 $errors = [];
 if (empty($register_no)) $errors[] = "Register Number is required.";
@@ -37,6 +43,7 @@ if (empty($_POST['department'])) $errors[] = "Department is required.";
 if (empty($_POST['section'])) $errors[] = "Section is required.";
 if (empty($_POST['test_type'])) $errors[] = "Test Type is required.";
 if (empty($_POST['subject_code'])) $errors[] = "Subject Code is required.";
+if (empty($_POST['subject_name'])) $errors[] = "Subject Name is required."; // Add validation for subject_name
 if ($testmark <= 0) $errors[] = "Test mark must be greater than 0.";
 
 if (!empty($errors)) {
@@ -69,22 +76,23 @@ try {
 
     if (!$test_result) {
         // Insert new test with uppercase values
-        $insert_test = $mysqli->prepare("INSERT INTO test_results (year, semester, department, section, test_type, subject_code, subject_name, testmark) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+        $insert_test = $mysqli->prepare("INSERT INTO test_results (year, semester, department, section, test_type, subject_code, subject_name, testmark, regulation) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
         $department_upper = strtoupper($_POST['department']);
         $section_upper = strtoupper($_POST['section']);
         $test_type_upper = strtoupper($_POST['test_type']);
         $subject_code_upper = strtoupper($_POST['subject_code']);
-        $subject_name_upper = strtoupper($_POST['subject_name']);
+        $subject_name_upper = strtoupper($_POST['subject_name']); // Ensure subject_name is uppercase
         $insert_test->bind_param(
-            "iisssssi",
+            "iisssssis", // 's' for regulation (string)
             $_POST['year'],
             $_POST['semester'],
             $department_upper,
             $section_upper,
             $test_type_upper,
             $subject_code_upper,
-            $subject_name_upper,
-            $testmark
+            $subject_name_upper, // Pass subject_name here
+            $testmark,
+            $regulation // Pass as string
         );
         if (!$insert_test->execute()) {
             throw new Exception("Error creating test configuration: " . $insert_test->error);
@@ -92,12 +100,12 @@ try {
         $test_id = $mysqli->insert_id;
         $test_type_db = $test_type_upper;
         $subject_code_db = $subject_code_upper;
-        $subject_name_db = $subject_name_upper;
+        $subject_name_db = $subject_name_upper; // Use the correct subject_name
     } else {
         $test_id = $test_result['id'];
         $test_type_db = strtoupper($test_result['test_type']);
         $subject_code_db = strtoupper($test_result['subject_code']);
-        $subject_name_db = strtoupper($test_result['subject_name']);
+        $subject_name_db = strtoupper($test_result['subject_name']); // Use the correct subject_name
 
         // Update testmark if needed
         if ($test_result['testmark'] != $testmark) {
@@ -110,14 +118,14 @@ try {
         }
     }
 
-    // Prepare COs for questions
-    $co_stmt = $mysqli->prepare("SELECT course_outcome FROM co_questions WHERE test_id = ? AND question_number = ?");
+    // Prepare COs and Bloom's Taxonomy for questions
+    $co_stmt = $mysqli->prepare("SELECT course_outcome, blooms_taxonomy FROM co_questions WHERE test_id = ? AND question_number = ?");
     $insert_mark = $mysqli->prepare("
         INSERT INTO student_marks (
             test_id, register_no, student_name, section, question_number, marks, attended, 
-            course_outcome, test_type, testmark, subject_code, subject_name, attendance, total_marks,
-            year, department, semester, student_id
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            course_outcome, blooms_taxonomy, test_type, testmark, subject_code, subject_name, attendance, total_marks,
+            year, department, semester, student_id, regulation
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ON DUPLICATE KEY UPDATE
             marks = VALUES(marks),
             attended = VALUES(attended),
@@ -127,7 +135,8 @@ try {
             year = VALUES(year),
             department = VALUES(department),
             semester = VALUES(semester),
-            student_id = VALUES(student_id)
+            student_id = VALUES(student_id),
+            regulation = VALUES(regulation)
     ");
 
     // Calculate total marks and insert/update
@@ -141,12 +150,13 @@ try {
         $co_stmt->execute();
         $co_result = $co_stmt->get_result()->fetch_assoc();
         $course_outcome = $co_result['course_outcome'] ?? null;
+        $blooms_taxonomy = $co_result['blooms_taxonomy'] ?? null;
 
         // Convert attendance to uppercase
         $attendance_upper = strtoupper($attendance);
 
         $insert_mark->bind_param(
-            "isssiiissssssiissi", // Adjust the types based on your schema
+            "isssiiisssssssiissis", // 's' for regulation (string)
             $test_id,
             $register_no,
             $student_name,
@@ -155,16 +165,18 @@ try {
             $mark,
             $is_attended,
             $course_outcome,
+            $blooms_taxonomy,
             $test_type_db,
             $testmark,
             $subject_code_db,
-            $subject_name_db,
+            $subject_name_db, // Use the correct subject_name
             $attendance_upper,
             $total_marks,
-            $_POST['year'], // Add year
-            $_POST['department'], // Add department
-            $_POST['semester'], // Add semester
-            $student_id // Add student_id
+            $_POST['year'],
+            $_POST['department'],
+            $_POST['semester'],
+            $student_id,
+            $regulation // Pass as string
         );
         if (!$insert_mark->execute()) {
             throw new Exception("Error saving marks for question $questionNo: " . $insert_mark->error);
