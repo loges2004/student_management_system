@@ -3,30 +3,29 @@ session_start();
 include 'db.php';
 
 // Check if session variables are set
-if (!isset($_SESSION['staff_id'], $_SESSION['regulation'], $_SESSION['staff_name'], $_SESSION['year'], $_SESSION['semester'], $_SESSION['department'], $_SESSION['test_type'], $_SESSION['testmark'], $_SESSION['subject_name'], $_SESSION['subject_code'])) {
+if (!isset($_SESSION['staff_id'], $_SESSION['staff_name'], $_SESSION['year'], $_SESSION['semester'], $_SESSION['department'], $_SESSION['test_type'], $_SESSION['testmark'], $_SESSION['subject_name'], $_SESSION['subject_code'])) {
     die('Error: Missing session data.');
 }
 
 // Fetch session variables
 $staff_id = $_SESSION['staff_id'];
-$staffname = strtoupper($_SESSION['staff_name']);
-$regulation = strtoupper($_SESSION['regulation']);
+$staffname = strtoupper( $_SESSION['staff_name']);
 $year = $_SESSION['year'];
-$semester = $_SESSION['semester'];
+$semester =$_SESSION['semester'];
 $department = strtoupper($_SESSION['department']);
-$section = strtoupper($_SESSION['section']);
-$test_type = strtoupper($_SESSION['test_type']);
+$section = strtoupper( $_SESSION['section']);
+$test_type = strtoUpper($_SESSION['test_type']);
 $testmark = $_SESSION['testmark'];
-$subject_name = strtoupper($_SESSION['subject_name']); // Ensure subject_name is not 0
-$subject_code = strtoupper($_SESSION['subject_code']);
+$subject_name = strtoupper($_SESSION['subject_name']);
+$subject_code = strtoupper( $_SESSION['subject_code']);
 
 // Check if a record with the same combination already exists in test_results
-$query = "SELECT id FROM test_results WHERE staff_id = ? AND staffname = ? AND regulation = ? AND year = ? AND semester = ? AND department = ? AND section = ? AND test_type = ? AND testmark = ? AND subject_name = ? AND subject_code = ?";
+$query = "SELECT id FROM test_results WHERE staff_id = ? AND staffname = ? AND year = ? AND semester = ? AND department = ? AND section = ? AND test_type = ? AND testmark = ? AND subject_name = ? AND subject_code = ?";
 $stmt = $mysqli->prepare($query);
 if (!$stmt) {
     die('Error preparing statement: ' . $mysqli->error);
 }
-$stmt->bind_param("isssssssiss", $staff_id, $staffname, $regulation, $year, $semester, $department, $section, $test_type, $testmark, $subject_name, $subject_code);
+$stmt->bind_param("isissssiss", $staff_id, $staffname, $year, $semester, $department, $section, $test_type, $testmark, $subject_name, $subject_code);
 $stmt->execute();
 $result = $stmt->get_result();
 
@@ -34,12 +33,12 @@ if ($result->num_rows > 0) {
     // Record exists, update it
     $row = $result->fetch_assoc();
     $test_id = $row['id']; // Get the existing test_id
-    $update_query = "UPDATE test_results SET staffname = ?, regulation = ?, year = ?, semester = ?, department = ?, section = ?, test_type = ?, testmark = ?, subject_name = ?, subject_code = ? WHERE id = ?";
+    $update_query = "UPDATE test_results SET staffname = ?, year = ?, semester = ?, department = ?, section = ?, test_type = ?, testmark = ?, subject_name = ?, subject_code = ? WHERE id = ?";
     $update_stmt = $mysqli->prepare($update_query);
     if (!$update_stmt) {
         die('Error preparing update statement: ' . $mysqli->error);
     }
-    $update_stmt->bind_param("ssssssssisi", $staffname, $regulation, $year, $semester, $department, $section, $test_type, $testmark, $subject_name, $subject_code, $test_id);
+    $update_stmt->bind_param("sissssissi", $staffname, $year, $semester, $department, $section, $test_type, $testmark, $subject_name, $subject_code, $test_id);
     
     if (!$update_stmt->execute()) {
         die("Error updating test_results: " . $update_stmt->error);
@@ -47,12 +46,12 @@ if ($result->num_rows > 0) {
     $update_stmt->close();
 } else {
     // Record doesn't exist, insert new record
-    $insert_query = "INSERT INTO test_results (staff_id, staffname, regulation, year, semester, department, section, test_type, testmark, subject_name, subject_code) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    $insert_query = "INSERT INTO test_results (staff_id, staffname, year, semester, department, section, test_type, testmark, subject_name, subject_code) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     $insert_stmt = $mysqli->prepare($insert_query);
     if (!$insert_stmt) {
         die('Error preparing insert statement: ' . $mysqli->error);
     }
-    $insert_stmt->bind_param("isssssssiss", $staff_id, $staffname, $regulation, $year, $semester, $department, $section, $test_type, $testmark, $subject_name, $subject_code);
+    $insert_stmt->bind_param("isissssiss", $staff_id, $staffname, $year, $semester, $department, $section, $test_type, $testmark, $subject_name, $subject_code);
     
     if ($insert_stmt->execute()) {
         // Get last inserted test_id
@@ -63,12 +62,11 @@ if ($result->num_rows > 0) {
     $insert_stmt->close();
 }
 
-// Check if 'course_outcome' and 'blooms_taxonomy' are set
-if (!isset($_POST['course_outcome']) || empty($_POST['course_outcome']) || !isset($_POST['blooms_taxonomy']) || empty($_POST['blooms_taxonomy'])) {
-    die("Error: Missing course_outcome or blooms_taxonomy data.");
+// Check if 'course_outcome' is set
+if (!isset($_POST['course_outcome']) || empty($_POST['course_outcome'])) {
+    die("Error: Missing course_outcome data.");
 }
 
-// Delete existing co_questions for this test_id
 $delete_query = "DELETE FROM co_questions WHERE test_id = ?";
 $delete_stmt = $mysqli->prepare($delete_query);
 if (!$delete_stmt) {
@@ -80,15 +78,14 @@ if (!$delete_stmt->execute()) {
 }
 $delete_stmt->close();
 
-// Now insert fresh data from $_POST['course_outcome'] and $_POST['blooms_taxonomy']
+// Now insert fresh data from $_POST['course_outcome']
 foreach ($_POST['course_outcome'] as $question_number => $course_outcome) {
-    $blooms_taxonomy = $_POST['blooms_taxonomy'][$question_number]; // Get corresponding Bloom's Taxonomy value
-    $insert_co_query = "INSERT INTO co_questions (test_id, question_number, course_outcome, blooms_taxonomy) VALUES (?, ?, ?, ?)";
+    $insert_co_query = "INSERT INTO co_questions (test_id, question_number, course_outcome) VALUES (?, ?, ?)";
     $insert_co_stmt = $mysqli->prepare($insert_co_query);
     if (!$insert_co_stmt) {
         die('Error preparing insert co_questions statement: ' . $mysqli->error);
     }
-    $insert_co_stmt->bind_param("iiss", $test_id, $question_number, $course_outcome, $blooms_taxonomy);
+    $insert_co_stmt->bind_param("iis", $test_id, $question_number, $course_outcome);
     
     if (!$insert_co_stmt->execute()) {
         die("Error inserting into co_questions: " . $insert_co_stmt->error);

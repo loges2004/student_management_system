@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 $register_no = isset($_POST['register_no']) ? strtoupper(trim($_POST['register_no'])) : '';
 $marks = $_POST['marks'] ?? [];
 $attended = $_POST['attended'] ?? [];
-$attendance = isset($_POST['attendance']) ? 'Present' : 'Absent';
+$attendance = isset($_POST['attendance']) ? $_POST['attendance'] : 'Absent'; // Get attendance value from form
 $questionCount = (int)($_POST['questionCount'] ?? 0);
 $testmark = (int)($_POST['testmark'] ?? 0);
 
@@ -43,7 +43,7 @@ if (empty($_POST['department'])) $errors[] = "Department is required.";
 if (empty($_POST['section'])) $errors[] = "Section is required.";
 if (empty($_POST['test_type'])) $errors[] = "Test Type is required.";
 if (empty($_POST['subject_code'])) $errors[] = "Subject Code is required.";
-if (empty($_POST['subject_name'])) $errors[] = "Subject Name is required."; // Add validation for subject_name
+if (empty($_POST['subject_name'])) $errors[] = "Subject Name is required.";
 if ($testmark <= 0) $errors[] = "Test mark must be greater than 0.";
 
 if (!empty($errors)) {
@@ -81,18 +81,18 @@ try {
         $section_upper = strtoupper($_POST['section']);
         $test_type_upper = strtoupper($_POST['test_type']);
         $subject_code_upper = strtoupper($_POST['subject_code']);
-        $subject_name_upper = strtoupper($_POST['subject_name']); // Ensure subject_name is uppercase
+        $subject_name_upper = strtoupper($_POST['subject_name']);
         $insert_test->bind_param(
-            "iisssssis", // 's' for regulation (string)
+            "iisssssis",
             $_POST['year'],
             $_POST['semester'],
             $department_upper,
             $section_upper,
             $test_type_upper,
             $subject_code_upper,
-            $subject_name_upper, // Pass subject_name here
+            $subject_name_upper,
             $testmark,
-            $regulation // Pass as string
+            $regulation
         );
         if (!$insert_test->execute()) {
             throw new Exception("Error creating test configuration: " . $insert_test->error);
@@ -100,12 +100,12 @@ try {
         $test_id = $mysqli->insert_id;
         $test_type_db = $test_type_upper;
         $subject_code_db = $subject_code_upper;
-        $subject_name_db = $subject_name_upper; // Use the correct subject_name
+        $subject_name_db = $subject_name_upper;
     } else {
         $test_id = $test_result['id'];
         $test_type_db = strtoupper($test_result['test_type']);
         $subject_code_db = strtoupper($test_result['subject_code']);
-        $subject_name_db = strtoupper($test_result['subject_name']); // Use the correct subject_name
+        $subject_name_db = strtoupper($test_result['subject_name']);
 
         // Update testmark if needed
         if ($test_result['testmark'] != $testmark) {
@@ -115,6 +115,21 @@ try {
                 throw new Exception("Error updating testmark: " . $update_testmark->error);
             }
             $update_testmark->close();
+        }
+    }
+
+    // If attendance is "Absent", set all marks to 0
+    if ($attendance === 'Absent') {
+        $marks = array_fill(1, $questionCount, 0); // Set all marks to 0
+        $attended = array_fill(1, $questionCount, 0); // Set all attended to 0
+        $total_marks = 0; // Set total marks to 0
+    } else {
+        // Calculate total marks
+        $total_marks = 0;
+        foreach ($marks as $questionNo => $mark) {
+            $mark = (int)$mark;
+            $is_attended = isset($attended[$questionNo]) ? (int)$attended[$questionNo] : 0;
+            $total_marks += $mark;
         }
     }
 
@@ -139,12 +154,10 @@ try {
             regulation = VALUES(regulation)
     ");
 
-    // Calculate total marks and insert/update
-    $total_marks = 0;
+    // Insert/update marks for each question
     foreach ($marks as $questionNo => $mark) {
         $mark = (int)$mark;
         $is_attended = isset($attended[$questionNo]) ? (int)$attended[$questionNo] : 0;
-        $total_marks += $mark;
 
         $co_stmt->bind_param("ii", $test_id, $questionNo);
         $co_stmt->execute();
@@ -156,7 +169,7 @@ try {
         $attendance_upper = strtoupper($attendance);
 
         $insert_mark->bind_param(
-            "isssiiisssssssiissis", // 's' for regulation (string)
+            "isssiiisssssssiissis",
             $test_id,
             $register_no,
             $student_name,
@@ -169,14 +182,14 @@ try {
             $test_type_db,
             $testmark,
             $subject_code_db,
-            $subject_name_db, // Use the correct subject_name
+            $subject_name_db,
             $attendance_upper,
             $total_marks,
             $_POST['year'],
             $_POST['department'],
             $_POST['semester'],
             $student_id,
-            $regulation // Pass as string
+            $regulation
         );
         if (!$insert_mark->execute()) {
             throw new Exception("Error saving marks for question $questionNo: " . $insert_mark->error);
