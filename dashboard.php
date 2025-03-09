@@ -50,13 +50,25 @@ if (isset($_GET['staff_name'])) {
                     <option value="4">IV Year</option>
                 </select>
             </div>
-
-            <div class="mb-3">
-                <label for="semester" class="form-label">Select Semester:</label>
-                <select name="semester" id="semester" class="form-select" required>
-                    <!-- Options will be populated dynamically via JavaScript -->
-                </select>
-            </div>
+            <div class=" mb-3">
+        <?php
+        // Get the current year
+        $currentYear = date("Y");
+        // Define the range of years for the dropdown (e.g., current year to current year + 10)
+        $startYear = 2020;
+        $endYear = $currentYear + 10;
+        // Generate the dropdown options for Regulation
+        echo '<label for="regulation" class="form-label">Regulation</label>';
+        echo '<select class="form-control" name="regulation" id="regulation" required>';
+        echo "<option value=''>---select the Regulation----</option>";
+        for ($year = $startYear; $year <= $endYear; $year++) {
+            echo "<option value='$year'>$year Regulation</option>";
+        }
+        echo '</select>';
+        ?>
+        <div class="invalid-feedback">Please select regulation.</div>
+    </div>
+           
 
             <div class="mb-3">
                 <label for="department" class="form-label">Select Department:</label>
@@ -68,6 +80,12 @@ if (isset($_GET['staff_name'])) {
                     <option value="Civil">Civil</option>
                     <option value="AIML">AIML</option>
                     <option value="Cyber Security">Cyber Security</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="semester" class="form-label">Select Semester:</label>
+                <select name="semester" id="semester" class="form-select" required>
+                    <!-- Options will be populated dynamically via JavaScript -->
                 </select>
             </div>
             <div class="mb-3">

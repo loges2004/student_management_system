@@ -6,7 +6,7 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 // Validate session variables
-$required_session = ['year', 'semester', 'department', 'section', 'test_type', 'subject_name', 'subject_code', 'testmark'];
+$required_session = ['year', 'semester', 'department', 'section', 'test_type', 'subject_name', 'subject_code', 'testmark', 'regulation'];
 foreach ($required_session as $var) {
     if (!isset($_SESSION[$var])) {
         die("Session expired or invalid. Please reconfigure the test.");
@@ -64,13 +64,14 @@ try {
             $insertStmt = $mysqli->prepare("
                 INSERT INTO test_results (
                     staffname, year, semester, department, 
-                    section, test_type, testmark, subject_name, subject_code, staff_id
-                ) VALUES (UPPER(?), ?, ?, ?, ?, ?, ?, UPPER(?), UPPER(?), ?)
+                    section, test_type, testmark, subject_name, subject_code, staff_id, regulation
+                ) VALUES (UPPER(?), ?, ?, ?, ?, ?, ?, UPPER(?), UPPER(?), ?, UPPER(?))
             ");
             $staffname = $_SESSION['staffname'] ?? '';
             $staff_id = $_SESSION['staff_id'] ?? 0;
+            $regulation = $_SESSION['regulation'] ?? '';
             $insertStmt->bind_param(
-                "siisssissi",
+                "siisssissis",
                 $staffname,
                 $_SESSION['year'],
                 $_SESSION['semester'],
@@ -80,7 +81,8 @@ try {
                 $_SESSION['testmark'],
                 $_SESSION['subject_name'],
                 $_SESSION['subject_code'],
-                $staff_id
+                $staff_id,
+                $regulation
             );
             $insertStmt->execute();
             $test_id = $mysqli->insert_id;
@@ -88,14 +90,16 @@ try {
             $test_id = $test['id'];
         }
 
-        // Fetch CO mapping
+        // Fetch CO and Bloom's Taxonomy mapping
         $co_mapping = [];
-        $co_stmt = $mysqli->prepare("SELECT question_number, course_outcome FROM co_questions WHERE test_id = ?");
+        $blooms_mapping = [];
+        $co_stmt = $mysqli->prepare("SELECT question_number, course_outcome, blooms_taxonomy FROM co_questions WHERE test_id = ?");
         $co_stmt->bind_param("i", $test_id);
         $co_stmt->execute();
         $co_result = $co_stmt->get_result();
         while ($row = $co_result->fetch_assoc()) {
             $co_mapping[$row['question_number']] = strtoupper($row['course_outcome']);
+            $blooms_mapping[$row['question_number']] = strtoupper($row['blooms_taxonomy']);
         }
 
         $file = $_FILES['excelFile']['tmp_name'];
@@ -144,30 +148,32 @@ try {
                 $mark = $marks[$i];
                 $attended = $mark > 0 ? 1 : 0;
                 $co = $co_mapping[$question_number] ?? strtoupper(getCourseOutcome($question_number, $countsArray));
+                $blooms_taxonomy = $blooms_mapping[$question_number] ?? 'BL1-Remembering'; // Default Bloom's Taxonomy
                 $attendance = ($total_mark > 0) ? 'PRESENT' : 'ABSENT';
 
                 $insert_stmt = $mysqli->prepare("
                     INSERT INTO student_marks (
                         test_id, register_no, question_number, 
                         year, department, semester, student_id, student_name, section,
-                        marks, attended, course_outcome,
-                        test_type, testmark, subject_code, subject_name, attendance, total_marks
+                        marks, attended, course_outcome, blooms_taxonomy,
+                        test_type, testmark, subject_code, subject_name, attendance, total_marks, regulation
                     ) VALUES (
                         ?, ?, ?, 
                         ?, ?, ?, ?, ?, ?,
-                        ?, ?, ?,
-                        ?, ?, ?, ?, ?, ?
+                        ?, ?, ?, ?,
+                        ?, ?, ?, ?, ?, ?, ?
                     )
                     ON DUPLICATE KEY UPDATE
                         marks = VALUES(marks),
                         attended = VALUES(attended),
                         attendance = VALUES(attendance),
                         section = VALUES(section),
-                        total_marks = VALUES(total_marks)
+                        total_marks = VALUES(total_marks),
+                        regulation = VALUES(regulation)
                 ");
 
                 $insert_stmt->bind_param(
-                    "isiiissssiissssssi",
+                    "isiiissssiisssssssis",
                     $test_id,
                     $register_no,
                     $question_number,
@@ -180,12 +186,14 @@ try {
                     $mark,
                     $attended,
                     $co,
+                    $blooms_taxonomy,
                     $_SESSION['test_type'],
                     $_SESSION['testmark'],
                     $_SESSION['subject_code'],
                     $_SESSION['subject_name'],
                     $attendance,
-                    $total_mark
+                    $total_mark,
+                    $_SESSION['regulation']
                 );
 
                 if (!$insert_stmt->execute()) {

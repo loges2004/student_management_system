@@ -16,14 +16,16 @@ if (!isset($_SESSION['year'], $_SESSION['semester'], $_SESSION['department'], $_
 }
 
 // Fetch and sanitize session variables
+$regulation = $_SESSION['regulation'] ?? '';
 $year = $_SESSION['year'] ?? '';
-$semester = $_SESSION['semester'] ?? '';
+$semester =strtoupper($_SESSION['semester']) ?? '';
 $department = strtoupper($_SESSION['department']) ?? '';
 $section =  strtoupper($_SESSION['section']) ?? '';
-$test_type = $_SESSION['test_type'] ?? '';
+$test_type = strtoupper($_SESSION['test_type']) ?? '';
 $subject_name = $_SESSION['subject_name'] ?? '';
 $subject_code = $_SESSION['subject_code'] ?? '';
 $testmark = $_SESSION['testmark'] ?? '';
+
 
 // Retrieve question count from URL
 $questionCount = isset($_GET['questionCount']) ? (int)$_GET['questionCount'] : 0;
@@ -336,16 +338,16 @@ if (isset($_SESSION['failed'])) {
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td class="attendance-checkbox" colspan="2">
-                                        <input type="hidden" name="attendance" value="Absent"> <!-- Default as Absent -->
-                                        <input type="checkbox" name="attendance" value="Present" checked>
-                                        <label for="attendance">Attendance</label>
-                                    </td>
-
-                                </tr>
+    <td class="attendance-checkbox" colspan="2">
+        <input type="checkbox" name="attendance_checkbox" id="attendance_checkbox" checked>
+        <label for="attendance_checkbox">Attendance</label>
+        <input type="hidden" name="attendance" id="attendance" value="Present"> <!-- Dynamic value -->
+    </td>
+</tr>
                             </tbody>
                         </table>
 
+                        <input type="hidden" name="regulation" value="<?php echo htmlspecialchars($regulation); ?>">
                         <input type="hidden" name="year" value="<?php echo htmlspecialchars($year); ?>">
                         <input type="hidden" name="semester" value="<?php echo htmlspecialchars($semester); ?>">
                         <input type="hidden" name="department" value="<?php echo htmlspecialchars($department); ?>">
@@ -537,6 +539,36 @@ if (isset($_SESSION['failed'])) {
                 }
             });
 
+            $(document).ready(function() {
+    // Handle the overall attendance checkbox
+    $('#attendance_checkbox').on('change', function() {
+        const isPresent = $(this).is(':checked');
+        $('#attendance').val(isPresent ? 'Present' : 'Absent');
+
+        if (!isPresent) {
+            // If absent, set all marks to 0 and disable input fields
+            $('.marks-input').val(0).prop('disabled', true);
+            $('input[name^="attended"]').prop('checked', false).prop('disabled', true);
+            $('#total_mark').val(0); // Set total marks to 0
+        } else {
+            // If present, enable input fields
+            $('.marks-input').prop('disabled', false).val('');
+            $('input[name^="attended"]').prop('disabled', false).prop('checked', true);
+        }
+    });
+
+    // Ensure attendance value is set correctly before form submission
+    $('#marksForm').on('submit', function() {
+        const isPresent = $('#attendance_checkbox').is(':checked');
+        $('#attendance').val(isPresent ? 'Present' : 'Absent');
+
+        if (!isPresent) {
+            // If absent, ensure all marks are 0
+            $('.marks-input').val(0);
+            $('#total_mark').val(0);
+        }
+    });
+});
 
             // Function to enable marks input fields when attendance is checked
             function enableMarksInputFields() {

@@ -6,16 +6,17 @@ require 'vendor/autoload.php'; // Ensure you have PhpSpreadsheet installed via C
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
 // Check if all required parameters are set
-if (isset($_POST['year']) && isset($_POST['semester']) && isset($_POST['department']) && isset($_POST['section'])) {
+if (isset($_POST['year']) && isset($_POST['semester']) && isset($_POST['department']) && isset($_POST['section']) && isset($_POST['regulation'])) {
     $year = $_POST['year'];
     $semester = $_POST['semester'];
     $department = $_POST['department'];
     $section = $_POST['section'];
+    $regulation = $_POST['regulation'];
 
-    // Fetch subjects
-    $stmt = $mysqli->prepare("SELECT subject_id, subject_name, subject_code, credit_points FROM subjects WHERE semester = ? AND department = ?");
+    // Fetch subjects based on regulation, semester, and department
+    $stmt = $mysqli->prepare("SELECT subject_id, subject_name, subject_code, credit_points FROM subjects WHERE semester = ? AND department = ? AND regulation = ?");
     if ($stmt === false) die('MySQL prepare error: ' . $mysqli->error);
-    $stmt->bind_param('ss', $semester, $department);
+    $stmt->bind_param('sss', $semester, $department, $regulation);
     $stmt->execute();
     $subjects = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 
@@ -25,19 +26,22 @@ if (isset($_POST['year']) && isset($_POST['semester']) && isset($_POST['departme
         exit();
     }
 
-    // Fetch students based on department, year, and section
+    // Fetch students based on department, year, section, and regulation
     $student_query = "
     SELECT DISTINCT s.register_no, s.student_name, sg.cgpa_mark 
     FROM stud s 
     LEFT JOIN student_grades sg 
         ON s.register_no = sg.register_no 
         AND sg.semester = ? 
+        AND sg.regulation = ?
     WHERE TRIM(s.department) = TRIM(?) 
         AND s.years = ? 
         AND TRIM(s.section) = TRIM(?)
+        AND s.regulation = ?
+        ORDER BY s.register_no ASC
     ";
     $student_stmt = $mysqli->prepare($student_query) or die('MySQL prepare error: ' . $mysqli->error);
-    $student_stmt->bind_param('ssss', $semester, $department, $year, $section);
+    $student_stmt->bind_param('ssssss', $semester, $regulation, $department, $year, $section, $regulation);
     $student_stmt->execute();
     $students = $student_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 } else {
@@ -47,7 +51,7 @@ if (isset($_POST['year']) && isset($_POST['semester']) && isset($_POST['departme
 // Handle Excel file upload
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['excel_file'])) {
     // Validate required parameters
-    if (!isset($_POST['year']) || !isset($_POST['semester']) || !isset($_POST['department']) || !isset($_POST['section'])) {
+    if (!isset($_POST['year']) || !isset($_POST['semester']) || !isset($_POST['department']) || !isset($_POST['section']) || !isset($_POST['regulation'])) {
         die('Required parameters not set.');
     }
 
@@ -55,6 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['excel_file'])) {
     $semester = $_POST['semester'];
     $department = $_POST['department'];
     $section = $_POST['section'];
+    $regulation = $_POST['regulation'];
 
     // Validate file upload
     if ($_FILES['excel_file']['error'] !== UPLOAD_ERR_OK) {
@@ -82,8 +87,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['excel_file'])) {
                 $grade = $grades[$index];
 
                 $stmt = $mysqli->prepare("
-                    INSERT INTO student_grades (register_no, student_name, subject_id, subject_code, subject_name, grade, semester, department, section, years) 
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    INSERT INTO student_grades (register_no, student_name, subject_id, subject_code, subject_name, grade, semester, department, section, years, regulation) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     ON DUPLICATE KEY UPDATE 
                         student_name = VALUES(student_name),
                         subject_code = VALUES(subject_code),
@@ -91,14 +96,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['excel_file'])) {
                         grade = VALUES(grade), 
                         semester = VALUES(semester),
                         section = VALUES(section),
-                        years = VALUES(years)
+                        years = VALUES(years),
+                        regulation = VALUES(regulation)
                 ");
 
                 if ($stmt === false) {
                     die('MySQL prepare error: ' . $mysqli->error);
                 }
 
-                $stmt->bind_param('ssissssssi', $register_no, $student_name, $subject_id, $subject['subject_code'], $subject['subject_name'], $grade, $semester, $department, $section, $year);
+                $stmt->bind_param('ssissssssss', $register_no, $student_name, $subject_id, $subject['subject_code'], $subject['subject_name'], $grade, $semester, $department, $section, $year, $regulation);
                 $stmt->execute();
             }
 
@@ -143,13 +149,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['excel_file'])) {
                 AND department = ? 
                 AND section = ?
                 AND years = ?
+                AND regulation = ?
             ");
 
             if ($stmt === false) {
                 die('MySQL prepare error: ' . $mysqli->error);
             }
 
-            $stmt->bind_param('dsssss', $truncated_cgpa, $register_no, $semester, $department, $section, $year);
+            $stmt->bind_param('dssssss', $truncated_cgpa, $register_no, $semester, $department, $section, $year, $regulation);
             if (!$stmt->execute()) {
                 die('MySQL execute error: ' . $stmt->error);
             }
@@ -187,7 +194,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['excel_file'])) {
             padding: 20px;
         }
         .student-list-container {
-            height: 70vh;
+            height: 100vh;
             overflow-y: auto;
             border: 1px solid #dee2e6;
             border-radius: 8px;
@@ -260,6 +267,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['excel_file'])) {
                         <input type="hidden" name="year" value="<?= htmlspecialchars($year) ?>">
                         <input type="hidden" name="semester" value="<?= htmlspecialchars($semester) ?>">
                         <input type="hidden" name="section" value="<?= htmlspecialchars($section) ?>">
+                        <input type="hidden" name="regulation" value="<?= htmlspecialchars($regulation) ?>">
 
                         <div class="row g-3 mb-4 align-items-center">
                             <div class="col-md-6">
@@ -311,7 +319,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['excel_file'])) {
 
        <!-- Excel Upload Section -->
 <div class="row mt-4">
-    <div class="col-12">
+    <div class="col-6">
         <div class="card">
             <div class="card-header bg-primary text-white">
                 <h5 class="card-title mb-0">Upload Grades via Excel</h5>
@@ -323,14 +331,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['excel_file'])) {
                     <input type="hidden" name="semester" value="<?= htmlspecialchars($semester) ?>">
                     <input type="hidden" name="department" value="<?= htmlspecialchars($department) ?>">
                     <input type="hidden" name="section" value="<?= htmlspecialchars($section) ?>">
+                    <input type="hidden" name="regulation" value="<?= htmlspecialchars($regulation) ?>">
 
                     <div class="mb-3">
                         <label for="excel_file" class="form-label">Choose Excel File</label>
                         <input type="file" class="form-control" id="excel_file" name="excel_file" accept=".xlsx, .xls" required>
                     </div>
                     <button type="submit" class="btn btn-success">Upload</button>
-                    <a href="download_template.php?year=<?= $year ?>&semester=<?= $semester ?>&department=<?= $department ?>" class="btn btn-secondary">Download Template</a>
+                    <a href="download_template.php?year=<?= $year ?>&semester=<?= $semester ?>&department=<?= $department ?>&regulation=<?= $regulation ?>" class="btn btn-secondary">Download Template</a>
                 </form>
+            </div>
+        </div>
+    </div>
+   
+    <div class="col-6">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="card-title mb-0">Generate Report</h5>
+            </div>
+            <div class="card-body">
+                <a href="generate_report.php?year=<?= $year ?>&semester=<?= $semester ?>&department=<?= urlencode($department) ?>&section=<?= urlencode($section) ?>&regulation=<?= urlencode($regulation) ?>" 
+                   class="btn btn-success">
+                    Generate Report
+                </a>
             </div>
         </div>
     </div>
@@ -340,61 +363,63 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['excel_file'])) {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        $(document).ready(function() {
-            // Student row click handler
-            $('#studentTableBody tr').click(function() {
-                const registerNo = $(this).data('register-no');
-                const studentName = $(this).find('td:nth-child(2)').text();
+       $(document).ready(function() {
+    // Student row click handler
+    $('#studentTableBody tr').click(function() {
+        const registerNo = $(this).data('register-no');
+        const studentName = $(this).find('td:nth-child(2)').text();
 
-                // Populate register_no and student_name
-                $('#register_no').val(registerNo);
-                $('#student_name').val(studentName);
+        console.log("Clicked student:", registerNo, studentName); // Debugging
 
-                // Fetch grades and profile image via AJAX
-                $.ajax({
-                    url: 'fetch_student_grades.php',
-                    type: 'GET',
-                    data: {
-                        register_no: registerNo,
-                        semester: <?= $semester ?>,
-                        department: '<?= trim($department) ?>' // Ensure no leading/trailing spaces
-                    },
-                    success: function(response) {
-                        console.log("AJAX Response:", response);
-                        const data = JSON.parse(response);
+        // Populate register_no and student_name
+        $('#register_no').val(registerNo);
+        $('#student_name').val(studentName);
 
-                        // Clear all grade inputs
-                        $('input[name^="grades"]').val('');
+        // Fetch grades and profile image via AJAX
+        $.ajax({
+            url: 'fetch_student_grades.php',
+            type: 'GET',
+            data: {
+                register_no: registerNo,
+                semester: <?= $semester ?>,
+                department: '<?= trim($department) ?>', // Ensure no leading/trailing spaces
+                regulation: '<?= trim($regulation) ?>'
+            },
+            success: function(response) {
+                console.log("AJAX Response:", response); // Debugging
+                const data = JSON.parse(response);
 
-                        // Populate grades
-                        if (data.grades && data.grades.length > 0) {
-                            data.grades.forEach(grade => {
-                                const inputField = $(`input[name="grades[${grade.subject_id}]"]`);
-                                if (inputField.length) {
-                                    inputField.val(grade.grade);
-                                } else {
-                                    console.warn(`Input field for subject_id ${grade.subject_id} not found.`);
-                                }
-                            });
+                // Clear all grade inputs
+                $('input[name^="grades"]').val('');
+
+                // Populate grades
+                if (data.grades && data.grades.length > 0) {
+                    data.grades.forEach(grade => {
+                        const inputField = $(`input[name="grades[${grade.subject_id}]"]`);
+                        if (inputField.length) {
+                            inputField.val(grade.grade);
                         } else {
-                            console.warn("No grades found for this student.");
+                            console.warn(`Input field for subject_id ${grade.subject_id} not found.`);
                         }
+                    });
+                } else {
+                    console.warn("No grades found for this student.");
+                }
 
-                        // Set profile image
-                        if (data.profile_image) {
-                            $('#profile_image').attr('src', `./${data.profile_image}`);
-                        } else {
-                            $('#profile_image').attr('src', './images/default_profile.jpg');
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        console.error("AJAX Error:", status, error);
-                        Swal.fire('Error', 'Failed to fetch student data.', 'error');
-                    }
-                });
-            });
+                // Set profile image
+                if (data.profile_image) {
+                    $('#profile_image').attr('src', `./${data.profile_image}`);
+                } else {
+                    $('#profile_image').attr('src', './images/default_profile.jpg');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("AJAX Error:", status, error);
+                Swal.fire('Error', 'Failed to fetch student data.', 'error');
+            }
         });
-
+    });
+});
         $(document).ready(function() {
         <?php if (isset($_SESSION['success'])): ?>
             Swal.fire({
@@ -414,6 +439,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['excel_file'])) {
             <?php unset($_SESSION['error']); ?>
         <?php endif; ?>
     }); 
-    </script>
-</body>
-</html>
+    </script
