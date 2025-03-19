@@ -12,9 +12,8 @@
 include('db.php');
 
 // Start the session
-session_start();   
+session_start();
 
-// Check if the form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $year = $_POST['year'];
     $test_type = $_POST['test_type'];
@@ -23,34 +22,57 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $section = $_POST['section'];
     $subject_name = $_POST['subject_name'];
     $subject_code = $_POST['subject_code'];
-    $testmark = $_POST['testmark']; // Get the testmark value from POST
-    $staff_name = $_POST['staff_name']; // Get the staff_name value from POST
-    $staff_id = $_POST['staff_id']; // Get the staff_id value from POST
-    $regulation = $_POST['regulation'];
+    $testmark = $_POST['testmark'];
+    $staff_name = trim(strtoupper($_POST['staff_name'])); // Trim and convert to uppercase
+    $staff_id = trim($_POST['staff_id']);
+    $regulation = strtoupper($_POST['regulation']);
 
-    // Validate staff_id and staff_name
-    $stmt_staff = $mysqli->prepare("SELECT * FROM staff WHERE staff_id = ? AND staff_name COLLATE utf8mb4_general_ci = ?");
-    $stmt_staff->bind_param("ss", $staff_id, $staff_name);
-    $stmt_staff->execute();
-    $result_staff = $stmt_staff->get_result();
+    // Debugging: Print the inputs
+    echo "<script>console.log('Input Staff Name:', '" . $staff_name . "');</script>";
+    echo "<script>console.log('Input Staff ID:', '" . $staff_id . "');</script>";
 
-    if ($result_staff->num_rows === 0) {
-        // Staff does not exist, show an error message
-        echo "<script>
-            Swal.fire({
-                title: 'Error!',
-                text: 'Invalid staff ID or name. Please check your credentials.',
-                icon: 'error'
-            }).then(() => {
-                window.history.back();
-            });
-        </script>";
-        $stmt_staff->close();
-        $mysqli->close();
-        exit;
-    }
+    // ✅ Validate staff_id and staff_name
+   // ✅ Validate staff_id and staff_name
+$stmt_staff = $mysqli->prepare("
+SELECT * 
+FROM staff 
+WHERE REPLACE(UPPER(TRIM(staff_name)), '  ', ' ') = REPLACE(UPPER(TRIM(?)), '  ', ' ') 
+AND staff_id = ?
+");
 
-    // Store form data in session variables
+$stmt_staff->bind_param("ss", $staff_name, $staff_id);
+$stmt_staff->execute();
+$result_staff = $stmt_staff->get_result();
+
+if ($result_staff->num_rows === 0) {
+// Debugging: Print the database values for better debugging
+$debug_stmt = $mysqli->prepare("SELECT staff_name, staff_id FROM staff WHERE staff_id = ?");
+$debug_stmt->bind_param("s", $staff_id);
+$debug_stmt->execute();
+$result_debug = $debug_stmt->get_result();
+
+$debug_stmt->close();
+
+echo "<script>
+    Swal.fire({
+        title: 'Error!',
+        text: 'Invalid staff ID or name. Please check your credentials.',
+        icon: 'error'
+    }).then(() => {
+        window.history.back();
+    });
+</script>";
+$stmt_staff->close();
+$mysqli->close();
+exit;
+} else {
+// Debugging: Output matched staff details
+$row = $result_staff->fetch_assoc();
+
+}
+
+
+    // ✅ Store form data in session variables
     $_SESSION['year'] = $year;
     $_SESSION['test_type'] = $test_type;
     $_SESSION['semester'] = $semester;
@@ -63,17 +85,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $_SESSION['staff_id'] = $staff_id;
     $_SESSION['regulation'] = $regulation;
 
-    // Prepare the SQL statement to check if the subject already exists
-    $stmt = $mysqli->prepare("SELECT * FROM subjects WHERE subject_name COLLATE utf8mb4_general_ci = ? AND subject_code = ? AND department = ? AND semester = ? AND regulation = ?");
+    // ✅ Check if the subject already exists
+    $stmt = $mysqli->prepare("SELECT * FROM subjects WHERE UPPER(subject_name) = UPPER(?) AND subject_code = ? AND department = ? AND semester = ? AND regulation = ?");
     $stmt->bind_param("sssss", $subject_name, $subject_code, $department, $semester, $regulation);
-
-    // Execute the statement
     $stmt->execute();
     $result = $stmt->get_result();
 
-    // Check if any row exists
     if ($result->num_rows > 0) {
-        // Subject exists, show a success message and redirect
+        // ✅ Subject exists, show a success message
         echo "<script>
             Swal.fire({
                 title: 'Success!',
@@ -84,7 +103,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             });
         </script>";
     } else {
-        // Subject does not exist, show an error message
+        // ❌ Subject does not exist
         echo "<script>
             Swal.fire({
                 title: 'Error!',
@@ -96,11 +115,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </script>";
     }
 
-    // Close the statements and database connection
+    // ✅ Close statements and connection
     $stmt->close();
     $stmt_staff->close();
     $mysqli->close();
 }
 ?>
+
 </body>
 </html>

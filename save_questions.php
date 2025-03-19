@@ -9,6 +9,7 @@ if (!isset($_SESSION['staff_id'], $_SESSION['staff_name'], $_SESSION['year'], $_
 
 // Fetch session variables
 $staff_id = $_SESSION['staff_id'];
+$regulation = isset($_SESSION['regulation']) ? $_SESSION['regulation'] : '';
 $staffname = strtoupper( $_SESSION['staff_name']);
 $year = $_SESSION['year'];
 $semester =$_SESSION['semester'];
@@ -25,7 +26,7 @@ $stmt = $mysqli->prepare($query);
 if (!$stmt) {
     die('Error preparing statement: ' . $mysqli->error);
 }
-$stmt->bind_param("isissssiss", $staff_id, $staffname, $year, $semester, $department, $section, $test_type, $testmark, $subject_name, $subject_code);
+$stmt->bind_param("ssissssiss", $staff_id, $staffname, $year, $semester, $department, $section, $test_type, $testmark, $subject_name, $subject_code);
 $stmt->execute();
 $result = $stmt->get_result();
 
@@ -51,7 +52,7 @@ if ($result->num_rows > 0) {
     if (!$insert_stmt) {
         die('Error preparing insert statement: ' . $mysqli->error);
     }
-    $insert_stmt->bind_param("isissssiss", $staff_id, $staffname, $year, $semester, $department, $section, $test_type, $testmark, $subject_name, $subject_code);
+    $insert_stmt->bind_param("ssissssiss", $staff_id, $staffname, $year, $semester, $department, $section, $test_type, $testmark, $subject_name, $subject_code);
     
     if ($insert_stmt->execute()) {
         // Get last inserted test_id
@@ -77,22 +78,22 @@ if (!$delete_stmt->execute()) {
     die("Error deleting old co_questions: " . $delete_stmt->error);
 }
 $delete_stmt->close();
-
-// Now insert fresh data from $_POST['course_outcome']
 foreach ($_POST['course_outcome'] as $question_number => $course_outcome) {
-    $insert_co_query = "INSERT INTO co_questions (test_id, question_number, course_outcome) VALUES (?, ?, ?)";
+    $blooms_taxonomy = $_POST['blooms_taxonomy'][$question_number]; // Get corresponding Bloom's Taxonomy value
+    $insert_co_query = "INSERT INTO co_questions (test_id, question_number, course_outcome, blooms_taxonomy) VALUES (?, ?, ?, ?)";
     $insert_co_stmt = $mysqli->prepare($insert_co_query);
     if (!$insert_co_stmt) {
         die('Error preparing insert co_questions statement: ' . $mysqli->error);
     }
-    $insert_co_stmt->bind_param("iis", $test_id, $question_number, $course_outcome);
-    
+    // Bind parameters only once
+    $insert_co_stmt->bind_param("iiss", $test_id, $question_number, $course_outcome, $blooms_taxonomy);
+
     if (!$insert_co_stmt->execute()) {
         die("Error inserting into co_questions: " . $insert_co_stmt->error);
     }
     $insert_co_stmt->close();
 }
-
+ 
 // Close connections and return success
 $mysqli->close();
 echo 'Success';
