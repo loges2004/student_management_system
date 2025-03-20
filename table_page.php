@@ -27,9 +27,9 @@ $testmark = isset($_SESSION['testmark']) ? (int)$_SESSION['testmark'] : 0;
     <style>
         :root {
             --primary-color: #2c3e50;
-            --secondary-color:rgb(47, 105, 146);
+            --secondary-color: rgb(47, 105, 146);
             --accent-color: #e74c3c;
-            --hover-color:rgb(127, 190, 233);
+            --hover-color: rgb(127, 190, 233);
             --background-color: #f8f9fa;
         }
 
@@ -44,8 +44,15 @@ $testmark = isset($_SESSION['testmark']) ? (int)$_SESSION['testmark'] : 0;
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .details-table {
@@ -138,8 +145,15 @@ $testmark = isset($_SESSION['testmark']) ? (int)$_SESSION['testmark'] : 0;
         }
 
         @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         #questionSection {
@@ -147,8 +161,15 @@ $testmark = isset($_SESSION['testmark']) ? (int)$_SESSION['testmark'] : 0;
         }
 
         @keyframes scaleIn {
-            from { transform: scale(0.95); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
+            from {
+                transform: scale(0.95);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
         }
 
         .sticky-section {
@@ -165,7 +186,7 @@ $testmark = isset($_SESSION['testmark']) ? (int)$_SESSION['testmark'] : 0;
                 margin-bottom: 1rem;
             }
 
-            .row > div {
+            .row>div {
                 margin-bottom: 1.5rem;
             }
 
@@ -184,9 +205,17 @@ $testmark = isset($_SESSION['testmark']) ? (int)$_SESSION['testmark'] : 0;
         }
 
         @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(52, 152, 219, 0.5); }
-            70% { box-shadow: 0 0 0 10px rgba(52, 152, 219, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(52, 152, 219, 0); }
+            0% {
+                box-shadow: 0 0 0 0 rgba(52, 152, 219, 0.5);
+            }
+
+            70% {
+                box-shadow: 0 0 0 10px rgba(52, 152, 219, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(52, 152, 219, 0);
+            }
         }
 
         .floating-alert {
@@ -198,8 +227,13 @@ $testmark = isset($_SESSION['testmark']) ? (int)$_SESSION['testmark'] : 0;
         }
 
         @keyframes slideIn {
-            from { transform: translateX(100%); }
-            to { transform: translateX(0); }
+            from {
+                transform: translateX(100%);
+            }
+
+            to {
+                transform: translateX(0);
+            }
         }
     </style>
 </head>
@@ -420,8 +454,8 @@ $testmark = isset($_SESSION['testmark']) ? (int)$_SESSION['testmark'] : 0;
             let formData = new FormData();
 
             // Add session data to formData
-            formData.append('staffname', '<?php echo $staff_name; ?>'); 
-            formData.append('regulation', '<?php echo $regulation; ?>'); 
+            formData.append('staffname', '<?php echo $staff_name; ?>');
+            formData.append('regulation', '<?php echo $regulation; ?>');
             formData.append('year', '<?php echo $year; ?>');
             formData.append('semester', '<?php echo $semester; ?>');
             formData.append('department', '<?php echo $department; ?>');
@@ -441,41 +475,39 @@ $testmark = isset($_SESSION['testmark']) ? (int)$_SESSION['testmark'] : 0;
                 formData.append(`co_marks[${i + 1}]`, coMarks);
             }
 
-            // Submit form data
             fetch('save_questions.php', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.text())
-            .then(data => {
-                if (data === 'Success') {
-                    Swal.fire({
-                        title: 'Success!',
-                        text: 'Course Outcomes and Bloom\'s Taxonomy saved successfully!',
-                        icon: 'success',
-                        confirmButtonText: 'OK'
-                    }).then(() => {
-                        // Redirect with proper parameters
-                        window.location.href = `test_enter.php?questionCount=${questions.length}&marks=${marksJson}&counts=${countsJson}`;
-                    });
-                } else {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json()) // Parse response as JSON
+                .then(data => {
+                    if (data.status === 'success') { // Check the status field
+                        Swal.fire({
+                            title: 'Success!',
+                            text: data.message, // Use the message from the JSON response
+                            icon: 'success',
+                            confirmButtonText: 'OK'
+                        }).then(() => {
+                            window.location.href = `test_enter.php?questionCount=${questions.length}&marks=${marksJson}&counts=${countsJson}`;
+                        });
+                    } else {
+                        Swal.fire({
+                            title: 'Error!',
+                            text: data.message || 'There was an error saving the data.', // Fallback message
+                            icon: 'error',
+                            confirmButtonText: 'OK'
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
                     Swal.fire({
                         title: 'Error!',
-                        text: 'There was an error saving the data.',
+                        text: 'An error occurred while submitting the form.',
                         icon: 'error',
                         confirmButtonText: 'OK'
                     });
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                Swal.fire({
-                    title: 'Error!',
-                    text: 'An error occurred while submitting the form.',
-                    icon: 'error',
-                    confirmButtonText: 'OK'
                 });
-            });
         });
 
         function backfunc() {
@@ -483,4 +515,5 @@ $testmark = isset($_SESSION['testmark']) ? (int)$_SESSION['testmark'] : 0;
         }
     </script>
 </body>
+
 </html>
