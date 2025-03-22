@@ -191,27 +191,27 @@ $regulation_upper = strtoupper($_SESSION['regulation']);
 
 // Bind parameters using the variables
 $insert_stmt->bind_param(
-    "isiissssssissssssssi", // Corrected parameter types
+    "isiissssssissssssssi", 
     $test_id,
     $register_no,
     $question_number,
     $_SESSION['year'],
-    $department,            // Use the uppercase variable
-    $semester,              // Use the uppercase variable
+    $department,            
+    $semester,              
     $student_id,
-    $student_name_upper,    // Use the uppercase variable
-    $section,               // Use the uppercase variable
+    $student_name_upper,    
+    $section,               
     $mark,
     $attended,
-    $co_upper,              // Use the uppercase variable
-    $blooms_taxonomy_upper, // Use the uppercase variable
-    $test_type_upper,       // Use the uppercase variable
+    $co_upper,              
+    $blooms_taxonomy_upper, 
+    $test_type_upper,       
     $_SESSION['testmark'],
-    $subject_code_upper,    // Use the uppercase variable
-    $subject_name_upper,    // Use the uppercase variable
-    $attendance_upper,      // Use the uppercase variable
+    $subject_code_upper,    
+    $subject_name_upper,    
+    $attendance_upper,      
     $total_mark,
-    $regulation_upper       // Use the uppercase variable
+    $regulation_upper       
 );
                 if (!$insert_stmt->execute()) {
                     throw new Exception("Failed to insert/update marks: " . $insert_stmt->error);
