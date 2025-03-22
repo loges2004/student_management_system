@@ -65,7 +65,7 @@ try {
                 INSERT INTO test_results (
                     staffname, year, semester, department, 
                     section, test_type, testmark, subject_name, subject_code, staff_id, regulation
-                ) VALUES (UPPER(?), ?, ?, ?, ?, ?, ?, UPPER(?), UPPER(?), ?, UPPER(?))
+                ) VALUES (UPPER(?), ?, ?, UPPER(?), UPPER(?), UPPER(?), ?, UPPER(?), UPPER(?), ?, UPPER(?))
             ");
             $staffname = $_SESSION['staffname'] ?? '';
             $staff_id = $_SESSION['staff_id'] ?? 0;
@@ -75,7 +75,7 @@ try {
                 $staffname,
                 $_SESSION['year'],
                 $_SESSION['semester'],
-                $_SESSION['department'],
+                $_SESSION['department'],  // department as string
                 $_SESSION['section'],
                 $_SESSION['test_type'],
                 $_SESSION['testmark'],
@@ -148,7 +148,7 @@ try {
                 $mark = $marks[$i];
                 $attended = $mark > 0 ? 1 : 0;
                 $co = $co_mapping[$question_number] ?? strtoupper(getCourseOutcome($question_number, $countsArray));
-                $blooms_taxonomy = $blooms_mapping[$question_number] ?? 'BL1-Remembering'; // Default Bloom's Taxonomy
+                $blooms_taxonomy = $blooms_mapping[$question_number] ?? 'BL1-Remembering';
                 $attendance = ($total_mark > 0) ? 'PRESENT' : 'ABSENT';
 
                 $insert_stmt = $mysqli->prepare("
@@ -165,37 +165,54 @@ try {
                     )
                     ON DUPLICATE KEY UPDATE
                         marks = VALUES(marks),
+                        course_outcome = VALUES(course_outcome),
+                        blooms_taxonomy = VALUES(blooms_taxonomy),
                         attended = VALUES(attended),
+                         test_type = VALUES(test_type),
                         attendance = VALUES(attendance),
                         section = VALUES(section),
+                        department = VALUES(department),
                         total_marks = VALUES(total_marks),
                         regulation = VALUES(regulation)
                 ");
 
-                $insert_stmt->bind_param(
-                    "isiiissssiisssssssis",
-                    $test_id,
-                    $register_no,
-                    $question_number,
-                    $_SESSION['year'],
-                    $_SESSION['department'],
-                    $_SESSION['semester'],
-                    $student_id,
-                    $student_name,
-                    $_SESSION['section'],
-                    $mark,
-                    $attended,
-                    $co,
-                    $blooms_taxonomy,
-                    $_SESSION['test_type'],
-                    $_SESSION['testmark'],
-                    $_SESSION['subject_code'],
-                    $_SESSION['subject_name'],
-                    $attendance,
-                    $total_mark,
-                    $_SESSION['regulation']
-                );
+               // Convert all string values to uppercase and store them in variables
+$department = strtoupper($_SESSION['department']);
+$semester = strtoupper($_SESSION['semester']);
+$student_name_upper = strtoupper($student_name);
+$section = strtoupper($_SESSION['section']);
+$co_upper = strtoupper($co);
+$blooms_taxonomy_upper = strtoupper($blooms_taxonomy);
+$test_type_upper = strtoupper($_SESSION['test_type']);
+$subject_code_upper = strtoupper($_SESSION['subject_code']);
+$subject_name_upper = strtoupper($_SESSION['subject_name']);
+$attendance_upper = strtoupper($attendance);
+$regulation_upper = strtoupper($_SESSION['regulation']);
 
+// Bind parameters using the variables
+$insert_stmt->bind_param(
+    "isiissssssissssssssi", // Corrected parameter types
+    $test_id,
+    $register_no,
+    $question_number,
+    $_SESSION['year'],
+    $department,            // Use the uppercase variable
+    $semester,              // Use the uppercase variable
+    $student_id,
+    $student_name_upper,    // Use the uppercase variable
+    $section,               // Use the uppercase variable
+    $mark,
+    $attended,
+    $co_upper,              // Use the uppercase variable
+    $blooms_taxonomy_upper, // Use the uppercase variable
+    $test_type_upper,       // Use the uppercase variable
+    $_SESSION['testmark'],
+    $subject_code_upper,    // Use the uppercase variable
+    $subject_name_upper,    // Use the uppercase variable
+    $attendance_upper,      // Use the uppercase variable
+    $total_mark,
+    $regulation_upper       // Use the uppercase variable
+);
                 if (!$insert_stmt->execute()) {
                     throw new Exception("Failed to insert/update marks: " . $insert_stmt->error);
                 }

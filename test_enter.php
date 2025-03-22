@@ -37,21 +37,22 @@ $countsArray = $_SESSION['countsArray'] ?? [];
 $students = [];
 if (!empty($year) && !empty($department) && !empty($section)) {
     $query = "
-    SELECT DISTINCT 
-        s.register_no, 
-        s.student_name, 
-        s.section, 
-        COALESCE(sm.total_marks, 'N/A') AS total_marks, 
+    SELECT DISTINCT
+        s.register_no,
+        s.student_name,
+        s.section,
+        COALESCE(sm.total_marks, 'N/A') AS total_marks,
         COALESCE(sm.attendance, 'N/A') AS attendance
     FROM stud s
-    LEFT JOIN student_marks sm 
+    LEFT JOIN student_marks sm
         ON s.register_no = sm.register_no
         AND sm.subject_code = ?
         AND sm.test_type = ?
-    WHERE s.years = ? 
+    WHERE s.years = ?
         AND UPPER(TRIM(s.department)) = UPPER(TRIM(?))
         AND UPPER(TRIM(s.section)) = UPPER(TRIM(?))
-";
+    ORDER BY s.register_no ASC";
+
     $stmt = $mysqli->prepare($query);
     if ($stmt) {
         $stmt->bind_param(
@@ -618,27 +619,27 @@ if (isset($_SESSION['failed'])) {
                 checkbox.prop('checked', false);
             }
         });
-        // Download template functionality
-        document.getElementById('downloadTemplate').addEventListener('click', function() {
-            // Create CSV headers
-            let headers = ['Register No', 'Student Name'];
-            for (let i = 1; i <= questionCount; i++) {
-                headers.push(`Q${i}`);
-            }
-            headers.push('Total Mark');
+        
+    // Download template functionality
+document.getElementById('downloadTemplate').addEventListener('click', function() {
+    // Create CSV headers
+    let headers = ['Register No', 'Student Name'];
+    for (let i = 1; i <= questionCount; i++) {
+        headers.push(`Q${i}`);
+    }
+    headers.push('Total Mark');
 
-            // Combine headers and sample row into CSV content
-            const csvContent = headers.join(',') + '\n' + sampleRow.join(',');
+    // Convert headers to CSV format
+    const csvContent = headers.join(',') + '\n';
 
-            // Create a Blob and trigger the download
-            const blob = new Blob([csvContent], {
-                type: 'text/csv'
-            });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = 'marks_template.csv';
-            link.click();
-        });
+    // Create a Blob and trigger the download
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'marks_template.csv';
+    link.click();
+});
+
     </script>
 </body>
 
