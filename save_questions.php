@@ -88,22 +88,52 @@ if (!$delete_stmt->execute()) {
 }
 $delete_stmt->close();
 
-// Insert new co_questions
+// Insert or update co_questions
 foreach ($_POST['course_outcome'] as $question_number => $course_outcome) {
     $blooms_taxonomy = $_POST['blooms_taxonomy'][$question_number];
     $co_marks = $_POST['co_marks'][$question_number];
-    $insert_co_query = "INSERT INTO co_questions (test_id, question_number, course_outcome, blooms_taxonomy, co_marks) VALUES (?, ?, ?, ?, ?)";
-    $insert_co_stmt = $mysqli->prepare($insert_co_query);
-    if (!$insert_co_stmt) {
-        echo json_encode(['status' => 'error', 'message' => 'Error preparing insert co_questions statement: ' . $mysqli->error]);
+
+    // Check if the record already exists
+    $check_query = "SELECT id FROM co_questions WHERE test_id = ? AND question_number = ?";
+    $check_stmt = $mysqli->prepare($check_query);
+    if (!$check_stmt) {
+        echo json_encode(['status' => 'error', 'message' => 'Error preparing check statement: ' . $mysqli->error]);
         exit();
     }
-    $insert_co_stmt->bind_param("iissi", $test_id, $question_number, $course_outcome, $blooms_taxonomy, $co_marks);
-    if (!$insert_co_stmt->execute()) {
-        echo json_encode(['status' => 'error', 'message' => 'Error inserting into co_questions: ' . $insert_co_stmt->error]);
-        exit();
+    $check_stmt->bind_param("ii", $test_id, $question_number);
+    $check_stmt->execute();
+    $check_result = $check_stmt->get_result();
+
+    if ($check_result->num_rows > 0) {
+        // Update existing record
+        $update_co_query = "UPDATE co_questions SET course_outcome = ?, blooms_taxonomy = ?, co_marks = ? WHERE test_id = ? AND question_number = ?";
+        $update_co_stmt = $mysqli->prepare($update_co_query);
+        if (!$update_co_stmt) {
+            echo json_encode(['status' => 'error', 'message' => 'Error preparing update co_questions statement: ' . $mysqli->error]);
+            exit();
+        }
+        $update_co_stmt->bind_param("sssii", $course_outcome, $blooms_taxonomy, $co_marks, $test_id, $question_number);
+        if (!$update_co_stmt->execute()) {
+            echo json_encode(['status' => 'error', 'message' => 'Error updating co_questions: ' . $update_co_stmt->error]);
+            exit();
+        }
+        $update_co_stmt->close();
+    } else {
+        // Insert new record
+        $insert_co_query = "INSERT INTO co_questions (test_id, question_number, course_outcome, blooms_taxonomy, co_marks) VALUES (?, ?, ?, ?, ?)";
+        $insert_co_stmt = $mysqli->prepare($insert_co_query);
+        if (!$insert_co_stmt) {
+            echo json_encode(['status' => 'error', 'message' => 'Error preparing insert co_questions statement: ' . $mysqli->error]);
+            exit();
+        }
+        $insert_co_stmt->bind_param("iissi", $test_id, $question_number, $course_outcome, $blooms_taxonomy, $co_marks);
+        if (!$insert_co_stmt->execute()) {
+            echo json_encode(['status' => 'error', 'message' => 'Error inserting into co_questions: ' . $insert_co_stmt->error]);
+            exit();
+        }
+        $insert_co_stmt->close();
     }
-    $insert_co_stmt->close();
+    $check_stmt->close();
 }
 
 // All operations succeeded
