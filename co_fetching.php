@@ -95,7 +95,8 @@ include 'db.php';
                         </select>
                     </div>
                     <div class="col-12 text-center mt-3">
-                        <button type="submit" class="btn btn-primary">Submit</button>
+                        <button type="reset" class="btn btn-danger">clear</button>
+                        <xbutton type="submit" class="btn btn-success">Submit</xbutton>
                     </div>
                 </div>
             </form>
